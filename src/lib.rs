@@ -19,6 +19,9 @@
 /// # Example
 ///
 /// ```{.rust}
+/// #[macro_use]
+/// extern crate bitflags;
+///
 /// bitflags! {
 ///     flags Flags: u32 {
 ///         const FLAG_A       = 0b00000001,
@@ -43,6 +46,9 @@
 /// The generated `struct`s can also be extended with type and trait implementations:
 ///
 /// ```{.rust}
+/// #[macro_use]
+/// extern crate bitflags;
+///
 /// use std::fmt;
 ///
 /// bitflags! {
