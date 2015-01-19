@@ -10,6 +10,9 @@
 
 //! A typesafe bitmask flag generator.
 
+#![no_std]
+#[cfg(test)] #[macro_use] extern crate std;
+
 /// The `bitflags!` macro generates a `struct` that holds a set of C-style
 /// bitmask flags. It is useful for creating typesafe wrappers for C APIs.
 ///
@@ -277,6 +280,7 @@ macro_rules! bitflags {
 #[cfg(test)]
 #[allow(non_upper_case_globals)]
 mod tests {
+    use std::prelude::v1::*;
     use std::hash::{self, SipHasher};
 
     bitflags! {
