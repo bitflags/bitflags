@@ -13,6 +13,67 @@
 #![no_std]
 #[cfg(test)] #[macro_use] extern crate std;
 
+/// The `bitflags_values` macro is a helper for the `bitflags!` macro.
+/// It creates the actual constants and the implementation for the `all` method.
+///
+/// It is used internally, but can be useful if you want to create macros
+/// extending `bitflags!`. For example, if you can't set all values from
+/// the get go, you can later use this.
+///
+/// ```{.rust}
+/// #[macro_use]
+/// extern crate bitflags;
+///
+/// bitflags! {
+///     flags Flags: u32
+/// }
+/// bitflags_values! {
+///     Flags {
+///         const FLAG_A       = 0b00000001,
+///         const FLAG_B       = 0b00000010,
+///         const FLAG_C       = 0b00000100,
+///         const FLAG_ABC     = FLAG_A.bits
+///                            | FLAG_B.bits
+///                            | FLAG_C.bits,
+///     }
+/// }
+///
+/// fn main() {
+///     let e1 = FLAG_A | FLAG_C;
+///     let e2 = FLAG_B | FLAG_C;
+///     assert!((e1 | e2) == FLAG_ABC);   // union
+///     assert!((e1 & e2) == FLAG_C);     // intersection
+///     assert!((e1 - e2) == FLAG_A);     // set difference
+///     assert!(!e2 == FLAG_A);           // set complement
+/// }
+/// ```
+///
+#[macro_export]
+macro_rules! bitflags_values {
+    ($BitFlags:ident {
+        $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+
+    }) => {
+        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
+
+        impl $BitFlags {
+            /// Returns the set containing all flags.
+            #[inline]
+            pub fn all() -> $BitFlags {
+                $BitFlags { bits: $($value)|+ }
+            }
+        }
+    };
+    ($BitFlags:ident {
+        $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+,
+    }) => {
+        bitflags_values! {
+            $BitFlags {
+                $($(#[$Flag_attr])* const $Flag = $value),+
+            }
+        }
+    };
+}
+
 /// The `bitflags!` macro generates a `struct` that holds a set of C-style
 /// bitmask flags. It is useful for creating typesafe wrappers for C APIs.
 ///
@@ -124,28 +185,18 @@
 ///             if they are.
 #[macro_export]
 macro_rules! bitflags {
-    ($(#[$attr:meta])* flags $BitFlags:ident: $T:ty {
-        $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+
-    }) => {
+    ($(#[$attr:meta])* flags $BitFlags:ident: $T:ty) => {
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
         $(#[$attr])*
         pub struct $BitFlags {
             bits: $T,
         }
 
-        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
-
         impl $BitFlags {
             /// Returns an empty set of flags.
             #[inline]
             pub fn empty() -> $BitFlags {
                 $BitFlags { bits: 0 }
-            }
-
-            /// Returns the set containing all flags.
-            #[inline]
-            pub fn all() -> $BitFlags {
-                $BitFlags { bits: $($value)|+ }
             }
 
             /// Returns the raw value of the flags currently stored.
@@ -262,6 +313,19 @@ macro_rules! bitflags {
             #[inline]
             fn not(self) -> $BitFlags {
                 $BitFlags { bits: !self.bits } & $BitFlags::all()
+            }
+        }
+    };
+    ($(#[$attr:meta])* flags $BitFlags:ident: $T:ty {
+        $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+
+    }) => {
+        bitflags! {
+            $(#[$attr])*
+            flags $BitFlags: $T
+        }
+        bitflags_values! {
+            $BitFlags {
+                $($(#[$Flag_attr])* const $Flag = $value),+
             }
         }
     };
