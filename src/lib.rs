@@ -10,12 +10,7 @@
 
 //! A typesafe bitmask flag generator.
 
-#![feature(no_std)]
-
-#![no_std]
-#[cfg(test)] #[macro_use] extern crate std;
-
-extern crate core;
+#![cfg_attr(test, feature(hash))]
 
 /// The `bitflags!` macro generates a `struct` that holds a set of C-style
 /// bitmask flags. It is useful for creating typesafe wrappers for C APIs.
