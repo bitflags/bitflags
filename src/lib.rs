@@ -10,8 +10,6 @@
 
 //! A typesafe bitmask flag generator.
 
-#![cfg_attr(test, feature(hash))]
-
 /// The `bitflags!` macro generates a `struct` that holds a set of C-style
 /// bitmask flags. It is useful for creating typesafe wrappers for C APIs.
 ///
@@ -45,7 +43,8 @@
 /// }
 /// ```
 ///
-/// The generated `struct`s can also be extended with type and trait implementations:
+/// The generated `struct`s can also be extended with type and trait
+/// implementations:
 ///
 /// ```{.rust}
 /// #[macro_use]
@@ -279,8 +278,7 @@ macro_rules! bitflags {
 #[cfg(test)]
 #[allow(non_upper_case_globals)]
 mod tests {
-    use std::prelude::v1::*;
-    use std::hash::{self, SipHasher};
+    use std::hash::{SipHasher, Hash, Hasher};
 
     bitflags! {
         #[doc = "> The first principle is that you must not fool yourself — and"]
@@ -469,13 +467,19 @@ mod tests {
         assert!(a < b && a <= b);
     }
 
+    fn hash<T: Hash>(t: &T) -> u64 {
+        let mut s = SipHasher::new_with_keys(0, 0);
+        t.hash(&mut s);
+        s.finish()
+    }
+
     #[test]
     fn test_hash() {
       let mut x = Flags::empty();
       let mut y = Flags::empty();
-      assert!(hash::hash::<Flags, SipHasher>(&x) == hash::hash::<Flags, SipHasher>(&y));
+      assert!(hash(&x) == hash(&y));
       x = Flags::all();
       y = FlagABC;
-      assert!(hash::hash::<Flags, SipHasher>(&x) == hash::hash::<Flags, SipHasher>(&y));
+      assert!(hash(&x) == hash(&y));
     }
 }
