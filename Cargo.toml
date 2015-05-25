@@ -17,6 +17,9 @@ description = """
 A macro to generate structures which behave like bitflags.
 """
 
+[dev-dependencies]
+compiletest_rs = "0.2"
+
 [badges]
 travis-ci = { repository = "rust-lang-nursery/bitflags" }
 
