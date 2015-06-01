@@ -66,7 +66,7 @@
 ///     }
 /// }
 ///
-/// impl fmt::Debug for Flags {
+/// impl fmt::Display for Flags {
 ///     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 ///         write!(f, "hi!")
 ///     }
@@ -76,7 +76,8 @@
 ///     let mut flags = FLAG_A | FLAG_B;
 ///     flags.clear();
 ///     assert!(flags.is_empty());
-///     assert_eq!(format!("{:?}", flags), "hi!");
+///     assert_eq!(format!("{}", flags), "hi!");
+///     assert_eq!(format!("{:?}", FLAG_A | FLAG_B), "FLAG_A | FLAG_B");
 /// }
 /// ```
 ///
@@ -89,7 +90,10 @@
 ///
 /// The `PartialEq` and `Clone` traits are automatically derived for the `struct` using
 /// the `deriving` attribute. Additional traits can be derived by providing an
-/// explicit `deriving` attribute on `flags`.
+/// explicit `deriving` attribute on `flags`. The `Debug` trait is also implemented by
+/// showing how the value could be constructed with only `|` (for example, `FLAG_A | FLAG_B`).
+/// However, if aliases are used, the representation is redundant. For example, `FLAG_ABC` will
+/// display as `FLAG_A | FLAG_B | FLAG_C | FLAG_ABC`.
 ///
 /// # Operators
 ///
@@ -132,6 +136,24 @@ macro_rules! bitflags {
         }
 
         $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
+
+        impl ::std::fmt::Debug for $BitFlags {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                let mut first = true;
+                $(
+                    if self.contains($Flag) {
+                        if !first {
+                            try!(f.write_str(" | "));
+                        }
+                        first = false;
+                        try!(f.write_str(stringify!($Flag)));
+                    }
+                )+
+                let _ = first; // silence! the last assignment from the above
+                               // expansion doesn't get read. fix that.
+                Ok(())
+            }
+        }
 
         impl $BitFlags {
             /// Returns an empty set of flags.
