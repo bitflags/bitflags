@@ -77,8 +77,8 @@
 ///     flags.clear();
 ///     assert!(flags.is_empty());
 ///     assert_eq!(format!("{}", flags), "hi!");
-///     assert_eq!(format!("{:?}", FLAG_A | FLAG_B), "Flags { bits: 0b00000011 }");
-///     assert_eq!(format!("{:?}", FLAG_B), "Flags { bits: 0b00000010 }");
+///     assert_eq!(format!("{:?}", FLAG_A | FLAG_B), "Flags { bits: 0b11 }");
+///     assert_eq!(format!("{:?}", FLAG_B), "Flags { bits: 0b10 }");
 /// }
 /// ```
 ///
@@ -89,10 +89,10 @@
 ///
 /// # Derived traits
 ///
-/// The `PartialEq` and `Clone` traits are automatically derived for the `struct` using
-/// the `deriving` attribute. Additional traits can be derived by providing an
-/// explicit `deriving` attribute on `flags`. The `Debug` trait is also implemented by
-/// displaying the bits value of the internal struct.
+/// The `PartialEq` and `Clone` traits are automatically derived for the
+/// `struct` using the `deriving` attribute. Additional traits can be derived by
+/// providing an explicit `deriving` attribute on `flags`. The `Debug` trait is
+/// also implemented by displaying the bits value of the internal struct.
 ///
 /// # Operators
 ///
@@ -138,7 +138,7 @@ macro_rules! bitflags {
 
         impl ::std::fmt::Debug for $BitFlags {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-                let out = format!("{} {{ bits: {:#010b} }}",
+                let out = format!("{} {{ bits: {:#b} }}",
                                   stringify!($BitFlags),
                                   self.bits);
                 f.write_str(&out[..])
@@ -288,7 +288,7 @@ macro_rules! bitflags {
 }
 
 #[cfg(test)]
-#[allow(non_upper_case_globals)]
+#[allow(non_upper_case_globals, dead_code)]
 mod tests {
     use std::hash::{SipHasher, Hash, Hasher};
 
@@ -308,6 +308,15 @@ mod tests {
             const FlagABC     = FlagA.bits
                                | FlagB.bits
                                | FlagC.bits,
+        }
+    }
+
+    bitflags! {
+        flags _CfgFlags: u32 {
+            #[cfg(windows)]
+            const _CfgA = 0b01,
+            #[cfg(unix)]
+            const _CfgB = 0b01,
         }
     }
 
@@ -497,7 +506,7 @@ mod tests {
 
     #[test]
     fn test_debug() {
-        assert_eq!(format!("{:?}", FlagA | FlagB), "Flags { bits: 0b00000011 }");
-        assert_eq!(format!("{:?}", FlagABC), "Flags { bits: 0b00000111 }");
+        assert_eq!(format!("{:?}", FlagA | FlagB), "Flags { bits: 0b11 }");
+        assert_eq!(format!("{:?}", FlagABC), "Flags { bits: 0b111 }");
     }
 }
