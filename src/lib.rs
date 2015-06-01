@@ -77,7 +77,8 @@
 ///     flags.clear();
 ///     assert!(flags.is_empty());
 ///     assert_eq!(format!("{}", flags), "hi!");
-///     assert_eq!(format!("{:?}", FLAG_A | FLAG_B), "FLAG_A | FLAG_B");
+///     assert_eq!(format!("{:?}", FLAG_A | FLAG_B), "Flags { bits: 0b00000011 }");
+///     assert_eq!(format!("{:?}", FLAG_B), "Flags { bits: 0b00000010 }");
 /// }
 /// ```
 ///
@@ -91,9 +92,7 @@
 /// The `PartialEq` and `Clone` traits are automatically derived for the `struct` using
 /// the `deriving` attribute. Additional traits can be derived by providing an
 /// explicit `deriving` attribute on `flags`. The `Debug` trait is also implemented by
-/// showing how the value could be constructed with only `|` (for example, `FLAG_A | FLAG_B`).
-/// However, if aliases are used, the representation is redundant. For example, `FLAG_ABC` will
-/// display as `FLAG_A | FLAG_B | FLAG_C | FLAG_ABC`.
+/// displaying the bits value of the internal struct.
 ///
 /// # Operators
 ///
@@ -139,19 +138,10 @@ macro_rules! bitflags {
 
         impl ::std::fmt::Debug for $BitFlags {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-                let mut first = true;
-                $(
-                    if self.contains($Flag) {
-                        if !first {
-                            try!(f.write_str(" | "));
-                        }
-                        first = false;
-                        try!(f.write_str(stringify!($Flag)));
-                    }
-                )+
-                let _ = first; // silence! the last assignment from the above
-                               // expansion doesn't get read. fix that.
-                Ok(())
+                let out = format!("{} {{ bits: {:#010b} }}",
+                                  stringify!($BitFlags),
+                                  self.bits);
+                f.write_str(&out[..])
             }
         }
 
@@ -497,11 +487,17 @@ mod tests {
 
     #[test]
     fn test_hash() {
-      let mut x = Flags::empty();
-      let mut y = Flags::empty();
-      assert!(hash(&x) == hash(&y));
-      x = Flags::all();
-      y = FlagABC;
-      assert!(hash(&x) == hash(&y));
+        let mut x = Flags::empty();
+        let mut y = Flags::empty();
+        assert!(hash(&x) == hash(&y));
+        x = Flags::all();
+        y = FlagABC;
+        assert!(hash(&x) == hash(&y));
+    }
+
+    #[test]
+    fn test_debug() {
+        assert_eq!(format!("{:?}", FlagA | FlagB), "Flags { bits: 0b00000011 }");
+        assert_eq!(format!("{:?}", FlagABC), "Flags { bits: 0b00000111 }");
     }
 }
