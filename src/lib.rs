@@ -87,14 +87,20 @@
 /// Attributes can be attached to the generated `struct` by placing them
 /// before the `flags` keyword.
 ///
-/// # Derived traits
+/// # Trait implementations
 ///
-/// The `PartialEq` and `Clone` traits are automatically derived for the
-/// `struct` using the `deriving` attribute. Additional traits can be derived by
-/// providing an explicit `deriving` attribute on `flags`. The `Debug` trait is
-/// also implemented by displaying the bits value of the internal struct.
+/// The `Copy`, `Clone`, `PartialEq`, `Eq`, `PartialOrd`, `Ord` and `Hash`
+/// traits automatically derived for the `struct` using the `derive` attribute.
+/// Additional traits can be derived by providing an explicit `derive`
+/// attribute on `flags`.
 ///
-/// # Operators
+/// The `FromIterator` trait is implemented for the `struct`, too, calculating
+/// the union of the instances of the `struct` iterated over.
+///
+/// The `Debug` trait is also implemented by displaying the bits value of the
+/// internal struct.
+///
+/// ## Operators
 ///
 /// The following operator traits are implemented for the generated `struct`:
 ///
@@ -272,6 +278,16 @@ macro_rules! bitflags {
             #[inline]
             fn not(self) -> $BitFlags {
                 $BitFlags { bits: !self.bits } & $BitFlags::all()
+            }
+        }
+
+        impl ::std::iter::FromIterator<$BitFlags> for $BitFlags {
+            fn from_iter<T: ::std::iter::IntoIterator<Item=$BitFlags>>(iterator: T) -> $BitFlags {
+                let mut result = Self::empty();
+                for item in iterator {
+                    result.insert(item)
+                }
+                result
             }
         }
     };
@@ -458,6 +474,13 @@ mod tests {
         let mut m4 = AnotherSetOfFlags::empty();
         m4.toggle(AnotherSetOfFlags::empty());
         assert!(m4 == AnotherSetOfFlags::empty());
+    }
+
+    #[test]
+    fn test_from_iterator() {
+        assert_eq!([].iter().cloned().collect::<Flags>(), Flags::empty());
+        assert_eq!([FlagA, FlagB].iter().cloned().collect::<Flags>(), FlagA | FlagB);
+        assert_eq!([FlagA, FlagABC].iter().cloned().collect::<Flags>(), FlagABC);
     }
 
     #[test]
