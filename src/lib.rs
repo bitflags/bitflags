@@ -151,6 +151,7 @@ macro_rules! bitflags {
                 // glob import variants from the outer module, shadowing all
                 // defined variants, leaving only the undefined ones with the
                 // bit value of 0.
+                #[allow(dead_code)]
                 mod dummy {
                     // Now we define the "undefined" versions of the flags.
                     // This way, all the names exist, even if some are #[cfg]ed
@@ -194,6 +195,7 @@ macro_rules! bitflags {
             #[inline]
             pub fn all() -> $BitFlags {
                 // See above `dummy` module for why this approach is taken.
+                #[allow(dead_code)]
                 mod dummy {
                     $(const $Flag: super::$BitFlags = super::$BitFlags { bits: 0 };)+
 
