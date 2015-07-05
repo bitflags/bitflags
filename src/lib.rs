@@ -144,38 +144,31 @@ macro_rules! bitflags {
 
         impl ::std::fmt::Debug for $BitFlags {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-                // This convoluted approach is to handle #[cfg]-based flag
-                // omission correctly. Some of the $Flag variants may not be
-                // defined in this module so we create an inner module which
-                // defines *all* flags to the value of 0. Afterwards when the
-                // glob import variants from the outer module, shadowing all
-                // defined variants, leaving only the undefined ones with the
-                // bit value of 0.
+                // This convoluted approach is to handle #[cfg]-based flag omission correctly.
                 mod dummy {
                     // Now we define the "undefined" versions of the flags.
-                    // This way, all the names exist, even if some are #[cfg]ed
-                    // out.
+                    // This way, all the names exist, even if some are #[cfg]ed out.
                     $(const $Flag: super::$BitFlags = super::$BitFlags { bits: 0 };)+
 
                     #[inline]
-                    pub fn fmt(self_: &super::$BitFlags,
-                               f: &mut ::std::fmt::Formatter)
-                               -> ::std::fmt::Result {
+                    pub fn fmt(self_: &super::$BitFlags, f: &mut ::std::fmt::Formatter)
+                              -> ::std::fmt::Result {
                         // Now we import the real values for the flags.
                         // Only ones that are #[cfg]ed out will be 0.
                         use super::*;
 
-                        let mut _first = true;
+                        let mut first = true;
                         $(
                             // $Flag.bits == 0 means that $Flag doesn't exist
                             if $Flag.bits != 0 && self_.contains($Flag) {
-                                if !_first {
+                                if !first {
                                     try!(f.write_str(" | "));
                                 }
-                                _first = false;
+                                first = false;
                                 try!(f.write_str(stringify!($Flag)));
                             }
                         )+
+                        let _ = first;  // Silence the unused_assignments warning
                         Ok(())
                     }
                 }
@@ -193,13 +186,18 @@ macro_rules! bitflags {
             /// Returns the set containing all flags.
             #[inline]
             pub fn all() -> $BitFlags {
-                // See above `dummy` module for why this approach is taken.
+                // This convoluted approach is to handle #[cfg]-based flag omission correctly.
                 mod dummy {
+                    // Now we define the "undefined" versions of the flags.
+                    // This way, all the names exist, even if some are #[cfg]ed out.
                     $(const $Flag: super::$BitFlags = super::$BitFlags { bits: 0 };)+
 
                     #[inline]
                     pub fn all() -> super::$BitFlags {
+                        // Now we import the real values for the flags.
+                        // Only ones that are #[cfg]ed out will be 0.
                         use super::*;
+
                         $BitFlags { bits: $($Flag.bits)|+ }
                     }
                 }
