@@ -77,8 +77,8 @@
 ///     flags.clear();
 ///     assert!(flags.is_empty());
 ///     assert_eq!(format!("{}", flags), "hi!");
-///     assert_eq!(format!("{:?}", FLAG_A | FLAG_B), "FLAG_A | FLAG_B");
-///     assert_eq!(format!("{:?}", FLAG_B), "FLAG_B");
+///     assert_eq!(format!("{:?}", FLAG_A | FLAG_B), "Flags { bits: 0b11 }");
+///     assert_eq!(format!("{:?}", FLAG_B), "Flags { bits: 0b10 }");
 /// }
 /// ```
 ///
@@ -144,35 +144,10 @@ macro_rules! bitflags {
 
         impl ::std::fmt::Debug for $BitFlags {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-                // This convoluted approach is to handle #[cfg]-based flag omission correctly.
-                mod dummy {
-                    // Now we define the "undefined" versions of the flags.
-                    // This way, all the names exist, even if some are #[cfg]ed out.
-                    $(const $Flag: super::$BitFlags = super::$BitFlags { bits: 0 };)+
-
-                    #[inline]
-                    pub fn fmt(self_: &super::$BitFlags, f: &mut ::std::fmt::Formatter)
-                              -> ::std::fmt::Result {
-                        // Now we import the real values for the flags.
-                        // Only ones that are #[cfg]ed out will be 0.
-                        use super::*;
-
-                        let mut first = true;
-                        $(
-                            // $Flag.bits == 0 means that $Flag doesn't exist
-                            if $Flag.bits != 0 && self_.contains($Flag) {
-                                if !first {
-                                    try!(f.write_str(" | "));
-                                }
-                                first = false;
-                                try!(f.write_str(stringify!($Flag)));
-                            }
-                        )+
-                        let _ = first;  // Silence the unused_assignments warning
-                        Ok(())
-                    }
-                }
-                dummy::fmt(self, f)
+                let out = format!("{} {{ bits: {:#b} }}",
+                                  stringify!($BitFlags),
+                                  self.bits);
+                f.write_str(&out[..])
             }
         }
 
@@ -186,22 +161,7 @@ macro_rules! bitflags {
             /// Returns the set containing all flags.
             #[inline]
             pub fn all() -> $BitFlags {
-                // This convoluted approach is to handle #[cfg]-based flag omission correctly.
-                mod dummy {
-                    // Now we define the "undefined" versions of the flags.
-                    // This way, all the names exist, even if some are #[cfg]ed out.
-                    $(const $Flag: super::$BitFlags = super::$BitFlags { bits: 0 };)+
-
-                    #[inline]
-                    pub fn all() -> super::$BitFlags {
-                        // Now we import the real values for the flags.
-                        // Only ones that are #[cfg]ed out will be 0.
-                        use super::*;
-
-                        $BitFlags { bits: $($Flag.bits)|+ }
-                    }
-                }
-                dummy::all()
+                $BitFlags { bits: $($value)|+ }
             }
 
             /// Returns the raw value of the flags currently stored.
@@ -373,8 +333,6 @@ mod tests {
             const _CfgA = 0b01,
             #[cfg(unix)]
             const _CfgB = 0b01,
-            #[cfg(windows)]
-            const _CfgC = _CfgA.bits | 0b10,
         }
     }
 
@@ -571,7 +529,7 @@ mod tests {
 
     #[test]
     fn test_debug() {
-        assert_eq!(format!("{:?}", FlagA | FlagB), "FlagA | FlagB");
-        assert_eq!(format!("{:?}", FlagABC), "FlagA | FlagB | FlagC | FlagABC");
+        assert_eq!(format!("{:?}", FlagA | FlagB), "Flags { bits: 0b11 }");
+        assert_eq!(format!("{:?}", FlagABC), "Flags { bits: 0b111 }");
     }
 }
