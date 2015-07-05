@@ -97,8 +97,12 @@
 /// The `FromIterator` trait is implemented for the `struct`, too, calculating
 /// the union of the instances of the `struct` iterated over.
 ///
-/// The `Debug` trait is also implemented by displaying the bits value of the
+/// The `Debug` trait is implemented by displaying the bits value of the
 /// internal struct.
+///
+/// The `FromStr` trait is implemented by splitting the string on `|`, trimming any whitespace, and
+/// then checking if there is a flag with that name. If there is, it is `|`'d in. Otherwise, it
+/// returns `None`.
 ///
 /// ## Operators
 ///
@@ -332,6 +336,39 @@ macro_rules! bitflags {
                     result.insert(item)
                 }
                 result
+            }
+        }
+
+        impl ::std::str::FromStr for $BitFlags {
+            type Err = String;
+            fn from_str(s: &str) -> Result<$BitFlags, String> {
+                // See above `dummy` module for why this approach is taken.
+                #[allow(dead_code)]
+                mod dummy {
+                    $(const $Flag: super::$BitFlags = super::$BitFlags { bits: 0 };)+
+
+                    #[inline]
+                    pub fn from_str(s: &str) -> Result<super::$BitFlags, &str> {
+                        use super::*;
+                        #[inline(always)] // hopefully LLVM can do a good job with this match.
+                        fn get_bits(s: &str) -> Option<super::$BitFlags> {
+                            match s {
+                                $( stringify!($Flag) => Some($Flag), )+
+                                _ => None
+                            }
+                        }
+                        let mut bits = 0;
+                        for piece in s.split('|') {
+                            let tr = piece.trim();
+                            match get_bits(tr) {
+                                Some(b) => bits |= b.bits,
+                                None => return Err(tr),
+                            }
+                        }
+                        Ok(super::$BitFlags { bits: bits })
+                    }
+                }
+                dummy::from_str(s).map_err(|e| format!("No such flag: {}", e))
             }
         }
     };
@@ -577,5 +614,12 @@ mod tests {
     fn test_debug() {
         assert_eq!(format!("{:?}", FlagA | FlagB), "FlagA | FlagB");
         assert_eq!(format!("{:?}", FlagABC), "FlagA | FlagB | FlagC | FlagABC");
+    }
+
+    #[test]
+    fn test_from_str() {
+        assert_eq!("FlagA | FlagB".parse(), Ok(FlagA | FlagB));
+        assert_eq!("FlagA".parse(), Ok(FlagA));
+        assert_eq!("Fooasfasdf".parse::<Flags>(), Err(String::from("No such flag: Fooasfasdf")));
     }
 }
