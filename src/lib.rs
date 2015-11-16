@@ -184,6 +184,7 @@ macro_rules! bitflags {
             }
         }
 
+        #[allow(dead_code)]
         impl $BitFlags {
             /// Returns an empty set of flags.
             #[inline]
