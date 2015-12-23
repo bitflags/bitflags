@@ -7,6 +7,9 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
+#![cfg_attr(feature="clippy", feature(plugin))]
+#![cfg_attr(feature="clippy", plugin(clippy))]
+#![cfg_attr(feature="clippy", deny(clippy, clippy_pedantic))]
 
 //! A typesafe bitmask flag generator.
 
@@ -129,6 +132,7 @@
 /// - `remove`: removes the specified flags in-place
 /// - `toggle`: the specified flags will be inserted if not present, and removed
 ///             if they are.
+
 #[macro_export]
 macro_rules! bitflags {
     ($(#[$attr:meta])* flags $BitFlags:ident: $T:ty {
@@ -151,7 +155,7 @@ macro_rules! bitflags {
                 // glob import variants from the outer module, shadowing all
                 // defined variants, leaving only the undefined ones with the
                 // bit value of 0.
-                #[allow(dead_code)]
+                #[allow(dead_code, unused_assignments)]
                 mod dummy {
                     // Now we define the "undefined" versions of the flags.
                     // This way, all the names exist, even if some are #[cfg]ed
@@ -166,14 +170,15 @@ macro_rules! bitflags {
                         // Only ones that are #[cfg]ed out will be 0.
                         use super::*;
 
-                        let mut _first = true;
+                        let mut first = true;
                         $(
                             // $Flag.bits == 0 means that $Flag doesn't exist
                             if $Flag.bits != 0 && self_.contains($Flag) {
-                                if !_first {
+                                if !first {
                                     try!(f.write_str(" | "));
                                 }
-                                _first = false;
+
+                                first = false;
                                 try!(f.write_str(stringify!($Flag)));
                             }
                         )+
@@ -354,7 +359,7 @@ mod tests {
     use std::hash::{SipHasher, Hash, Hasher};
 
     bitflags! {
-        #[doc = "> The first principle is that you must not fool yourself — and"]
+        #[doc = "> The first principle is that you must not fool yourself \u{2014} and"]
         #[doc = "> you are the easiest person to fool."]
         #[doc = "> "]
         #[doc = "> - Richard Feynman"]
