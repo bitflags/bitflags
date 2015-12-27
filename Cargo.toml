@@ -1,16 +1,16 @@
 [package]
-
-name = "bitflags"
+name = "blastfig"
 version = "0.3.3"
-authors = ["The Rust Project Developers"]
+authors = ["The Rust Project Developers", "Jason Ozias"]
 license = "MIT/Apache-2.0"
 readme = "README.md"
-repository = "https://github.com/rust-lang/bitflags"
-homepage = "https://github.com/rust-lang/bitflags"
-documentation = "https://doc.rust-lang.org/bitflags"
+repository = "https://github.com/rustyhorde/blastfig.git"
+homepage = "https://rustyhorde.github.io/blastfig"
+documentation = "https://doc.rust-lang.org/blastfig/blastfig/blastfig/index.html"
 description = """
 A macro to generate structures which behave like bitflags.
 """
+
 [features]
 default = []
 

@@ -23,7 +23,7 @@
 ///
 /// ```{.rust}
 /// #[macro_use]
-/// extern crate bitflags;
+/// extern crate blastfig;
 ///
 /// bitflags! {
 ///     flags Flags: u32 {
@@ -51,7 +51,7 @@
 ///
 /// ```{.rust}
 /// #[macro_use]
-/// extern crate bitflags;
+/// extern crate blastfig;
 ///
 /// use std::fmt;
 ///
