@@ -104,10 +104,10 @@
 ///
 /// The following operator traits are implemented for the generated `struct`:
 ///
-/// - `BitOr`: union
-/// - `BitAnd`: intersection
-/// - `BitXor`: toggle
-/// - `Sub`: set difference
+/// - `BitOr` and `BitOrAssign`: union
+/// - `BitAnd` and `BitAndAssign`: intersection
+/// - `BitXor` and `BitXorAssign`: toggle
+/// - `Sub` and `SubAssign`: set difference
 /// - `Not`: set complement
 ///
 /// # Methods
@@ -286,6 +286,15 @@ macro_rules! bitflags {
             }
         }
 
+        impl ::std::ops::BitOrAssign for $BitFlags {
+
+            /// Adds the set of flags.
+            #[inline]
+            fn bitor_assign(&mut self, other: $BitFlags) {
+                self.bits |= other.bits;
+            }
+        }
+
         impl ::std::ops::BitXor for $BitFlags {
             type Output = $BitFlags;
 
@@ -293,6 +302,15 @@ macro_rules! bitflags {
             #[inline]
             fn bitxor(self, other: $BitFlags) -> $BitFlags {
                 $BitFlags { bits: self.bits ^ other.bits }
+            }
+        }
+
+        impl ::std::ops::BitXorAssign for $BitFlags {
+
+            /// Toggles the set of flags.
+            #[inline]
+            fn bitxor_assign(&mut self, other: $BitFlags) {
+                self.bits ^= other.bits;
             }
         }
 
@@ -306,6 +324,16 @@ macro_rules! bitflags {
             }
         }
 
+        impl ::std::ops::BitAndAssign for $BitFlags {
+
+
+            /// Disables all flags disabled in the set.
+            #[inline]
+            fn bitand_assign(&mut self, other: $BitFlags) {
+                self.bits &= other.bits;
+            }
+        }
+
         impl ::std::ops::Sub for $BitFlags {
             type Output = $BitFlags;
 
@@ -313,6 +341,15 @@ macro_rules! bitflags {
             #[inline]
             fn sub(self, other: $BitFlags) -> $BitFlags {
                 $BitFlags { bits: self.bits & !other.bits }
+            }
+        }
+
+        impl ::std::ops::SubAssign for $BitFlags {
+
+            /// Disables all flags enabled in the set.
+            #[inline]
+            fn sub_assign(&mut self, other: $BitFlags) {
+                self.bits &= !other.bits;
             }
         }
 
