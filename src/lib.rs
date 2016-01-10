@@ -1,3 +1,5 @@
+#![feature(op_assign_traits)]
+#![feature(augmented_assignments)]
 // Copyright 2014 The Rust Project Developers. See the COPYRIGHT
 // file at the top-level directory of this distribution and at
 // http://rust-lang.org/COPYRIGHT.
@@ -19,6 +21,7 @@
 /// # Example
 ///
 /// ```{.rust}
+/// #![feature(op_assign_traits)]
 /// #[macro_use]
 /// extern crate bitflags;
 ///
@@ -47,6 +50,7 @@
 /// implementations:
 ///
 /// ```{.rust}
+/// #![feature(op_assign_traits)]
 /// #[macro_use]
 /// extern crate bitflags;
 ///
@@ -558,6 +562,24 @@ mod tests {
         let mut m4 = AnotherSetOfFlags::empty();
         m4.toggle(AnotherSetOfFlags::empty());
         assert!(m4 == AnotherSetOfFlags::empty());
+    }
+
+    #[test]
+    fn test_assignment_operators() {
+        let mut m1 = Flags::empty();
+        let e1 = FlagA | FlagC;
+        // union
+        m1 |= FlagA;
+        assert!(m1 == FlagA);
+        // intersection
+        m1 &= e1;
+        assert!(m1 == FlagA);
+        // set difference
+        m1 -= m1;
+        assert!(m1 == Flags::empty());
+        // toggle
+        m1 ^= e1;
+        assert!(m1 == e1);
     }
 
     #[test]
