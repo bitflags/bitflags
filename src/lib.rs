@@ -10,6 +10,20 @@
 
 //! A typesafe bitmask flag generator.
 
+// Compile the crate with no_std if possible. The "no_std" feature can be
+// removed once no_std becomes available in 1.6.0 stable. In the meantime no_std
+// must be disabled by default to allow the crate to work on older rust versions.
+#![cfg_attr(all(feature = "no_std", not(test)), no_std)]
+
+#[cfg(all(feature = "no_std", not(test)))]
+#[macro_use]
+extern crate core as std;
+
+// Re-export libstd/libcore using an alias so that the macros can work in no_std
+// crates while remaining compatible with normal crates.
+#[doc(hidden)]
+pub use std as __core;
+
 /// The `bitflags!` macro generates a `struct` that holds a set of C-style
 /// bitmask flags. It is useful for creating typesafe wrappers for C APIs.
 ///
@@ -142,8 +156,8 @@ macro_rules! bitflags {
 
         $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
 
-        impl ::std::fmt::Debug for $BitFlags {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        impl $crate::__core::fmt::Debug for $BitFlags {
+            fn fmt(&self, f: &mut $crate::__core::fmt::Formatter) -> $crate::__core::fmt::Result {
                 // This convoluted approach is to handle #[cfg]-based flag
                 // omission correctly. Some of the $Flag variants may not be
                 // defined in this module so we create an inner module which
@@ -160,8 +174,8 @@ macro_rules! bitflags {
 
                     #[inline]
                     pub fn fmt(self_: &super::$BitFlags,
-                               f: &mut ::std::fmt::Formatter)
-                               -> ::std::fmt::Result {
+                               f: &mut $crate::__core::fmt::Formatter)
+                               -> $crate::__core::fmt::Result {
                         // Now we import the real values for the flags.
                         // Only ones that are #[cfg]ed out will be 0.
                         use super::*;
@@ -218,11 +232,11 @@ macro_rules! bitflags {
             /// Convert from underlying bit representation, unless that
             /// representation contains bits that do not correspond to a flag.
             #[inline]
-            pub fn from_bits(bits: $T) -> ::std::option::Option<$BitFlags> {
+            pub fn from_bits(bits: $T) -> $crate::__core::option::Option<$BitFlags> {
                 if (bits & !$BitFlags::all().bits()) != 0 {
-                    ::std::option::Option::None
+                    $crate::__core::option::Option::None
                 } else {
-                    ::std::option::Option::Some($BitFlags { bits: bits })
+                    $crate::__core::option::Option::Some($BitFlags { bits: bits })
                 }
             }
 
@@ -276,7 +290,7 @@ macro_rules! bitflags {
             }
         }
 
-        impl ::std::ops::BitOr for $BitFlags {
+        impl $crate::__core::ops::BitOr for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the union of the two sets of flags.
@@ -286,7 +300,7 @@ macro_rules! bitflags {
             }
         }
 
-        impl ::std::ops::BitXor for $BitFlags {
+        impl $crate::__core::ops::BitXor for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the left flags, but with all the right flags toggled.
@@ -296,7 +310,7 @@ macro_rules! bitflags {
             }
         }
 
-        impl ::std::ops::BitAnd for $BitFlags {
+        impl $crate::__core::ops::BitAnd for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the intersection between the two sets of flags.
@@ -306,7 +320,7 @@ macro_rules! bitflags {
             }
         }
 
-        impl ::std::ops::Sub for $BitFlags {
+        impl $crate::__core::ops::Sub for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the set difference of the two sets of flags.
@@ -316,7 +330,7 @@ macro_rules! bitflags {
             }
         }
 
-        impl ::std::ops::Not for $BitFlags {
+        impl $crate::__core::ops::Not for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the complement of this set of flags.
@@ -326,8 +340,8 @@ macro_rules! bitflags {
             }
         }
 
-        impl ::std::iter::FromIterator<$BitFlags> for $BitFlags {
-            fn from_iter<T: ::std::iter::IntoIterator<Item=$BitFlags>>(iterator: T) -> $BitFlags {
+        impl $crate::__core::iter::FromIterator<$BitFlags> for $BitFlags {
+            fn from_iter<T: $crate::__core::iter::IntoIterator<Item=$BitFlags>>(iterator: T) -> $BitFlags {
                 let mut result = Self::empty();
                 for item in iterator {
                     result.insert(item)
