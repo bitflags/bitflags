@@ -7,6 +7,7 @@ sudo: false
 script:
   - cargo build --verbose
   - cargo test --verbose
+  - [ "$TRAVIS_RUST_VERSION" = "1.0" ] || cargo test --verbose --features no_std
   - cargo doc
 after_success: |
   [ $TRAVIS_BRANCH = master ] &&
