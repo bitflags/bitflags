@@ -166,6 +166,7 @@ macro_rules! bitflags {
                 // defined variants, leaving only the undefined ones with the
                 // bit value of 0.
                 #[allow(dead_code)]
+                #[allow(unused_assignments)]
                 mod dummy {
                     // Now we define the "undefined" versions of the flags.
                     // This way, all the names exist, even if some are #[cfg]ed
@@ -180,14 +181,14 @@ macro_rules! bitflags {
                         // Only ones that are #[cfg]ed out will be 0.
                         use super::*;
 
-                        let mut _first = true;
+                        let mut first = true;
                         $(
                             // $Flag.bits == 0 means that $Flag doesn't exist
                             if $Flag.bits != 0 && self_.contains($Flag) {
-                                if !_first {
+                                if !first {
                                     try!(f.write_str(" | "));
                                 }
-                                _first = false;
+                                first = false;
                                 try!(f.write_str(stringify!($Flag)));
                             }
                         )+
