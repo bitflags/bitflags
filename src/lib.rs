@@ -15,6 +15,9 @@
 // must be disabled by default to allow the crate to work on older rust versions.
 #![cfg_attr(all(feature = "no_std", not(test)), no_std)]
 
+#![cfg_attr(feature = "assignment_operators", feature(augmented_assignments))]
+#![cfg_attr(all(feature = "assignment_operators", test), feature(op_assign_traits))]
+
 #[cfg(all(feature = "no_std", not(test)))]
 #[macro_use]
 extern crate core as std;
@@ -33,6 +36,7 @@ pub use std as __core;
 /// # Example
 ///
 /// ```{.rust}
+/// #![cfg_attr(feature = "assignment_operators", feature(augmented_assignments, op_assign_traits))]
 /// #[macro_use]
 /// extern crate bitflags;
 ///
@@ -61,6 +65,7 @@ pub use std as __core;
 /// implementations:
 ///
 /// ```{.rust}
+/// #![cfg_attr(feature = "assignment_operators", feature(augmented_assignments, op_assign_traits))]
 /// #[macro_use]
 /// extern crate bitflags;
 ///
@@ -123,6 +128,9 @@ pub use std as __core;
 /// - `BitXor` and `BitXorAssign`: toggle
 /// - `Sub` and `SubAssign`: set difference
 /// - `Not`: set complement
+///
+/// As long as the assignment operators are unstable rust feature they are only
+/// available with the crate feature `assignment_ops` enabled.
 ///
 /// # Methods
 ///
@@ -301,6 +309,7 @@ macro_rules! bitflags {
             }
         }
 
+        #[cfg(feature="assignment_operators")]
         impl $crate::__core::ops::BitOrAssign for $BitFlags {
 
             /// Adds the set of flags.
@@ -320,6 +329,7 @@ macro_rules! bitflags {
             }
         }
 
+        #[cfg(feature="assignment_operators")]
         impl $crate::__core::ops::BitXorAssign for $BitFlags {
 
             /// Toggles the set of flags.
@@ -339,6 +349,7 @@ macro_rules! bitflags {
             }
         }
 
+        #[cfg(feature="assignment_operators")]
         impl $crate::__core::ops::BitAndAssign for $BitFlags {
 
             /// Disables all flags disabled in the set.
@@ -358,6 +369,7 @@ macro_rules! bitflags {
             }
         }
 
+        #[cfg(feature="assignment_operators")]
         impl $crate::__core::ops::SubAssign for $BitFlags {
 
             /// Disables all flags enabled in the set.
@@ -574,6 +586,7 @@ mod tests {
         assert!(m4 == AnotherSetOfFlags::empty());
     }
 
+    #[cfg(feature="assignment_operators")]
     #[test]
     fn test_assignment_operators() {
         let mut m1 = Flags::empty();
