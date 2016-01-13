@@ -8,6 +8,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+#![cfg_attr(feature = "assignment_operators", feature(augmented_assignments, op_assign_traits))]
 //! A typesafe bitmask flag generator.
 
 /// The `bitflags!` macro generates a `struct` that holds a set of C-style
@@ -19,6 +20,7 @@
 /// # Example
 ///
 /// ```{.rust}
+/// #![cfg_attr(feature = "assignment_operators", feature(augmented_assignments, op_assign_traits))]
 /// #[macro_use]
 /// extern crate bitflags;
 ///
@@ -47,6 +49,7 @@
 /// implementations:
 ///
 /// ```{.rust}
+/// #![cfg_attr(feature = "assignment_operators", feature(augmented_assignments, op_assign_traits))]
 /// #[macro_use]
 /// extern crate bitflags;
 ///
@@ -109,6 +112,9 @@
 /// - `BitXor` and `BitXorAssign`: toggle
 /// - `Sub` and `SubAssign`: set difference
 /// - `Not`: set complement
+///
+/// As long as the assignment operators are unstable rust feature they are only
+/// available with the crate feature `assignment_ops` enabled.
 ///
 /// # Methods
 ///
@@ -286,6 +292,7 @@ macro_rules! bitflags {
             }
         }
 
+        #[cfg(feature="assignment_operators")]
         impl ::std::ops::BitOrAssign for $BitFlags {
 
             /// Adds the set of flags.
@@ -305,6 +312,7 @@ macro_rules! bitflags {
             }
         }
 
+        #[cfg(feature="assignment_operators")]
         impl ::std::ops::BitXorAssign for $BitFlags {
 
             /// Toggles the set of flags.
@@ -324,6 +332,7 @@ macro_rules! bitflags {
             }
         }
 
+        #[cfg(feature="assignment_operators")]
         impl ::std::ops::BitAndAssign for $BitFlags {
 
 
@@ -344,6 +353,7 @@ macro_rules! bitflags {
             }
         }
 
+        #[cfg(feature="assignment_operators")]
         impl ::std::ops::SubAssign for $BitFlags {
 
             /// Disables all flags enabled in the set.
@@ -560,6 +570,7 @@ mod tests {
         assert!(m4 == AnotherSetOfFlags::empty());
     }
 
+    #[cfg(feature="assignment_operators")]
     #[test]
     fn test_assignment_operators() {
         let mut m1 = Flags::empty();
