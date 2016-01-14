@@ -8,6 +8,8 @@ script:
   - cargo build --verbose
   - cargo test --verbose
   - [ "$TRAVIS_RUST_VERSION" = "1.0" ] || cargo test --verbose --features no_std
+  - [ $TRAVIS_RUST_VERSION = nightly ] && cargo test --verbose --features assignment_operators
+  - [ $TRAVIS_RUST_VERSION = nightly ] && cargo test --verbose --features "no_std assignment_operators"
   - cargo doc
 after_success: |
   [ $TRAVIS_BRANCH = master ] &&
