@@ -1,6 +1,7 @@
 #![cfg(feature = "no_std")]
 #![allow(dead_code)]
 #![no_std]
+#![cfg_attr(all(feature = "assignment_operators", test), feature(op_assign_traits))]
 
 #[macro_use]
 extern crate bitflags;
@@ -21,4 +22,3 @@ bitflags! {
 fn smoke() {
     assert_eq!(ABC, A | B | C);
 }
-

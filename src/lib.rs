@@ -15,6 +15,9 @@
 // must be disabled by default to allow the crate to work on older rust versions.
 #![cfg_attr(all(feature = "no_std", not(test)), no_std)]
 
+#![cfg_attr(feature = "assignment_operators", feature(augmented_assignments))]
+#![cfg_attr(all(feature = "assignment_operators", test), feature(op_assign_traits))]
+
 #[cfg(all(feature = "no_std", not(test)))]
 #[macro_use]
 extern crate core as std;
@@ -33,6 +36,7 @@ pub use std as __core;
 /// # Example
 ///
 /// ```{.rust}
+/// #![cfg_attr(feature = "assignment_operators", feature(augmented_assignments, op_assign_traits))]
 /// #[macro_use]
 /// extern crate bitflags;
 ///
@@ -61,6 +65,7 @@ pub use std as __core;
 /// implementations:
 ///
 /// ```{.rust}
+/// #![cfg_attr(feature = "assignment_operators", feature(augmented_assignments, op_assign_traits))]
 /// #[macro_use]
 /// extern crate bitflags;
 ///
@@ -118,11 +123,14 @@ pub use std as __core;
 ///
 /// The following operator traits are implemented for the generated `struct`:
 ///
-/// - `BitOr`: union
-/// - `BitAnd`: intersection
-/// - `BitXor`: toggle
-/// - `Sub`: set difference
+/// - `BitOr` and `BitOrAssign`: union
+/// - `BitAnd` and `BitAndAssign`: intersection
+/// - `BitXor` and `BitXorAssign`: toggle
+/// - `Sub` and `SubAssign`: set difference
 /// - `Not`: set complement
+///
+/// As long as the assignment operators are unstable rust feature they are only
+/// available with the crate feature `assignment_ops` enabled.
 ///
 /// # Methods
 ///
@@ -301,6 +309,16 @@ macro_rules! bitflags {
             }
         }
 
+        #[cfg(feature="assignment_operators")]
+        impl $crate::__core::ops::BitOrAssign for $BitFlags {
+
+            /// Adds the set of flags.
+            #[inline]
+            fn bitor_assign(&mut self, other: $BitFlags) {
+                self.bits |= other.bits;
+            }
+        }
+
         impl $crate::__core::ops::BitXor for $BitFlags {
             type Output = $BitFlags;
 
@@ -308,6 +326,16 @@ macro_rules! bitflags {
             #[inline]
             fn bitxor(self, other: $BitFlags) -> $BitFlags {
                 $BitFlags { bits: self.bits ^ other.bits }
+            }
+        }
+
+        #[cfg(feature="assignment_operators")]
+        impl $crate::__core::ops::BitXorAssign for $BitFlags {
+
+            /// Toggles the set of flags.
+            #[inline]
+            fn bitxor_assign(&mut self, other: $BitFlags) {
+                self.bits ^= other.bits;
             }
         }
 
@@ -321,6 +349,16 @@ macro_rules! bitflags {
             }
         }
 
+        #[cfg(feature="assignment_operators")]
+        impl $crate::__core::ops::BitAndAssign for $BitFlags {
+
+            /// Disables all flags disabled in the set.
+            #[inline]
+            fn bitand_assign(&mut self, other: $BitFlags) {
+                self.bits &= other.bits;
+            }
+        }
+
         impl $crate::__core::ops::Sub for $BitFlags {
             type Output = $BitFlags;
 
@@ -328,6 +366,16 @@ macro_rules! bitflags {
             #[inline]
             fn sub(self, other: $BitFlags) -> $BitFlags {
                 $BitFlags { bits: self.bits & !other.bits }
+            }
+        }
+
+        #[cfg(feature="assignment_operators")]
+        impl $crate::__core::ops::SubAssign for $BitFlags {
+
+            /// Disables all flags enabled in the set.
+            #[inline]
+            fn sub_assign(&mut self, other: $BitFlags) {
+                self.bits &= !other.bits;
             }
         }
 
@@ -536,6 +584,25 @@ mod tests {
         let mut m4 = AnotherSetOfFlags::empty();
         m4.toggle(AnotherSetOfFlags::empty());
         assert!(m4 == AnotherSetOfFlags::empty());
+    }
+
+    #[cfg(feature="assignment_operators")]
+    #[test]
+    fn test_assignment_operators() {
+        let mut m1 = Flags::empty();
+        let e1 = FlagA | FlagC;
+        // union
+        m1 |= FlagA;
+        assert!(m1 == FlagA);
+        // intersection
+        m1 &= e1;
+        assert!(m1 == FlagA);
+        // set difference
+        m1 -= m1;
+        assert!(m1 == Flags::empty());
+        // toggle
+        m1 ^= e1;
+        assert!(m1 == e1);
     }
 
     #[test]
