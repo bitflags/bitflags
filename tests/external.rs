@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+#![cfg_attr(all(feature = "assignment_operators", test), feature(op_assign_traits))]
 
 #[macro_use]
 extern crate bitflags;
