@@ -1,14 +1,17 @@
 language: rust
 rust:
   - 1.0.0
+  - stable
   - beta
   - nightly
 sudo: false
 script:
   - cargo build --verbose
   - cargo test --verbose
-  - if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
+  - if [ "$TRAVIS_RUST_VERSION" != "1.0" ]; then
        cargo test --verbose --features no_std
+    fi
+  - if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
        cargo test --verbose --features assignment_operators;
        cargo test --verbose --features "no_std assignment_operators";
     fi
