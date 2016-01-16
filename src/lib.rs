@@ -101,6 +101,35 @@ pub use std as __core;
 /// }
 /// ```
 ///
+/// # Visibility
+///
+/// The generated struct and its associated flag constants are not exported
+/// out of the current module by default. A definition can be exported out of
+/// the current module by adding `pub` before `flags`:
+///
+/// ```{.rust},ignore
+/// #[macro_use]
+/// extern crate bitflags;
+///
+/// mod example {
+///     bitflags! {
+///         pub flags Flags1: u32 {
+///             const FLAG_A   = 0b00000001,
+///         }
+///     }
+///     bitflags! {
+///         flags Flags2: u32 {
+///             const FLAG_B   = 0b00000010,
+///         }
+///     }
+/// }
+///
+/// fn main() {
+///     let flag1 = example::FLAG_A;
+///     let flag2 = example::FLAG_B; // error: const `FLAG_B` is private
+/// }
+/// ```
+///
 /// # Attributes
 ///
 /// Attributes can be attached to the generated `struct` by placing them
@@ -153,7 +182,7 @@ pub use std as __core;
 ///             if they are.
 #[macro_export]
 macro_rules! bitflags {
-    ($(#[$attr:meta])* flags $BitFlags:ident: $T:ty {
+    ($(#[$attr:meta])* pub flags $BitFlags:ident: $T:ty {
         $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+
     }) => {
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
@@ -164,35 +193,73 @@ macro_rules! bitflags {
 
         $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
 
+        bitflags! {
+            @_impl flags $BitFlags: $T {
+                $($(#[$Flag_attr])* const $Flag = $value),+
+            }
+        }
+    };
+    ($(#[$attr:meta])* flags $BitFlags:ident: $T:ty {
+        $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+
+    }) => {
+        #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
+        $(#[$attr])*
+        struct $BitFlags {
+            bits: $T,
+        }
+
+        $($(#[$Flag_attr])* const $Flag: $BitFlags = $BitFlags { bits: $value };)+
+
+        bitflags! {
+            @_impl flags $BitFlags: $T {
+                $($(#[$Flag_attr])* const $Flag = $value),+
+            }
+        }
+    };
+    (@_impl flags $BitFlags:ident: $T:ty {
+        $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+
+    }) => {
         impl $crate::__core::fmt::Debug for $BitFlags {
             fn fmt(&self, f: &mut $crate::__core::fmt::Formatter) -> $crate::__core::fmt::Result {
                 // This convoluted approach is to handle #[cfg]-based flag
                 // omission correctly. Some of the $Flag variants may not be
                 // defined in this module so we create an inner module which
-                // defines *all* flags to the value of 0. Afterwards when the
-                // glob import variants from the outer module, shadowing all
+                // defines *all* flags to the value of 0. We then create a
+                // second inner module that defines all of the flags with #[cfg]
+                // to their real values. Afterwards the glob will import
+                // variants from the second inner module, shadowing all
                 // defined variants, leaving only the undefined ones with the
                 // bit value of 0.
                 #[allow(dead_code)]
                 #[allow(unused_assignments)]
                 mod dummy {
+                    // We can't use the real $BitFlags struct because it may be
+                    // private, which prevents us from using it to define
+                    // public constants.
+                    pub struct $BitFlags {
+                        bits: $T,
+                    }
+                    mod real_flags {
+                        use super::$BitFlags;
+                        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
+                    }
                     // Now we define the "undefined" versions of the flags.
                     // This way, all the names exist, even if some are #[cfg]ed
                     // out.
-                    $(const $Flag: super::$BitFlags = super::$BitFlags { bits: 0 };)+
+                    $(const $Flag: $BitFlags = $BitFlags { bits: 0 };)+
 
                     #[inline]
-                    pub fn fmt(self_: &super::$BitFlags,
+                    pub fn fmt(self_: $T,
                                f: &mut $crate::__core::fmt::Formatter)
                                -> $crate::__core::fmt::Result {
                         // Now we import the real values for the flags.
                         // Only ones that are #[cfg]ed out will be 0.
-                        use super::*;
+                        use self::real_flags::*;
 
                         let mut first = true;
                         $(
                             // $Flag.bits == 0 means that $Flag doesn't exist
-                            if $Flag.bits != 0 && self_.contains($Flag) {
+                            if $Flag.bits != 0 && self_ & $Flag.bits == $Flag.bits {
                                 if !first {
                                     try!(f.write_str(" | "));
                                 }
@@ -203,7 +270,7 @@ macro_rules! bitflags {
                         Ok(())
                     }
                 }
-                dummy::fmt(self, f)
+                dummy::fmt(self.bits, f)
             }
         }
 
@@ -221,15 +288,22 @@ macro_rules! bitflags {
                 // See above `dummy` module for why this approach is taken.
                 #[allow(dead_code)]
                 mod dummy {
-                    $(const $Flag: super::$BitFlags = super::$BitFlags { bits: 0 };)+
+                    pub struct $BitFlags {
+                        bits: $T,
+                    }
+                    mod real_flags {
+                        use super::$BitFlags;
+                        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
+                    }
+                    $(const $Flag: $BitFlags = $BitFlags { bits: 0 };)+
 
                     #[inline]
-                    pub fn all() -> super::$BitFlags {
-                        use super::*;
-                        $BitFlags { bits: $($Flag.bits)|+ }
+                    pub fn all() -> $T {
+                        use self::real_flags::*;
+                        $($Flag.bits)|+
                     }
                 }
-                dummy::all()
+                $BitFlags { bits: dummy::all() }
             }
 
             /// Returns the raw value of the flags currently stored.
@@ -396,6 +470,16 @@ macro_rules! bitflags {
                     result.insert(item)
                 }
                 result
+            }
+        }
+    };
+    ($(#[$attr:meta])* pub flags $BitFlags:ident: $T:ty {
+        $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+,
+    }) => {
+        bitflags! {
+            $(#[$attr])*
+            pub flags $BitFlags: $T {
+                $($(#[$Flag_attr])* const $Flag = $value),+
             }
         }
     };
@@ -660,5 +744,28 @@ mod tests {
     fn test_debug() {
         assert_eq!(format!("{:?}", FlagA | FlagB), "FlagA | FlagB");
         assert_eq!(format!("{:?}", FlagABC), "FlagA | FlagB | FlagC | FlagABC");
+    }
+
+    mod submodule {
+        bitflags! {
+            pub flags PublicFlags: i8 {
+                const FlagX = 0,
+            }
+        }
+        bitflags! {
+            flags PrivateFlags: i8 {
+                const FlagY = 0,
+            }
+        }
+
+        #[test]
+        fn test_private() {
+            let _ = FlagY;
+        }
+    }
+
+    #[test]
+    fn test_public() {
+        let _ = submodule::FlagX;
     }
 }
