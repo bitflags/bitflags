@@ -316,10 +316,10 @@ macro_rules! bitflags {
             /// representation contains bits that do not correspond to a flag.
             #[inline]
             pub fn from_bits(bits: $T) -> $crate::__core::option::Option<$BitFlags> {
-                if (bits & !$BitFlags::all().bits()) != 0 {
-                    $crate::__core::option::Option::None
-                } else {
+                if (bits & !$BitFlags::all().bits()) == 0 {
                     $crate::__core::option::Option::Some($BitFlags { bits: bits })
+                } else {
+                    $crate::__core::option::Option::None
                 }
             }
 
