@@ -24,6 +24,7 @@ extern crate core as std;
 
 // Re-export libstd/libcore using an alias so that the macros can work in no_std
 // crates while remaining compatible with normal crates.
+#[allow(private_in_public)]
 #[doc(hidden)]
 pub use std as __core;
 
