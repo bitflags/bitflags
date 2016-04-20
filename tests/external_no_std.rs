@@ -1,4 +1,3 @@
-#![cfg(feature = "no_std")]
 #![allow(dead_code)]
 #![no_std]
 
