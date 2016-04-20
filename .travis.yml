@@ -9,8 +9,7 @@ script:
   - cargo test --verbose
   - cargo test --verbose --features no_std
   - if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
-       cargo test --verbose --features assignment_operators;
-       cargo test --verbose --features "no_std assignment_operators";
+       cargo test --verbose --features "no_std";
     fi
   - cargo doc
 after_success: |
