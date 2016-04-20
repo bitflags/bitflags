@@ -10,20 +10,17 @@
 
 //! A typesafe bitmask flag generator.
 
-// Compile the crate with no_std if possible. The "no_std" feature can be
-// removed once no_std becomes available in 1.6.0 stable. In the meantime no_std
-// must be disabled by default to allow the crate to work on older rust versions.
-#![cfg_attr(all(feature = "no_std", not(test)), no_std)]
+#![no_std]
 
-#[cfg(all(feature = "no_std", not(test)))]
+#[cfg(test)]
 #[macro_use]
-extern crate core as std;
+extern crate std;
 
 // Re-export libstd/libcore using an alias so that the macros can work in no_std
 // crates while remaining compatible with normal crates.
 #[allow(private_in_public)]
 #[doc(hidden)]
-pub use std as __core;
+pub use core as __core;
 
 /// The `bitflags!` macro generates a `struct` that holds a set of C-style
 /// bitmask flags. It is useful for creating typesafe wrappers for C APIs.
