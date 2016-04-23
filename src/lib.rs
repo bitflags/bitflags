@@ -135,8 +135,9 @@ pub use core as __core;
 /// Additional traits can be derived by providing an explicit `derive`
 /// attribute on `flags`.
 ///
-/// The `FromIterator` trait is implemented for the `struct`, too, calculating
-/// the union of the instances of the `struct` iterated over.
+/// The `Extend` and `FromIterator` traits are implemented for the `struct`,
+/// too: `Extend` adds the union of the instances of the `struct` iterated over,
+/// while `FromIterator` calculates the union.
 ///
 /// The `Debug` trait is also implemented by displaying the bits value of the
 /// internal struct.
@@ -452,12 +453,18 @@ macro_rules! bitflags {
             }
         }
 
+        impl $crate::__core::iter::Extend<$BitFlags> for $BitFlags {
+            fn extend<T: $crate::__core::iter::IntoIterator<Item=$BitFlags>>(&mut self, iterator: T) {
+                for item in iterator {
+                    self.insert(item)
+                }
+            }
+        }
+
         impl $crate::__core::iter::FromIterator<$BitFlags> for $BitFlags {
             fn from_iter<T: $crate::__core::iter::IntoIterator<Item=$BitFlags>>(iterator: T) -> $BitFlags {
                 let mut result = Self::empty();
-                for item in iterator {
-                    result.insert(item)
-                }
+                result.extend(iterator);
                 result
             }
         }
@@ -675,6 +682,27 @@ mod tests {
         // toggle
         m1 ^= e1;
         assert_eq!(m1, e1);
+    }
+
+    #[test]
+    fn test_extend() {
+        let mut flags;
+
+        flags = Flags::empty();
+        flags.extend([].iter().cloned());
+        assert_eq!(flags, Flags::empty());
+
+        flags = Flags::empty();
+        flags.extend([FlagA, FlagB].iter().cloned());
+        assert_eq!(flags, FlagA | FlagB);
+
+        flags = FlagA;
+        flags.extend([FlagA, FlagB].iter().cloned());
+        assert_eq!(flags, FlagA | FlagB);
+
+        flags = FlagB;
+        flags.extend([FlagA, FlagABC].iter().cloned());
+        assert_eq!(flags, FlagABC);
     }
 
     #[test]
