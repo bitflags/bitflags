@@ -235,7 +235,7 @@ macro_rules! bitflags {
                     }
                     mod real_flags {
                         use super::$BitFlags;
-                        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
+                        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: super::super::$Flag.bits };)+
                     }
                     // Now we define the "undefined" versions of the flags.
                     // This way, all the names exist, even if some are #[cfg]ed
@@ -287,7 +287,7 @@ macro_rules! bitflags {
                     }
                     mod real_flags {
                         use super::$BitFlags;
-                        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
+                        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: super::super::$Flag.bits };)+
                     }
                     $(const $Flag: $BitFlags = $BitFlags { bits: 0 };)+
 
