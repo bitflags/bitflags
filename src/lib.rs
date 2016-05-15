@@ -788,4 +788,21 @@ mod tests {
     fn test_public() {
         let _ = submodule::FlagX;
     }
+
+    mod t1 {
+        mod foo {
+            pub type Bar = i32;
+        }
+
+        bitflags! {
+            /// baz
+            flags Flags: foo::Bar {
+                const A       = 0b00000001,
+                #[cfg(foo)]
+                const B       = 0b00000010,
+                #[cfg(foo)]
+                const C       = 0b00000010,
+            }
+        }
+    }
 }
