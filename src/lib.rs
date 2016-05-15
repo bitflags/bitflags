@@ -231,11 +231,13 @@ macro_rules! bitflags {
                     // private, which prevents us from using it to define
                     // public constants.
                     pub struct $BitFlags {
-                        bits: $T,
+                        bits: u64,
                     }
                     mod real_flags {
                         use super::$BitFlags;
-                        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
+                        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags {
+                            bits: super::super::$Flag.bits as u64
+                        };)+
                     }
                     // Now we define the "undefined" versions of the flags.
                     // This way, all the names exist, even if some are #[cfg]ed
@@ -243,7 +245,7 @@ macro_rules! bitflags {
                     $(const $Flag: $BitFlags = $BitFlags { bits: 0 };)+
 
                     #[inline]
-                    pub fn fmt(self_: $T,
+                    pub fn fmt(self_: u64,
                                f: &mut $crate::__core::fmt::Formatter)
                                -> $crate::__core::fmt::Result {
                         // Now we import the real values for the flags.
@@ -253,7 +255,7 @@ macro_rules! bitflags {
                         let mut first = true;
                         $(
                             // $Flag.bits == 0 means that $Flag doesn't exist
-                            if $Flag.bits != 0 && self_ & $Flag.bits == $Flag.bits {
+                            if $Flag.bits != 0 && self_ & $Flag.bits as u64 == $Flag.bits as u64 {
                                 if !first {
                                     try!(f.write_str(" | "));
                                 }
@@ -264,7 +266,7 @@ macro_rules! bitflags {
                         Ok(())
                     }
                 }
-                dummy::fmt(self.bits, f)
+                dummy::fmt(self.bits as u64, f)
             }
         }
 
@@ -283,21 +285,23 @@ macro_rules! bitflags {
                 #[allow(dead_code)]
                 mod dummy {
                     pub struct $BitFlags {
-                        bits: $T,
+                        bits: u64,
                     }
                     mod real_flags {
                         use super::$BitFlags;
-                        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
+                        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags {
+                            bits: super::super::$Flag.bits as u64
+                        };)+
                     }
                     $(const $Flag: $BitFlags = $BitFlags { bits: 0 };)+
 
                     #[inline]
-                    pub fn all() -> $T {
+                    pub fn all() -> u64 {
                         use self::real_flags::*;
                         $($Flag.bits)|+
                     }
                 }
-                $BitFlags { bits: dummy::all() }
+                $BitFlags { bits: dummy::all() as $T }
             }
 
             /// Returns the raw value of the flags currently stored.
