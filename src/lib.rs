@@ -369,6 +369,16 @@ macro_rules! bitflags {
             pub fn toggle(&mut self, other: $BitFlags) {
                 self.bits ^= other.bits;
             }
+
+            /// Inserts or removes the specified flags depending on the passed value.
+            #[inline]
+            pub fn set(&mut self, other: $BitFlags, value: bool) {
+                if value {
+                    self.insert(other);
+                } else {
+                    self.remove(other);
+                }
+            }
         }
 
         impl $crate::__core::ops::BitOr for $BitFlags {
@@ -668,6 +678,15 @@ mod tests {
         let mut m4 = AnotherSetOfFlags::empty();
         m4.toggle(AnotherSetOfFlags::empty());
         assert_eq!(m4, AnotherSetOfFlags::empty());
+    }
+
+    #[test]
+    fn test_set() {
+        let mut e1 = FlagA | FlagC;
+        e1.set(FlagB, true);
+        e1.set(FlagC, false);
+
+        assert_eq!(e1, FlagA | FlagB);
     }
 
     #[test]
