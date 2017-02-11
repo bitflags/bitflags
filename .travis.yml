@@ -9,7 +9,6 @@ before_script:
 script:
   - cargo build --verbose
   - cargo test --verbose
-  - travis-cargo --only nightly test
   - cargo doc --no-deps
 after_success:
   - travis-cargo --only nightly doc-upload
