@@ -11,3 +11,7 @@ documentation = "https://doc.rust-lang.org/bitflags"
 description = """
 A macro to generate structures which behave like bitflags.
 """
+
+[features]
+unstable = []
+u128 = []

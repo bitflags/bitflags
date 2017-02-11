@@ -22,3 +22,22 @@ and this to your crate root:
 #[macro_use]
 extern crate bitflags;
 ```
+
+## u128 bitflags (nightly only)
+
+Add this to your `Cargo.toml`:
+
+```toml
+[dependencies.bitflags]
+version = "0.7"
+features = ["u128"]
+```
+
+and this to your crate root:
+
+```rust
+#![feature(i128_type)]
+
+#[macro_use]
+extern crate bitflags;
+```
