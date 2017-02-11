@@ -13,5 +13,5 @@ A macro to generate structures which behave like bitflags.
 """
 
 [features]
+unstable = []
 u128 = []
-unstable = ["u128"]
