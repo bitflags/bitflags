@@ -13,7 +13,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-bitflags = "0.7"
+bitflags = "0.8"
 ```
 
 and this to your crate root:
@@ -29,7 +29,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies.bitflags]
-version = "0.7"
+version = "0.8"
 features = ["i128"]
 ```
 
