@@ -15,7 +15,8 @@ after_success:
   - travis-cargo --only nightly doc-upload
 env:
   global:
-    secure: "DoZ8g8iPs+X3xEEucke0Ae02JbkQ1qd1SSv/L2aQqxULmREtRcbzRauhiT+ToQO5Ft1Lul8uck14nPfs4gMr/O3jFFBhEBVpSlbkJx7eNL3kwUdp95UNroA8I43xPN/nccJaHDN6TMTD3+uajTQTje2SyzOQP+1gvdKg17kguvE="
+    - TRAVIS_CARGO_NIGHTLY_FEATURE=unstable_testing
+    - secure: "DoZ8g8iPs+X3xEEucke0Ae02JbkQ1qd1SSv/L2aQqxULmREtRcbzRauhiT+ToQO5Ft1Lul8uck14nPfs4gMr/O3jFFBhEBVpSlbkJx7eNL3kwUdp95UNroA8I43xPN/nccJaHDN6TMTD3+uajTQTje2SyzOQP+1gvdKg17kguvE="
 
 
 
