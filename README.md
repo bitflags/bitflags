@@ -25,19 +25,20 @@ extern crate bitflags;
 
 ## 128-bit integer bitflags (nightly only)
 
-Add this to your `Cargo.toml`:
-
-```toml
-[dependencies.bitflags]
-version = "0.7"
-features = ["i128"]
-```
-
-and this to your crate root:
+`u128` and `i128` are supported just like any other integer type.
 
 ```rust
 #![feature(i128_type)]
 
 #[macro_use]
 extern crate bitflags;
+
+bitflags! {
+    flags Flags128: u128 {
+        const A   = 0x0000_0000_0000_0000_0000_0000_0000_0001,
+        const B   = 0x0000_0000_0000_1000_0000_0000_0000_0000,
+        const C   = 0x8000_0000_0000_0000_0000_0000_0000_0000,
+        const ABC = A.bits | B.bits | C.bits,
+    }
+}
 ```

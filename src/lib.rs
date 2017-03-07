@@ -12,8 +12,6 @@
 
 #![no_std]
 
-#![cfg_attr(feature = "i128", feature(i128_type))]
-
 #[cfg(test)]
 #[macro_use]
 extern crate std;
@@ -23,11 +21,6 @@ extern crate std;
 #[allow(private_in_public)]
 #[doc(hidden)]
 pub use core as __core;
-
-#[cfg(feature = "i128")]
-pub type __BitFlagsWidth = u128;
-#[cfg(not(feature = "i128"))]
-pub type __BitFlagsWidth = u64;
 
 /// The `bitflags!` macro generates a `struct` that holds a set of C-style
 /// bitmask flags. It is useful for creating typesafe wrappers for C APIs.
@@ -237,22 +230,28 @@ macro_rules! bitflags {
                     // We can't use the real $BitFlags struct because it may be
                     // private, which prevents us from using it to define
                     // public constants.
-                    pub struct $BitFlags {
-                        bits: $crate::__BitFlagsWidth,
+                    pub struct __Pub(super::$BitFlags);
+                    impl $crate::__core::convert::From<super::$BitFlags> for __Pub {
+                        fn from(original: super::$BitFlags) -> Self {
+                            __Pub(original)
+                        }
                     }
                     mod real_flags {
-                        use super::$BitFlags;
-                        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags {
-                            bits: super::super::$Flag.bits as $crate::__BitFlagsWidth
-                        };)+
+                        use super::__Pub;
+                        $(
+                            $(#[$Flag_attr])*
+                            pub const $Flag: __Pub = __Pub(super::super::$Flag);
+                        )+
                     }
                     // Now we define the "undefined" versions of the flags.
                     // This way, all the names exist, even if some are #[cfg]ed
                     // out.
-                    $(const $Flag: $BitFlags = $BitFlags { bits: 0 };)+
+                    $(
+                        const $Flag: __Pub = __Pub(super::$BitFlags { bits: 0 });
+                    )+
 
                     #[inline]
-                    pub fn fmt(self_: $crate::__BitFlagsWidth,
+                    pub fn fmt(self_: __Pub,
                                f: &mut $crate::__core::fmt::Formatter)
                                -> $crate::__core::fmt::Result {
                         // Now we import the real values for the flags.
@@ -262,8 +261,7 @@ macro_rules! bitflags {
                         let mut first = true;
                         $(
                             // $Flag.bits == 0 means that $Flag doesn't exist
-                            if $Flag.bits != 0 && self_ & $Flag.bits as $crate::__BitFlagsWidth ==
-                                $Flag.bits as $crate::__BitFlagsWidth {
+                            if $Flag.0.bits != 0 && self_.0.bits & $Flag.0.bits == $Flag.0.bits {
                                 if !first {
                                     try!(f.write_str(" | "));
                                 }
@@ -274,7 +272,7 @@ macro_rules! bitflags {
                         Ok(())
                     }
                 }
-                dummy::fmt(self.bits as $crate::__BitFlagsWidth, f)
+                dummy::fmt($crate::__core::convert::From::from(*self), f)
             }
         }
 
@@ -292,24 +290,30 @@ macro_rules! bitflags {
                 // See above `dummy` module for why this approach is taken.
                 #[allow(dead_code)]
                 mod dummy {
-                    pub struct $BitFlags {
-                        bits: $crate::__BitFlagsWidth,
+                    pub struct __Pub(super::$BitFlags);
+                    impl $crate::__core::convert::From<__Pub> for super::$BitFlags {
+                        fn from(wrapper: __Pub) -> Self {
+                            wrapper.0
+                        }
                     }
                     mod real_flags {
-                        use super::$BitFlags;
-                        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags {
-                            bits: super::super::$Flag.bits as $crate::__BitFlagsWidth
-                        };)+
+                        use super::__Pub;
+                        $(
+                            $(#[$Flag_attr])*
+                            pub const $Flag: __Pub = __Pub(super::super::$Flag);
+                        )+
                     }
-                    $(const $Flag: $BitFlags = $BitFlags { bits: 0 };)+
+                    $(
+                        const $Flag: __Pub = __Pub(super::$BitFlags { bits: 0 });
+                    )+
 
                     #[inline]
-                    pub fn all() -> $crate::__BitFlagsWidth {
+                    pub fn all() -> __Pub {
                         use self::real_flags::*;
-                        $($Flag.bits)|+
+                        __Pub(super::$BitFlags { bits: $($Flag.0.bits)|+ })
                     }
                 }
-                $BitFlags { bits: dummy::all() as $T }
+                $crate::__core::convert::From::from(dummy::all())
             }
 
             /// Returns the raw value of the flags currently stored.
