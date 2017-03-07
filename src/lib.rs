@@ -516,7 +516,8 @@ macro_rules! bitflags {
 #[cfg(test)]
 #[allow(non_upper_case_globals, dead_code)]
 mod tests {
-    use std::hash::{SipHasher, Hash, Hasher};
+    use std::hash::{Hash, Hasher};
+    use std::collections::hash_map::DefaultHasher;
 
     bitflags! {
         #[doc = "> The first principle is that you must not fool yourself — and"]
@@ -772,7 +773,7 @@ mod tests {
     }
 
     fn hash<T: Hash>(t: &T) -> u64 {
-        let mut s = SipHasher::new_with_keys(0, 0);
+        let mut s = DefaultHasher::new();
         t.hash(&mut s);
         s.finish()
     }
