@@ -216,63 +216,46 @@ macro_rules! bitflags {
         impl $crate::__core::fmt::Debug for $BitFlags {
             fn fmt(&self, f: &mut $crate::__core::fmt::Formatter) -> $crate::__core::fmt::Result {
                 // This convoluted approach is to handle #[cfg]-based flag
-                // omission correctly. Some of the $Flag variants may not be
-                // defined in this module so we create an inner module which
-                // defines *all* flags to the value of 0. We then create a
-                // second inner module that defines all of the flags with #[cfg]
-                // to their real values. Afterwards the glob will import
-                // variants from the second inner module, shadowing all
-                // defined variants, leaving only the undefined ones with the
-                // bit value of 0.
-                #[allow(dead_code)]
-                #[allow(unused_assignments)]
-                mod dummy {
-                    // We can't use the real $BitFlags struct because it may be
-                    // private, which prevents us from using it to define
-                    // public constants.
-                    pub struct __Pub(super::$BitFlags);
-                    impl $crate::__core::convert::From<super::$BitFlags> for __Pub {
-                        fn from(original: super::$BitFlags) -> Self {
-                            __Pub(original)
-                        }
-                    }
-                    mod real_flags {
-                        use super::__Pub;
-                        $(
-                            $(#[$Flag_attr])*
-                            pub const $Flag: __Pub = __Pub(super::super::$Flag);
-                        )+
-                    }
-                    // Now we define the "undefined" versions of the flags.
-                    // This way, all the names exist, even if some are #[cfg]ed
-                    // out.
+                // omission correctly. For example it needs to support:
+                //
+                //    #[cfg(unix)] const A: Flag = /* ... */;
+                //    #[cfg(windows)] const B: Flag = /* ... */;
+
+                // Unconditionally define a check for every flag, even disabled
+                // ones.
+                #[allow(non_snake_case)]
+                trait __BitFlags {
                     $(
-                        const $Flag: __Pub = __Pub(super::$BitFlags { bits: 0 });
+                        fn $Flag(&self) -> bool { false }
                     )+
-
-                    #[inline]
-                    pub fn fmt(self_: __Pub,
-                               f: &mut $crate::__core::fmt::Formatter)
-                               -> $crate::__core::fmt::Result {
-                        // Now we import the real values for the flags.
-                        // Only ones that are #[cfg]ed out will be 0.
-                        use self::real_flags::*;
-
-                        let mut first = true;
-                        $(
-                            // $Flag.bits == 0 means that $Flag doesn't exist
-                            if $Flag.0.bits != 0 && self_.0.bits & $Flag.0.bits == $Flag.0.bits {
-                                if !first {
-                                    try!(f.write_str(" | "));
-                                }
-                                first = false;
-                                try!(f.write_str(stringify!($Flag)));
-                            }
-                        )+
-                        Ok(())
-                    }
                 }
-                dummy::fmt($crate::__core::convert::From::from(*self), f)
+
+                // Conditionally override the check for just those flags that
+                // are not #[cfg]ed away.
+                impl __BitFlags for $BitFlags {
+                    $(
+                        $(#[$Flag_attr])*
+                        fn $Flag(&self) -> bool {
+                            self.bits & $Flag.bits == $Flag.bits
+                        }
+                    )+
+                }
+
+                let mut first = true;
+                $(
+                    if <$BitFlags as __BitFlags>::$Flag(self) {
+                        if !first {
+                            try!(f.write_str(" | "));
+                        }
+                        first = false;
+                        try!(f.write_str(stringify!($Flag)));
+                    }
+                )+
+                if first {
+                    // TODO: should not be the empty string
+                    // https://github.com/rust-lang-nursery/bitflags/issues/64
+                }
+                Ok(())
             }
         }
 
@@ -287,33 +270,20 @@ macro_rules! bitflags {
             /// Returns the set containing all flags.
             #[inline]
             pub fn all() -> $BitFlags {
-                // See above `dummy` module for why this approach is taken.
-                #[allow(dead_code)]
-                mod dummy {
-                    pub struct __Pub(super::$BitFlags);
-                    impl $crate::__core::convert::From<__Pub> for super::$BitFlags {
-                        fn from(wrapper: __Pub) -> Self {
-                            wrapper.0
-                        }
-                    }
-                    mod real_flags {
-                        use super::__Pub;
-                        $(
-                            $(#[$Flag_attr])*
-                            pub const $Flag: __Pub = __Pub(super::super::$Flag);
-                        )+
-                    }
+                // See `Debug::fmt` for why this approach is taken.
+                #[allow(non_snake_case)]
+                trait __BitFlags {
                     $(
-                        const $Flag: __Pub = __Pub(super::$BitFlags { bits: 0 });
+                        fn $Flag() -> $T { 0 }
                     )+
-
-                    #[inline]
-                    pub fn all() -> __Pub {
-                        use self::real_flags::*;
-                        __Pub(super::$BitFlags { bits: $($Flag.0.bits)|+ })
-                    }
                 }
-                $crate::__core::convert::From::from(dummy::all())
+                impl __BitFlags for $BitFlags {
+                    $(
+                        $(#[$Flag_attr])*
+                        fn $Flag() -> $T { $Flag.bits }
+                    )+
+                }
+                $BitFlags { bits: $(<$BitFlags as __BitFlags>::$Flag())|+ }
             }
 
             /// Returns the raw value of the flags currently stored.
@@ -836,5 +806,18 @@ mod tests {
                 const C       = 0b00000010,
             }
         }
+    }
+
+    #[test]
+    fn test_in_function() {
+        bitflags! {
+            flags Flags: u8 {
+                const A = 1,
+                #[cfg(any())] // false
+                const B = 2,
+            }
+        }
+        assert_eq!(Flags::all(), A);
+        assert_eq!(format!("{:?}", A), "A");
     }
 }
