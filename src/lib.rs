@@ -243,7 +243,7 @@ macro_rules! bitflags {
 
                 let mut first = true;
                 $(
-                    if <$BitFlags as __BitFlags>::$Flag(self) {
+                    if <Self as __BitFlags>::$Flag(self) {
                         if !first {
                             try!(f.write_str(" | "));
                         }
@@ -263,13 +263,13 @@ macro_rules! bitflags {
         impl $BitFlags {
             /// Returns an empty set of flags.
             #[inline]
-            pub fn empty() -> $BitFlags {
-                $BitFlags { bits: 0 }
+            pub fn empty() -> Self {
+                Self { bits: 0 }
             }
 
             /// Returns the set containing all flags.
             #[inline]
-            pub fn all() -> $BitFlags {
+            pub fn all() -> Self {
                 // See `Debug::fmt` for why this approach is taken.
                 #[allow(non_snake_case)]
                 trait __BitFlags {
@@ -283,7 +283,7 @@ macro_rules! bitflags {
                         fn $Flag() -> $T { $Flag.bits }
                     )+
                 }
-                $BitFlags { bits: $(<$BitFlags as __BitFlags>::$Flag())|+ }
+                Self { bits: $(<Self as __BitFlags>::$Flag())|+ }
             }
 
             /// Returns the raw value of the flags currently stored.
@@ -295,9 +295,9 @@ macro_rules! bitflags {
             /// Convert from underlying bit representation, unless that
             /// representation contains bits that do not correspond to a flag.
             #[inline]
-            pub fn from_bits(bits: $T) -> $crate::__core::option::Option<$BitFlags> {
-                if (bits & !$BitFlags::all().bits()) == 0 {
-                    $crate::__core::option::Option::Some($BitFlags { bits: bits })
+            pub fn from_bits(bits: $T) -> $crate::__core::option::Option<Self> {
+                if (bits & !Self::all().bits()) == 0 {
+                    $crate::__core::option::Option::Some(Self { bits: bits })
                 } else {
                     $crate::__core::option::Option::None
                 }
@@ -306,55 +306,55 @@ macro_rules! bitflags {
             /// Convert from underlying bit representation, dropping any bits
             /// that do not correspond to flags.
             #[inline]
-            pub fn from_bits_truncate(bits: $T) -> $BitFlags {
-                $BitFlags { bits: bits } & $BitFlags::all()
+            pub fn from_bits_truncate(bits: $T) -> Self {
+                Self { bits: bits } & Self::all()
             }
 
             /// Returns `true` if no flags are currently stored.
             #[inline]
             pub fn is_empty(&self) -> bool {
-                *self == $BitFlags::empty()
+                *self == Self::empty()
             }
 
             /// Returns `true` if all flags are currently set.
             #[inline]
             pub fn is_all(&self) -> bool {
-                *self == $BitFlags::all()
+                *self == Self::all()
             }
 
             /// Returns `true` if there are flags common to both `self` and `other`.
             #[inline]
-            pub fn intersects(&self, other: $BitFlags) -> bool {
+            pub fn intersects(&self, other: Self) -> bool {
                 !(*self & other).is_empty()
             }
 
             /// Returns `true` all of the flags in `other` are contained within `self`.
             #[inline]
-            pub fn contains(&self, other: $BitFlags) -> bool {
+            pub fn contains(&self, other: Self) -> bool {
                 (*self & other) == other
             }
 
             /// Inserts the specified flags in-place.
             #[inline]
-            pub fn insert(&mut self, other: $BitFlags) {
+            pub fn insert(&mut self, other: Self) {
                 self.bits |= other.bits;
             }
 
             /// Removes the specified flags in-place.
             #[inline]
-            pub fn remove(&mut self, other: $BitFlags) {
+            pub fn remove(&mut self, other: Self) {
                 self.bits &= !other.bits;
             }
 
             /// Toggles the specified flags in-place.
             #[inline]
-            pub fn toggle(&mut self, other: $BitFlags) {
+            pub fn toggle(&mut self, other: Self) {
                 self.bits ^= other.bits;
             }
 
             /// Inserts or removes the specified flags depending on the passed value.
             #[inline]
-            pub fn set(&mut self, other: $BitFlags, value: bool) {
+            pub fn set(&mut self, other: Self, value: bool) {
                 if value {
                     self.insert(other);
                 } else {
@@ -364,12 +364,12 @@ macro_rules! bitflags {
         }
 
         impl $crate::__core::ops::BitOr for $BitFlags {
-            type Output = $BitFlags;
+            type Output = Self;
 
             /// Returns the union of the two sets of flags.
             #[inline]
-            fn bitor(self, other: $BitFlags) -> $BitFlags {
-                $BitFlags { bits: self.bits | other.bits }
+            fn bitor(self, other: Self) -> Self {
+                Self { bits: self.bits | other.bits }
             }
         }
 
@@ -377,18 +377,18 @@ macro_rules! bitflags {
 
             /// Adds the set of flags.
             #[inline]
-            fn bitor_assign(&mut self, other: $BitFlags) {
+            fn bitor_assign(&mut self, other: Self) {
                 self.bits |= other.bits;
             }
         }
 
         impl $crate::__core::ops::BitXor for $BitFlags {
-            type Output = $BitFlags;
+            type Output = Self;
 
             /// Returns the left flags, but with all the right flags toggled.
             #[inline]
-            fn bitxor(self, other: $BitFlags) -> $BitFlags {
-                $BitFlags { bits: self.bits ^ other.bits }
+            fn bitxor(self, other: Self) -> Self {
+                Self { bits: self.bits ^ other.bits }
             }
         }
 
@@ -396,18 +396,18 @@ macro_rules! bitflags {
 
             /// Toggles the set of flags.
             #[inline]
-            fn bitxor_assign(&mut self, other: $BitFlags) {
+            fn bitxor_assign(&mut self, other: Self) {
                 self.bits ^= other.bits;
             }
         }
 
         impl $crate::__core::ops::BitAnd for $BitFlags {
-            type Output = $BitFlags;
+            type Output = Self;
 
             /// Returns the intersection between the two sets of flags.
             #[inline]
-            fn bitand(self, other: $BitFlags) -> $BitFlags {
-                $BitFlags { bits: self.bits & other.bits }
+            fn bitand(self, other: Self) -> Self {
+                Self { bits: self.bits & other.bits }
             }
         }
 
@@ -415,18 +415,18 @@ macro_rules! bitflags {
 
             /// Disables all flags disabled in the set.
             #[inline]
-            fn bitand_assign(&mut self, other: $BitFlags) {
+            fn bitand_assign(&mut self, other: Self) {
                 self.bits &= other.bits;
             }
         }
 
         impl $crate::__core::ops::Sub for $BitFlags {
-            type Output = $BitFlags;
+            type Output = Self;
 
             /// Returns the set difference of the two sets of flags.
             #[inline]
-            fn sub(self, other: $BitFlags) -> $BitFlags {
-                $BitFlags { bits: self.bits & !other.bits }
+            fn sub(self, other: Self) -> Self {
+                Self { bits: self.bits & !other.bits }
             }
         }
 
@@ -434,31 +434,31 @@ macro_rules! bitflags {
 
             /// Disables all flags enabled in the set.
             #[inline]
-            fn sub_assign(&mut self, other: $BitFlags) {
+            fn sub_assign(&mut self, other: Self) {
                 self.bits &= !other.bits;
             }
         }
 
         impl $crate::__core::ops::Not for $BitFlags {
-            type Output = $BitFlags;
+            type Output = Self;
 
             /// Returns the complement of this set of flags.
             #[inline]
-            fn not(self) -> $BitFlags {
-                $BitFlags { bits: !self.bits } & $BitFlags::all()
+            fn not(self) -> Self {
+                Self { bits: !self.bits } & Self::all()
             }
         }
 
-        impl $crate::__core::iter::Extend<$BitFlags> for $BitFlags {
-            fn extend<T: $crate::__core::iter::IntoIterator<Item=$BitFlags>>(&mut self, iterator: T) {
+        impl $crate::__core::iter::Extend<Self> for $BitFlags {
+            fn extend<T: $crate::__core::iter::IntoIterator<Item=Self>>(&mut self, iterator: T) {
                 for item in iterator {
                     self.insert(item)
                 }
             }
         }
 
-        impl $crate::__core::iter::FromIterator<$BitFlags> for $BitFlags {
-            fn from_iter<T: $crate::__core::iter::IntoIterator<Item=$BitFlags>>(iterator: T) -> $BitFlags {
+        impl $crate::__core::iter::FromIterator<Self> for $BitFlags {
+            fn from_iter<T: $crate::__core::iter::IntoIterator<Item=Self>>(iterator: T) -> Self {
                 let mut result = Self::empty();
                 result.extend(iterator);
                 result
