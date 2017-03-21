@@ -5,7 +5,7 @@ extern crate bitflags;
 
 bitflags! {
     /// baz
-    flags Flags: u32 {
+    struct Flags: u32 {
         const A       = 0b00000001,
         #[doc = "bar"]
         const B       = 0b00000010,
