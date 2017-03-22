@@ -252,8 +252,7 @@ macro_rules! bitflags {
                     }
                 )+
                 if first {
-                    // TODO: should not be the empty string
-                    // https://github.com/rust-lang-nursery/bitflags/issues/64
+                    try!(f.write_str("(empty)"));
                 }
                 Ok(())
             }
@@ -765,6 +764,7 @@ mod tests {
     #[test]
     fn test_debug() {
         assert_eq!(format!("{:?}", FlagA | FlagB), "FlagA | FlagB");
+        assert_eq!(format!("{:?}", Flags::empty()), "(empty)");
         assert_eq!(format!("{:?}", FlagABC), "FlagA | FlagB | FlagC | FlagABC");
     }
 
