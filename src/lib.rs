@@ -139,8 +139,8 @@ pub use core as __core;
 /// too: `Extend` adds the union of the instances of the `struct` iterated over,
 /// while `FromIterator` calculates the union.
 ///
-/// The `Debug` trait is also implemented by displaying the bits value of the
-/// internal struct.
+/// The `Binary`, `Debug`, `LowerExp`, `Octal` and `UpperExp` trait is also
+/// implemented by displaying the bits value of the internal struct.
 ///
 /// ## Operators
 ///
@@ -256,6 +256,26 @@ macro_rules! bitflags {
                     // https://github.com/rust-lang-nursery/bitflags/issues/64
                 }
                 Ok(())
+            }
+        }
+        impl $crate::__core::fmt::Binary for $BitFlags {
+            fn fmt(&self, f: &mut $crate::__core::fmt::Formatter) -> $crate::__core::fmt::Result {
+                self.bits.fmt(f)
+            }
+        }
+        impl $crate::__core::fmt::Octal for $BitFlags {
+            fn fmt(&self, f: &mut $crate::__core::fmt::Formatter) -> $crate::__core::fmt::Result {
+                self.bits.fmt(f)
+            }
+        }
+        impl $crate::__core::fmt::LowerHex for $BitFlags {
+            fn fmt(&self, f: &mut $crate::__core::fmt::Formatter) -> $crate::__core::fmt::Result {
+                self.bits.fmt(f)
+            }
+        }
+        impl $crate::__core::fmt::UpperHex for $BitFlags {
+            fn fmt(&self, f: &mut $crate::__core::fmt::Formatter) -> $crate::__core::fmt::Result {
+                self.bits.fmt(f)
             }
         }
 
@@ -529,6 +549,12 @@ mod tests {
         }
     }
 
+    bitflags! {
+        flags LongFlags: u32 {
+            const LongFlagA = 0b1111111111111111,
+        }
+    }
+
     #[test]
     fn test_bits(){
         assert_eq!(Flags::empty().bits(), 0b00000000);
@@ -766,6 +792,30 @@ mod tests {
     fn test_debug() {
         assert_eq!(format!("{:?}", FlagA | FlagB), "FlagA | FlagB");
         assert_eq!(format!("{:?}", FlagABC), "FlagA | FlagB | FlagC | FlagABC");
+    }
+
+    #[test]
+    fn test_binary() {
+        assert_eq!(format!("{:b}", FlagABC), "111");
+        assert_eq!(format!("{:#b}", FlagABC), "0b111");
+    }
+
+    #[test]
+    fn test_octal() {
+        assert_eq!(format!("{:o}", LongFlagA), "177777");
+        assert_eq!(format!("{:#o}", LongFlagA), "0o177777");
+    }
+
+    #[test]
+    fn test_lowerhex() {
+        assert_eq!(format!("{:x}", LongFlagA), "ffff");
+        assert_eq!(format!("{:#x}", LongFlagA), "0xffff");
+    }
+
+    #[test]
+    fn test_upperhex() {
+        assert_eq!(format!("{:X}", LongFlagA), "FFFF");
+        assert_eq!(format!("{:#X}", LongFlagA), "0xFFFF");
     }
 
     mod submodule {
