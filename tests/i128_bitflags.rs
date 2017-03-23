@@ -8,7 +8,7 @@ extern crate bitflags;
 
 bitflags! {
     /// baz
-    flags Flags128: u128 {
+    struct Flags128: u128 {
         const A       = 0x0000_0000_0000_0000_0000_0000_0000_0001,
         const B       = 0x0000_0000_0000_1000_0000_0000_0000_0000,
         const C       = 0x8000_0000_0000_0000_0000_0000_0000_0000,

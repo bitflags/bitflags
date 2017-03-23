@@ -35,7 +35,7 @@ pub use core as __core;
 /// extern crate bitflags;
 ///
 /// bitflags! {
-///     flags Flags: u32 {
+///     struct Flags: u32 {
 ///         const FLAG_A       = 0b00000001,
 ///         const FLAG_B       = 0b00000010,
 ///         const FLAG_C       = 0b00000100,
@@ -65,7 +65,7 @@ pub use core as __core;
 /// use std::fmt;
 ///
 /// bitflags! {
-///     flags Flags: u32 {
+///     struct Flags: u32 {
 ///         const FLAG_A   = 0b00000001,
 ///         const FLAG_B   = 0b00000010,
 ///     }
@@ -106,12 +106,12 @@ pub use core as __core;
 ///
 /// mod example {
 ///     bitflags! {
-///         pub flags Flags1: u32 {
+///         pub struct Flags1: u32 {
 ///             const FLAG_A   = 0b00000001,
 ///         }
 ///     }
 ///     bitflags! {
-///         flags Flags2: u32 {
+///         struct Flags2: u32 {
 ///             const FLAG_B   = 0b00000010,
 ///         }
 ///     }
@@ -176,7 +176,7 @@ pub use core as __core;
 ///             if they are.
 #[macro_export]
 macro_rules! bitflags {
-    ($(#[$attr:meta])* pub flags $BitFlags:ident: $T:ty {
+    ($(#[$attr:meta])* pub struct $BitFlags:ident: $T:ty {
         $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+
     }) => {
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
@@ -188,12 +188,12 @@ macro_rules! bitflags {
         $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
 
         bitflags! {
-            @_impl flags $BitFlags: $T {
+            @_impl struct $BitFlags: $T {
                 $($(#[$Flag_attr])* const $Flag = $value),+
             }
         }
     };
-    ($(#[$attr:meta])* flags $BitFlags:ident: $T:ty {
+    ($(#[$attr:meta])* struct $BitFlags:ident: $T:ty {
         $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+
     }) => {
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
@@ -205,12 +205,12 @@ macro_rules! bitflags {
         $($(#[$Flag_attr])* const $Flag: $BitFlags = $BitFlags { bits: $value };)+
 
         bitflags! {
-            @_impl flags $BitFlags: $T {
+            @_impl struct $BitFlags: $T {
                 $($(#[$Flag_attr])* const $Flag = $value),+
             }
         }
     };
-    (@_impl flags $BitFlags:ident: $T:ty {
+    (@_impl struct $BitFlags:ident: $T:ty {
         $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+
     }) => {
         impl $crate::__core::fmt::Debug for $BitFlags {
@@ -465,22 +465,22 @@ macro_rules! bitflags {
             }
         }
     };
-    ($(#[$attr:meta])* pub flags $BitFlags:ident: $T:ty {
+    ($(#[$attr:meta])* pub struct $BitFlags:ident: $T:ty {
         $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+,
     }) => {
         bitflags! {
             $(#[$attr])*
-            pub flags $BitFlags: $T {
+            pub struct $BitFlags: $T {
                 $($(#[$Flag_attr])* const $Flag = $value),+
             }
         }
     };
-    ($(#[$attr:meta])* flags $BitFlags:ident: $T:ty {
+    ($(#[$attr:meta])* struct $BitFlags:ident: $T:ty {
         $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr),+,
     }) => {
         bitflags! {
             $(#[$attr])*
-            flags $BitFlags: $T {
+            struct $BitFlags: $T {
                 $($(#[$Flag_attr])* const $Flag = $value),+
             }
         }
@@ -498,7 +498,7 @@ mod tests {
         #[doc = "> you are the easiest person to fool."]
         #[doc = "> "]
         #[doc = "> - Richard Feynman"]
-        flags Flags: u32 {
+        struct Flags: u32 {
             const FlagA       = 0b00000001,
             #[doc = "<pcwalton> macros are way better at generating code than trans is"]
             const FlagB       = 0b00000010,
@@ -513,7 +513,7 @@ mod tests {
     }
 
     bitflags! {
-        flags _CfgFlags: u32 {
+        struct _CfgFlags: u32 {
             #[cfg(windows)]
             const _CfgA = 0b01,
             #[cfg(unix)]
@@ -524,7 +524,7 @@ mod tests {
     }
 
     bitflags! {
-        flags AnotherSetOfFlags: i8 {
+        struct AnotherSetOfFlags: i8 {
             const AnotherFlag = -1_i8,
         }
     }
@@ -770,12 +770,12 @@ mod tests {
 
     mod submodule {
         bitflags! {
-            pub flags PublicFlags: i8 {
+            pub struct PublicFlags: i8 {
                 const FlagX = 0,
             }
         }
         bitflags! {
-            flags PrivateFlags: i8 {
+            struct PrivateFlags: i8 {
                 const FlagY = 0,
             }
         }
@@ -798,7 +798,7 @@ mod tests {
 
         bitflags! {
             /// baz
-            flags Flags: foo::Bar {
+            struct Flags: foo::Bar {
                 const A       = 0b00000001,
                 #[cfg(foo)]
                 const B       = 0b00000010,
@@ -811,7 +811,7 @@ mod tests {
     #[test]
     fn test_in_function() {
         bitflags! {
-            flags Flags: u8 {
+            struct Flags: u8 {
                 const A = 1,
                 #[cfg(any())] // false
                 const B = 2,
