@@ -549,7 +549,7 @@ mod tests {
     }
 
     bitflags! {
-        flags LongFlags: u32 {
+        struct LongFlags: u32 {
             const LongFlagA = 0b1111111111111111,
         }
     }
