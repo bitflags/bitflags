@@ -84,13 +84,21 @@ pub use core as __core;
 ///     }
 /// }
 ///
+/// impl Default for Flags {
+///     fn default() -> Flags {
+///         Flags { bits: 0b00000001 }
+///     }
+/// }
+///
 /// fn main() {
 ///     let mut flags = FLAG_A | FLAG_B;
+///     let flag1: Flags = Default::default();
 ///     flags.clear();
 ///     assert!(flags.is_empty());
 ///     assert_eq!(format!("{}", flags), "hi!");
 ///     assert_eq!(format!("{:?}", FLAG_A | FLAG_B), "FLAG_A | FLAG_B");
 ///     assert_eq!(format!("{:?}", FLAG_B), "FLAG_B");
+///     assert_eq!(format!("{:?}", flag1), "FLAG_A");
 /// }
 /// ```
 ///
