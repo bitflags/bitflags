@@ -187,8 +187,8 @@ macro_rules! bitflags {
 
         $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
 
-        bitflags! {
-            @_impl struct $BitFlags: $T {
+        __impl_bitflags! {
+            struct $BitFlags: $T {
                 $($(#[$Flag_attr])* const $Flag = $value;)+
             }
         }
@@ -204,14 +204,19 @@ macro_rules! bitflags {
 
         $($(#[$Flag_attr])* const $Flag: $BitFlags = $BitFlags { bits: $value };)+
 
-        bitflags! {
-            @_impl struct $BitFlags: $T {
+        __impl_bitflags! {
+            struct $BitFlags: $T {
                 $($(#[$Flag_attr])* const $Flag = $value;)+
             }
         }
 
     };
-    (@_impl struct $BitFlags:ident: $T:ty {
+}
+
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __impl_bitflags {
+    (struct $BitFlags:ident: $T:ty {
         $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr;)+
     }) => {
         impl $crate::__core::fmt::Debug for $BitFlags {
