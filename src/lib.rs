@@ -12,6 +12,11 @@
 
 #![no_std]
 
+// When compiled for the rustc compiler itself we want to make sure that this is
+// an unstable crate.
+#![cfg_attr(rustbuild, feature(staged_api))]
+#![cfg_attr(rustbuild, unstable(feature = "rustdoc", issue = "27812"))]
+
 #[cfg(test)]
 #[macro_use]
 extern crate std;
