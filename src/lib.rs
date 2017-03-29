@@ -17,7 +17,7 @@
 //!
 //! # Example
 //!
-//! ```{.rust}
+//! ```
 //! #[macro_use]
 //! extern crate bitflags;
 //!
@@ -45,7 +45,7 @@
 //! The generated `struct`s can also be extended with type and trait
 //! implementations:
 //!
-//! ```{.rust}
+//! ```
 //! #[macro_use]
 //! extern crate bitflags;
 //!
@@ -87,7 +87,7 @@
 //! out of the current module by default. A definition can be exported out of
 //! the current module by adding `pub` before `flags`:
 //!
-//! ```{.rust},ignore
+//! ```ignore
 //! #[macro_use]
 //! extern crate bitflags;
 //!
@@ -178,11 +178,11 @@ pub use core as __core;
 
 /// The macro used to generate the flag structure.
 ///
-/// See the [crate level docs](https://docs.rs/bitflags) for complete documentation.
+/// See the [crate level docs](../bitflags/index.html) for complete documentation.
 ///
 /// # Example
 ///
-/// ```{.rust}
+/// ```
 /// #[macro_use]
 /// extern crate bitflags;
 ///
@@ -210,7 +210,7 @@ pub use core as __core;
 /// The generated `struct`s can also be extended with type and trait
 /// implementations:
 ///
-/// ```{.rust}
+/// ```
 /// #[macro_use]
 /// extern crate bitflags;
 ///
