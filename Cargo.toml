@@ -8,6 +8,7 @@ readme = "README.md"
 repository = "https://github.com/rust-lang/bitflags"
 homepage = "https://github.com/rust-lang/bitflags"
 documentation = "https://doc.rust-lang.org/bitflags"
+categories = ["no-std"]
 description = """
 A macro to generate structures which behave like bitflags.
 """
