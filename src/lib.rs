@@ -28,6 +28,9 @@ extern crate std;
 #[doc(hidden)]
 pub use core as __core;
 
+#[cfg(feature = "example_generated")]
+pub mod example_generated;
+
 /// The `bitflags!` macro generates a `struct` that holds a set of C-style
 /// bitmask flags. It is useful for creating typesafe wrappers for C APIs.
 ///
@@ -861,5 +864,63 @@ mod tests {
         }
         assert_eq!(Flags::all(), A);
         assert_eq!(format!("{:?}", A), "A");
+    }
+}
+
+#[cfg(test)]
+#[allow(non_upper_case_globals, dead_code)]
+mod example_tests {
+    use example_generated::ExampleFlags;
+    use example_generated::*;
+
+    bitflags! {
+        struct ExampleFlagsGenned: u32 {
+            const GENNED_FLAG_A       = 0b00000001;
+            const GENNED_FLAG_B       = 0b00000010;
+            const GENNED_FLAG_C       = 0b00000100;
+            const GENNED_FLAG_ABC     = GENNED_FLAG_A.bits
+                                      | GENNED_FLAG_B.bits
+                                      | GENNED_FLAG_C.bits;
+        }
+    }
+
+    #[test]
+    fn flags_eq() {
+        assert_eq!(GENNED_FLAG_A.bits(), FLAG_A.bits());
+        assert_eq!(GENNED_FLAG_B.bits(), FLAG_B.bits());
+        assert_eq!(GENNED_FLAG_C.bits(), FLAG_C.bits());
+        assert_eq!(GENNED_FLAG_ABC.bits(), FLAG_ABC.bits());
+    }
+
+    #[test]
+    fn all_eq() {
+        let genned_all = ExampleFlagsGenned::all();
+        let manual_all = ExampleFlags::all();
+
+        assert_eq!(genned_all.bits(), manual_all.bits());
+        assert_eq!(genned_all.is_all(), manual_all.is_all());
+
+        assert_eq!(ExampleFlagsGenned::from_bits(genned_all.bits()).unwrap().bits(),
+                   ExampleFlags::from_bits(manual_all.bits()).unwrap().bits());
+        assert_eq!(ExampleFlagsGenned::from_bits(manual_all.bits()).unwrap().bits(),
+                   ExampleFlags::from_bits(genned_all.bits()).unwrap().bits());
+    }
+
+    #[test]
+    fn empty_eq() {
+        let genned_empty = ExampleFlagsGenned::empty();
+        let manual_empty = ExampleFlags::empty();
+
+        assert_eq!(genned_empty.bits(), manual_empty.bits());
+        assert_eq!(genned_empty.is_empty(), manual_empty.is_empty());
+    }
+
+    #[test]
+    fn debug_eq() {
+        let genned_debug = format!("{:?}", ExampleFlagsGenned::all())
+            .replace("GENNED_", "");
+        let manual_debug = format!("{:?}", ExampleFlags::all());
+
+        assert_eq!(genned_debug, manual_debug);
     }
 }

@@ -18,4 +18,6 @@ A macro to generate structures which behave like bitflags.
 """
 
 [features]
+default = ["example_generated"]
+example_generated = []
 unstable_testing = []
