@@ -158,9 +158,6 @@ pub use core as __core;
 /// - `Sub` and `SubAssign`: set difference
 /// - `Not`: set complement
 ///
-/// As long as the assignment operators are unstable rust feature they are only
-/// available with the crate feature `assignment_ops` enabled.
-///
 /// # Methods
 ///
 /// The following methods are defined for the generated `struct`:
