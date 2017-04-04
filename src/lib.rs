@@ -564,6 +564,8 @@ macro_rules! __impl_bitflags {
     };
 }
 
+pub mod example_generated;
+
 #[cfg(test)]
 #[allow(non_upper_case_globals, dead_code)]
 mod tests {
