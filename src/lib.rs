@@ -564,6 +564,7 @@ macro_rules! __impl_bitflags {
     };
 }
 
+#[cfg(feature = "example_generated")]
 pub mod example_generated;
 
 #[cfg(test)]
