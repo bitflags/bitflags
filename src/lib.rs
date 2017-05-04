@@ -158,6 +158,60 @@
 //! - `remove`: removes the specified flags in-place
 //! - `toggle`: the specified flags will be inserted if not present, and removed
 //!             if they are.
+//!
+//! ## Default
+//!
+//! The `Default` trait is not automatically implemented for the generated struct.
+//!
+//! If your default value is equal to `0` (which is the same value as calling `empty()`
+//! on the generated struct), you can simply derive `Default`:
+//!
+//! ```
+//! #[macro_use]
+//! extern crate bitflags;
+//!
+//! bitflags! {
+//!     // Results in default value with bits: 0
+//!     #[derive(Default)]
+//!     struct Flags: u32 {
+//!         const FLAG_A       = 0b00000001;
+//!         const FLAG_B       = 0b00000010;
+//!         const FLAG_C       = 0b00000100;
+//!     }
+//! }
+//!
+//! fn main() {
+//!     let derived_default: Flags = Default::default();
+//!     assert_eq!(derived_default.bits(), 0);
+//! }
+//! ```
+//!
+//! If your default value is not equal to `0` you need to implement `Default` yourself:
+//!
+//! ```
+//! #[macro_use]
+//! extern crate bitflags;
+//!
+//! bitflags! {
+//!     struct Flags: u32 {
+//!         const FLAG_A       = 0b00000001;
+//!         const FLAG_B       = 0b00000010;
+//!         const FLAG_C       = 0b00000100;
+//!     }
+//! }
+//!
+//! // explicit `Default` implementation
+//! impl Default for Flags {
+//!     fn default() -> Flags {
+//!         FLAG_A | FLAG_C
+//!     }
+//! }
+//!
+//! fn main() {
+//!     let implemented_default: Flags = Default::default();
+//!     assert_eq!(implemented_default, (FLAG_A | FLAG_C));
+//! }
+//! ```
 
 #![no_std]
 
