@@ -230,9 +230,8 @@ extern crate std;
 
 // Re-export libstd/libcore using an alias so that the macros can work in no_std
 // crates while remaining compatible with normal crates.
-#[allow(private_in_public)]
 #[doc(hidden)]
-pub use core as __core;
+pub extern crate core as _core;
 
 /// The macro used to generate the flag structure.
 ///
@@ -348,8 +347,8 @@ macro_rules! __impl_bitflags {
     (struct $BitFlags:ident: $T:ty {
         $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr;)+
     }) => {
-        impl $crate::__core::fmt::Debug for $BitFlags {
-            fn fmt(&self, f: &mut $crate::__core::fmt::Formatter) -> $crate::__core::fmt::Result {
+        impl $crate::_core::fmt::Debug for $BitFlags {
+            fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
                 // This convoluted approach is to handle #[cfg]-based flag
                 // omission correctly. For example it needs to support:
                 //
@@ -392,23 +391,23 @@ macro_rules! __impl_bitflags {
                 Ok(())
             }
         }
-        impl $crate::__core::fmt::Binary for $BitFlags {
-            fn fmt(&self, f: &mut $crate::__core::fmt::Formatter) -> $crate::__core::fmt::Result {
+        impl $crate::_core::fmt::Binary for $BitFlags {
+            fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
                 self.bits.fmt(f)
             }
         }
-        impl $crate::__core::fmt::Octal for $BitFlags {
-            fn fmt(&self, f: &mut $crate::__core::fmt::Formatter) -> $crate::__core::fmt::Result {
+        impl $crate::_core::fmt::Octal for $BitFlags {
+            fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
                 self.bits.fmt(f)
             }
         }
-        impl $crate::__core::fmt::LowerHex for $BitFlags {
-            fn fmt(&self, f: &mut $crate::__core::fmt::Formatter) -> $crate::__core::fmt::Result {
+        impl $crate::_core::fmt::LowerHex for $BitFlags {
+            fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
                 self.bits.fmt(f)
             }
         }
-        impl $crate::__core::fmt::UpperHex for $BitFlags {
-            fn fmt(&self, f: &mut $crate::__core::fmt::Formatter) -> $crate::__core::fmt::Result {
+        impl $crate::_core::fmt::UpperHex for $BitFlags {
+            fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
                 self.bits.fmt(f)
             }
         }
@@ -449,11 +448,11 @@ macro_rules! __impl_bitflags {
             /// Convert from underlying bit representation, unless that
             /// representation contains bits that do not correspond to a flag.
             #[inline]
-            pub fn from_bits(bits: $T) -> $crate::__core::option::Option<$BitFlags> {
+            pub fn from_bits(bits: $T) -> $crate::_core::option::Option<$BitFlags> {
                 if (bits & !$BitFlags::all().bits()) == 0 {
-                    $crate::__core::option::Option::Some($BitFlags { bits: bits })
+                    $crate::_core::option::Option::Some($BitFlags { bits: bits })
                 } else {
-                    $crate::__core::option::Option::None
+                    $crate::_core::option::Option::None
                 }
             }
 
@@ -517,7 +516,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::__core::ops::BitOr for $BitFlags {
+        impl $crate::_core::ops::BitOr for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the union of the two sets of flags.
@@ -527,7 +526,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::__core::ops::BitOrAssign for $BitFlags {
+        impl $crate::_core::ops::BitOrAssign for $BitFlags {
 
             /// Adds the set of flags.
             #[inline]
@@ -536,7 +535,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::__core::ops::BitXor for $BitFlags {
+        impl $crate::_core::ops::BitXor for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the left flags, but with all the right flags toggled.
@@ -546,7 +545,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::__core::ops::BitXorAssign for $BitFlags {
+        impl $crate::_core::ops::BitXorAssign for $BitFlags {
 
             /// Toggles the set of flags.
             #[inline]
@@ -555,7 +554,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::__core::ops::BitAnd for $BitFlags {
+        impl $crate::_core::ops::BitAnd for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the intersection between the two sets of flags.
@@ -565,7 +564,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::__core::ops::BitAndAssign for $BitFlags {
+        impl $crate::_core::ops::BitAndAssign for $BitFlags {
 
             /// Disables all flags disabled in the set.
             #[inline]
@@ -574,7 +573,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::__core::ops::Sub for $BitFlags {
+        impl $crate::_core::ops::Sub for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the set difference of the two sets of flags.
@@ -584,7 +583,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::__core::ops::SubAssign for $BitFlags {
+        impl $crate::_core::ops::SubAssign for $BitFlags {
 
             /// Disables all flags enabled in the set.
             #[inline]
@@ -593,7 +592,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::__core::ops::Not for $BitFlags {
+        impl $crate::_core::ops::Not for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the complement of this set of flags.
@@ -603,16 +602,16 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::__core::iter::Extend<$BitFlags> for $BitFlags {
-            fn extend<T: $crate::__core::iter::IntoIterator<Item=$BitFlags>>(&mut self, iterator: T) {
+        impl $crate::_core::iter::Extend<$BitFlags> for $BitFlags {
+            fn extend<T: $crate::_core::iter::IntoIterator<Item=$BitFlags>>(&mut self, iterator: T) {
                 for item in iterator {
                     self.insert(item)
                 }
             }
         }
 
-        impl $crate::__core::iter::FromIterator<$BitFlags> for $BitFlags {
-            fn from_iter<T: $crate::__core::iter::IntoIterator<Item=$BitFlags>>(iterator: T) -> $BitFlags {
+        impl $crate::_core::iter::FromIterator<$BitFlags> for $BitFlags {
+            fn from_iter<T: $crate::_core::iter::IntoIterator<Item=$BitFlags>>(iterator: T) -> $BitFlags {
                 let mut result = Self::empty();
                 result.extend(iterator);
                 result
