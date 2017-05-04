@@ -21,4 +21,6 @@ A macro to generate structures which behave like bitflags.
 travis-ci = { repository = "rust-lang-nursery/bitflags" }
 
 [features]
+default = ["example_generated"]
 unstable_testing = []
+example_generated = []
