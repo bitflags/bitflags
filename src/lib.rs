@@ -11,8 +11,8 @@
 //! A typesafe bitmask flag generator useful for sets of C-style bitmask flags.
 //! It can be used for creating typesafe wrappers around C APIs.
 //!
-//! The `bitflags!` macro generates a `struct` that manages a set of flags. The 
-//! flags should only be defined for integer types, otherwise unexpected type 
+//! The `bitflags!` macro generates a `struct` that manages a set of flags. The
+//! flags should only be defined for integer types, otherwise unexpected type
 //! errors may occur at compile time.
 //!
 //! # Example
@@ -218,7 +218,7 @@
 
 #![no_std]
 
-#![doc(html_root_url = "https://docs.rs/bitflags/0.8.2")]
+#![doc(html_root_url = "https://docs.rs/bitflags/0.9.0")]
 // When compiled for the rustc compiler itself we want to make sure that this is
 // an unstable crate.
 #![cfg_attr(rustbuild, feature(staged_api))]
