@@ -218,7 +218,7 @@
 
 #![no_std]
 
-#![doc(html_root_url = "https://docs.rs/bitflags/0.9.0")]
+#![doc(html_root_url = "https://docs.rs/bitflags/0.9.1")]
 // When compiled for the rustc compiler itself we want to make sure that this is
 // an unstable crate.
 #![cfg_attr(rustbuild, feature(staged_api))]
