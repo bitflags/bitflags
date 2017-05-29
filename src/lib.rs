@@ -393,22 +393,22 @@ macro_rules! __impl_bitflags {
         }
         impl $crate::_core::fmt::Binary for $BitFlags {
             fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
-                self.bits.fmt(f)
+                $crate::_core::fmt::Binary::fmt(&self.bits, f)
             }
         }
         impl $crate::_core::fmt::Octal for $BitFlags {
             fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
-                self.bits.fmt(f)
+                $crate::_core::fmt::Octal::fmt(&self.bits, f)
             }
         }
         impl $crate::_core::fmt::LowerHex for $BitFlags {
             fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
-                self.bits.fmt(f)
+                $crate::_core::fmt::LowerHex::fmt(&self.bits, f)
             }
         }
         impl $crate::_core::fmt::UpperHex for $BitFlags {
             fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
-                self.bits.fmt(f)
+                $crate::_core::fmt::UpperHex::fmt(&self.bits, f)
             }
         }
 
