@@ -161,6 +161,7 @@
 //! - `remove`: removes the specified flags in-place
 //! - `toggle`: the specified flags will be inserted if not present, and removed
 //!             if they are.
+//! - `set`: inserts or removes the specified flags depending on the passed value
 //!
 //! ## Default
 //!
