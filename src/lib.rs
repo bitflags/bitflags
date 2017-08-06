@@ -305,49 +305,77 @@ pub extern crate core as _core;
 /// ```
 #[macro_export]
 macro_rules! bitflags {
-    ($(#[$attr:meta])* pub struct $BitFlags:ident: $T:ty {
-        $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr;)+
-    }) => {
+    (
+        $(#[$outer:meta])*
+        pub struct $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )+
+        }
+    ) => {
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
-        $(#[$attr])*
+        $(#[$outer])*
         pub struct $BitFlags {
             bits: $T,
         }
 
-        $($(#[$Flag_attr])* pub const $Flag: $BitFlags = $BitFlags { bits: $value };)+
+        $(
+            $(#[$inner $($args)*])*
+            pub const $Flag: $BitFlags = $BitFlags { bits: $value };
+        )+
 
         __impl_bitflags! {
             struct $BitFlags: $T {
-                $($(#[$Flag_attr])* const $Flag = $value;)+
+                $(
+                    $(#[$inner $($args)*])*
+                    const $Flag = $value;
+                )+
             }
         }
     };
-    ($(#[$attr:meta])* struct $BitFlags:ident: $T:ty {
-        $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr;)+
-    }) => {
+    (
+        $(#[$outer:meta])*
+        struct $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )+
+        }
+    ) => {
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
-        $(#[$attr])*
+        $(#[$outer])*
         struct $BitFlags {
             bits: $T,
         }
 
-        $($(#[$Flag_attr])* const $Flag: $BitFlags = $BitFlags { bits: $value };)+
+        $(
+            $(#[$inner $($args)*])*
+            const $Flag: $BitFlags = $BitFlags { bits: $value };
+        )+
 
         __impl_bitflags! {
             struct $BitFlags: $T {
-                $($(#[$Flag_attr])* const $Flag = $value;)+
+                $(
+                    $(#[$inner $($args)*])*
+                    const $Flag = $value;
+                )+
             }
         }
-
     };
 }
 
 #[macro_export]
 #[doc(hidden)]
 macro_rules! __impl_bitflags {
-    (struct $BitFlags:ident: $T:ty {
-        $($(#[$Flag_attr:meta])* const $Flag:ident = $value:expr;)+
-    }) => {
+    (
+        struct $BitFlags:ident: $T:ty {
+            $(
+                $(#[$attr:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )+
+        }
+    ) => {
         impl $crate::_core::fmt::Debug for $BitFlags {
             fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
                 // This convoluted approach is to handle #[cfg]-based flag
@@ -369,9 +397,12 @@ macro_rules! __impl_bitflags {
                 // are not #[cfg]ed away.
                 impl __BitFlags for $BitFlags {
                     $(
-                        $(#[$Flag_attr])*
-                        fn $Flag(&self) -> bool {
-                            self.bits & $Flag.bits == $Flag.bits
+                        __impl_bitflags! {
+                            #[allow(deprecated)]
+                            $(? #[$attr $($args)*])*
+                            fn $Flag(&self) -> bool {
+                                self.bits & $Flag.bits == $Flag.bits
+                            }
                         }
                     )+
                 }
@@ -433,8 +464,11 @@ macro_rules! __impl_bitflags {
                 }
                 impl __BitFlags for $BitFlags {
                     $(
-                        $(#[$Flag_attr])*
-                        fn $Flag() -> $T { $Flag.bits }
+                        __impl_bitflags! {
+                            #[allow(deprecated)]
+                            $(? #[$attr $($args)*])*
+                            fn $Flag() -> $T { $Flag.bits }
+                        }
                     )+
                 }
                 $BitFlags { bits: $(<$BitFlags as __BitFlags>::$Flag())|+ }
@@ -618,6 +652,59 @@ macro_rules! __impl_bitflags {
                 result
             }
         }
+    };
+
+    // Every attribute that the user writes on a const is applied to the
+    // corresponding const that we generate, but within the implementation of
+    // Debug and all() we want to ignore everything but #[cfg] attributes. In
+    // particular, including a #[deprecated] attribute on those items would fail
+    // to compile.
+    // https://github.com/rust-lang-nursery/bitflags/issues/109
+    //
+    // Input:
+    //
+    //     ? #[cfg(feature = "advanced")]
+    //     ? #[deprecated(note = "Use somthing else.")]
+    //     ? #[doc = r"High quality documentation."]
+    //     fn f() -> i32 { /* ... */ }
+    //
+    // Output:
+    //
+    //     #[cfg(feature = "advanced")]
+    //     fn f() -> i32 { /* ... */ }
+    (
+        $(#[$filtered:meta])*
+        ? #[cfg $($cfgargs:tt)*]
+        $(? #[$rest:ident $($restargs:tt)*])*
+        fn $($item:tt)*
+    ) => {
+        __impl_bitflags! {
+            $(#[$filtered])*
+            #[cfg $($cfgargs)*]
+            $(? #[$rest $($restargs)*])*
+            fn $($item)*
+        }
+    };
+    (
+        $(#[$filtered:meta])*
+        // $next != `cfg`
+        ? #[$next:ident $($nextargs:tt)*]
+        $(? #[$rest:ident $($restargs:tt)*])*
+        fn $($item:tt)*
+    ) => {
+        __impl_bitflags! {
+            $(#[$filtered])*
+            // $next filtered out
+            $(? #[$rest $($restargs)*])*
+            fn $($item)*
+        }
+    };
+    (
+        $(#[$filtered:meta])*
+        fn $($item:tt)*
+    ) => {
+        $(#[$filtered])*
+        fn $($item)*
     };
 }
 
@@ -987,5 +1074,15 @@ mod tests {
         }
         assert_eq!(Flags::all(), A);
         assert_eq!(format!("{:?}", A), "A");
+    }
+
+    #[test]
+    fn test_deprecated() {
+        bitflags! {
+            pub struct TestFlags: u32 {
+                #[deprecated(note = "Use something else.")]
+                const FLAG_ONE = 1;
+            }
+        }
     }
 }
