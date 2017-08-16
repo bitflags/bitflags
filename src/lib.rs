@@ -311,7 +311,7 @@ macro_rules! bitflags {
             $(
                 $(#[$inner:ident $($args:tt)*])*
                 const $Flag:ident = $value:expr;
-            )+
+            )*
         }
     ) => {
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
@@ -323,14 +323,14 @@ macro_rules! bitflags {
         $(
             $(#[$inner $($args)*])*
             pub const $Flag: $BitFlags = $BitFlags { bits: $value };
-        )+
+        )*
 
         __impl_bitflags! {
             struct $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
                     const $Flag = $value;
-                )+
+                )*
             }
         }
     };
@@ -340,7 +340,7 @@ macro_rules! bitflags {
             $(
                 $(#[$inner:ident $($args:tt)*])*
                 const $Flag:ident = $value:expr;
-            )+
+            )*
         }
     ) => {
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
@@ -352,14 +352,14 @@ macro_rules! bitflags {
         $(
             $(#[$inner $($args)*])*
             const $Flag: $BitFlags = $BitFlags { bits: $value };
-        )+
+        )*
 
         __impl_bitflags! {
             struct $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
                     const $Flag = $value;
-                )+
+                )*
             }
         }
     };
@@ -373,7 +373,7 @@ macro_rules! __impl_bitflags {
             $(
                 $(#[$attr:ident $($args:tt)*])*
                 const $Flag:ident = $value:expr;
-            )+
+            )*
         }
     ) => {
         impl $crate::_core::fmt::Debug for $BitFlags {
@@ -390,7 +390,7 @@ macro_rules! __impl_bitflags {
                 trait __BitFlags {
                     $(
                         fn $Flag(&self) -> bool { false }
-                    )+
+                    )*
                 }
 
                 // Conditionally override the check for just those flags that
@@ -404,7 +404,7 @@ macro_rules! __impl_bitflags {
                                 self.bits & $Flag.bits == $Flag.bits
                             }
                         }
-                    )+
+                    )*
                 }
 
                 let mut first = true;
@@ -416,7 +416,7 @@ macro_rules! __impl_bitflags {
                         first = false;
                         try!(f.write_str(stringify!($Flag)));
                     }
-                )+
+                )*
                 if first {
                     try!(f.write_str("(empty)"));
                 }
@@ -455,23 +455,14 @@ macro_rules! __impl_bitflags {
             /// Returns the set containing all flags.
             #[inline]
             pub fn all() -> $BitFlags {
-                // See `Debug::fmt` for why this approach is taken.
-                #[allow(non_snake_case)]
-                trait __BitFlags {
-                    $(
-                        fn $Flag() -> $T { 0 }
-                    )+
+                __impl_bitflags_all! {
+                    struct $BitFlags: $T {
+                        $(
+                            $(#[$attr$($args)*])*
+                            const $Flag = $value;
+                        )*
+                    }
                 }
-                impl __BitFlags for $BitFlags {
-                    $(
-                        __impl_bitflags! {
-                            #[allow(deprecated)]
-                            $(? #[$attr $($args)*])*
-                            fn $Flag() -> $T { $Flag.bits }
-                        }
-                    )+
-                }
-                $BitFlags { bits: $(<$BitFlags as __BitFlags>::$Flag())|+ }
             }
 
             /// Returns the raw value of the flags currently stored.
@@ -705,6 +696,43 @@ macro_rules! __impl_bitflags {
     ) => {
         $(#[$filtered])*
         fn $($item)*
+    };
+}
+
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __impl_bitflags_all {
+    (
+        struct $BitFlags:ident: $T:ty {
+            $(
+                $(#[$attr:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )+
+        }
+    ) => {
+        // See `Debug::fmt` for why this approach is taken.
+        #[allow(non_snake_case)]
+        trait __BitFlags {
+            $(
+                fn $Flag() -> $T { 0 }
+            )*
+        }
+        impl __BitFlags for $BitFlags {
+            $(
+                __impl_bitflags! {
+                    #[allow(deprecated)]
+                    $(? #[$attr $($args)*])*
+                    fn $Flag() -> $T { $Flag.bits }
+                }
+            )*
+        }
+        $BitFlags { bits: $(<$BitFlags as __BitFlags>::$Flag())|* }
+    };
+    (
+        struct $BitFlags:ident: $T:ty {
+        }
+    ) => {
+        $BitFlags::empty()
     };
 }
 
@@ -1081,6 +1109,24 @@ mod tests {
         bitflags! {
             pub struct TestFlags: u32 {
                 #[deprecated(note = "Use something else.")]
+                const FLAG_ONE = 1;
+            }
+        }
+    }
+
+    #[test]
+    fn test_empty() {
+        bitflags! {
+            pub struct TestFlags: u32 {
+            }
+        }
+    }
+
+    #[test]
+    fn test_conditionally_empty() {
+        bitflags! {
+            pub struct TestFlags: u32 {
+                #[cfg(target_os = "made_up_os")]
                 const FLAG_ONE = 1;
             }
         }
