@@ -13,10 +13,10 @@ before_script:
   - pip install -v 'travis-cargo<0.2' --user && export PATH=$HOME/.local/bin:$PATH
   - if [[ -e ~/Library/Python/2.7/bin ]]; then export PATH=~/Library/Python/2.7/bin:$PATH; fi
 script:
-  - cargo build --verbose
-  - cargo test --verbose
-  - travis-cargo --only nightly test
-  - cargo doc --no-deps
+  - travis-cargo build
+  - travis-cargo test
+  - travis-cargo --only nightly test -- --all
+  - travis-cargo --only stable doc
 after_success:
   - travis-cargo --only nightly doc-upload
 env:

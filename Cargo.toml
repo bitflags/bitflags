@@ -24,3 +24,9 @@ travis-ci = { repository = "rust-lang-nursery/bitflags" }
 default = ["example_generated"]
 unstable_testing = []
 example_generated = []
+
+[dev-dependencies]
+# Trick Cargo into testing this crate when we run `cargo test --all`.
+bitflags-compiletest = { path = "compiletest" }
+
+[workspace]
