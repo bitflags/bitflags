@@ -3,7 +3,9 @@
 #![feature(i128_type)]
 
 #[macro_use]
+#[no_link]
 extern crate bitflags;
+extern crate core;
 
 bitflags! {
     /// baz
