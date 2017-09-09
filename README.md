@@ -14,7 +14,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-bitflags = "0.9"
+bitflags = "1.0"
 ```
 
 and this to your crate root:
