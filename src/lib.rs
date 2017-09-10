@@ -225,8 +225,8 @@
 #[macro_use]
 extern crate std;
 
-// Re-export libstd/libcore using an alias so that the macros can work in no_std
-// crates while remaining compatible with normal crates.
+// Re-export libcore using an alias so that the macros can work without
+// requiring `extern crate core` downstream.
 #[doc(hidden)]
 pub extern crate core as _core;
 
