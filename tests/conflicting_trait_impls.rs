@@ -1,6 +1,7 @@
 #![no_std]
 
 #[macro_use]
+#[no_link]
 extern crate bitflags;
 
 #[allow(unused_imports)]

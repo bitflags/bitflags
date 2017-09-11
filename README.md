@@ -21,6 +21,7 @@ and this to your crate root:
 
 ```rust
 #[macro_use]
+#[no_link]
 extern crate bitflags;
 ```
 

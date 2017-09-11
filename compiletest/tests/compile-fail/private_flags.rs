@@ -1,4 +1,5 @@
 #[macro_use]
+#[no_link]
 extern crate bitflags;
 
 mod example {
