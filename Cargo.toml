@@ -28,5 +28,8 @@ example_generated = []
 [dev-dependencies]
 # Trick Cargo into testing this crate when we run `cargo test --all`.
 bitflags-compiletest = { path = "compiletest" }
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
 
 [workspace]
