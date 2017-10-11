@@ -228,6 +228,7 @@
 // Required for `pub (in some_module)` support.
 // TODO: remove once this is stabilized.
 #![feature(macro_vis_matcher)]
+
 #[cfg(test)]
 #[macro_use]
 extern crate std;
