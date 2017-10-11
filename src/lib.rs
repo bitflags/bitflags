@@ -225,6 +225,9 @@
 #![cfg_attr(rustbuild, feature(staged_api))]
 #![cfg_attr(rustbuild, unstable(feature = "rustc_private", issue = "27812"))]
 
+// Required for `pub (in some_module)` support.
+// TODO: remove once this is stabilized.
+#![feature(macro_vis_matcher)]
 #[cfg(test)]
 #[macro_use]
 extern crate std;
@@ -307,7 +310,7 @@ pub extern crate core as _core;
 macro_rules! bitflags {
     (
         $(#[$outer:meta])*
-        pub struct $BitFlags:ident: $T:ty {
+        $visibility:vis struct $BitFlags:ident: $T:ty {
             $(
                 $(#[$inner:ident $($args:tt)*])*
                 const $Flag:ident = $value:expr;
@@ -316,31 +319,7 @@ macro_rules! bitflags {
     ) => {
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
         $(#[$outer])*
-        pub struct $BitFlags {
-            bits: $T,
-        }
-
-        __impl_bitflags! {
-            struct $BitFlags: $T {
-                $(
-                    $(#[$inner $($args)*])*
-                    const $Flag = $value;
-                )+
-            }
-        }
-    };
-    (
-        $(#[$outer:meta])*
-        struct $BitFlags:ident: $T:ty {
-            $(
-                $(#[$inner:ident $($args:tt)*])*
-                const $Flag:ident = $value:expr;
-            )+
-        }
-    ) => {
-        #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
-        $(#[$outer])*
-        struct $BitFlags {
+        $visibility struct $BitFlags {
             bits: $T,
         }
 
@@ -1081,5 +1060,17 @@ mod tests {
                 const FLAG_ONE = 1;
             }
         }
+    }
+
+    #[test]
+    fn test_pub_restricted() {
+        mod pub_restrict {
+            bitflags! {
+                pub (in super) struct TestFlags: u8 {
+                    const A = 1;
+                }
+            }
+        }
+        assert_eq!(pub_restrict::TestFlags::A.bits(), 1);
     }
 }
