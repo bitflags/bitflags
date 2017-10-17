@@ -24,3 +24,4 @@ travis-ci = { repository = "rust-lang-nursery/bitflags" }
 default = ["example_generated"]
 unstable_testing = []
 example_generated = []
+visibility = []

@@ -227,7 +227,7 @@
 
 // Required for `pub (in some_module)` support.
 // TODO: remove once this is stabilized.
-#![feature(macro_vis_matcher)]
+#![cfg_attr(feature = "visibility", feature(macro_vis_matcher))]
 
 #[cfg(test)]
 #[macro_use]
@@ -307,6 +307,7 @@ pub extern crate core as _core;
 ///     assert_eq!(format!("{:?}", Flags::FLAG_B), "FLAG_B");
 /// }
 /// ```
+#[cfg(feature = "visibility")]
 #[macro_export]
 macro_rules! bitflags {
     (
@@ -321,6 +322,59 @@ macro_rules! bitflags {
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
         $(#[$outer])*
         $visibility struct $BitFlags {
+            bits: $T,
+        }
+
+        __impl_bitflags! {
+            struct $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    const $Flag = $value;
+                )+
+            }
+        }
+    };
+}
+
+#[cfg(not(feature = "visibility"))]
+#[macro_export]
+macro_rules! bitflags {
+    (
+        $(#[$outer:meta])*
+        pub struct $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )+
+        }
+    ) => {
+        #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
+        $(#[$outer])*
+        pub struct $BitFlags {
+            bits: $T,
+        }
+
+        __impl_bitflags! {
+            struct $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    const $Flag = $value;
+                )+
+            }
+        }
+    };
+    (
+        $(#[$outer:meta])*
+        struct $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )+
+        }
+    ) => {
+        #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
+        $(#[$outer])*
+        struct $BitFlags {
             bits: $T,
         }
 
@@ -1063,6 +1117,7 @@ mod tests {
         }
     }
 
+    #[cfg(feature = "visibility")]
     #[test]
     fn test_pub_restricted() {
         mod pub_restrict {
