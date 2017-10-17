@@ -1,4 +1,4 @@
-#![cfg(feature = "unstable_testing")]
+#![cfg(feature = "unstable")]
 
 #![feature(i128_type)]
 
