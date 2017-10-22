@@ -12,7 +12,7 @@ rust:
 sudo: false
 script:
   - cargo test
-  - if [ "$TRAVIS_RUST_VERSION" = nightly ]; then (cd ./test_suite && cargo test --features unstable); fi
+  - (cd ./test_suite && cargo test $([ "$TRAVIS_RUST_VERSION" = nightly ] && echo '--features unstable'))
 env:
   global:
     - secure: "DoZ8g8iPs+X3xEEucke0Ae02JbkQ1qd1SSv/L2aQqxULmREtRcbzRauhiT+ToQO5Ft1Lul8uck14nPfs4gMr/O3jFFBhEBVpSlbkJx7eNL3kwUdp95UNroA8I43xPN/nccJaHDN6TMTD3+uajTQTje2SyzOQP+1gvdKg17kguvE="
