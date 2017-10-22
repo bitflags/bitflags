@@ -9,7 +9,7 @@ use core::fmt::Display;
 bitflags! {
     /// baz
     struct Flags: u32 {
-        const A       = 0b00000001;
+        const A = 0b00000001;
     }
 }
 
