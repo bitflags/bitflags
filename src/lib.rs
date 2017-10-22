@@ -90,7 +90,7 @@
 //! out of the current module by default. A definition can be exported out of
 //! the current module by adding `pub` before `flags`:
 //!
-//! ```ignore
+//! ```
 //! #[macro_use]
 //! extern crate bitflags;
 //!
@@ -101,6 +101,7 @@
 //!         }
 //!     }
 //!     bitflags! {
+//! #       pub
 //!         struct Flags2: u32 {
 //!             const B   = 0b00000010;
 //!         }
