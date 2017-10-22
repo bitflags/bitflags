@@ -23,12 +23,10 @@
 //!
 //! bitflags! {
 //!     struct Flags: u32 {
-//!         const A       = 0b00000001;
-//!         const B       = 0b00000010;
-//!         const C       = 0b00000100;
-//!         const ABC     = Self::A.bits
-//!                       | Self::B.bits
-//!                       | Self::C.bits;
+//!         const A = 0b00000001;
+//!         const B = 0b00000010;
+//!         const C = 0b00000100;
+//!         const ABC = Self::A.bits | Self::B.bits | Self::C.bits;
 //!     }
 //! }
 //!
@@ -56,8 +54,8 @@
 //!
 //! bitflags! {
 //!     struct Flags: u32 {
-//!         const A   = 0b00000001;
-//!         const B   = 0b00000010;
+//!         const A = 0b00000001;
+//!         const B = 0b00000010;
 //!     }
 //! }
 //!
@@ -97,13 +95,13 @@
 //! mod example {
 //!     bitflags! {
 //!         pub struct Flags1: u32 {
-//!             const A   = 0b00000001;
+//!             const A = 0b00000001;
 //!         }
 //!     }
 //!     bitflags! {
 //! #       pub
 //!         struct Flags2: u32 {
-//!             const B   = 0b00000010;
+//!             const B = 0b00000010;
 //!         }
 //!     }
 //! }
@@ -179,9 +177,9 @@
 //!     // Results in default value with bits: 0
 //!     #[derive(Default)]
 //!     struct Flags: u32 {
-//!         const A       = 0b00000001;
-//!         const B       = 0b00000010;
-//!         const C       = 0b00000100;
+//!         const A = 0b00000001;
+//!         const B = 0b00000010;
+//!         const C = 0b00000100;
 //!     }
 //! }
 //!
@@ -199,9 +197,9 @@
 //!
 //! bitflags! {
 //!     struct Flags: u32 {
-//!         const A       = 0b00000001;
-//!         const B       = 0b00000010;
-//!         const C       = 0b00000100;
+//!         const A = 0b00000001;
+//!         const B = 0b00000010;
+//!         const C = 0b00000100;
 //!     }
 //! }
 //!
@@ -243,12 +241,10 @@ pub extern crate core as _core;
 ///
 /// bitflags! {
 ///     struct Flags: u32 {
-///         const A       = 0b00000001;
-///         const B       = 0b00000010;
-///         const C       = 0b00000100;
-///         const ABC     = Self::A.bits
-///                       | Self::B.bits
-///                       | Self::C.bits;
+///         const A = 0b00000001;
+///         const B = 0b00000010;
+///         const C = 0b00000100;
+///         const ABC = Self::A.bits | Self::B.bits | Self::C.bits;
 ///     }
 /// }
 ///
@@ -273,8 +269,8 @@ pub extern crate core as _core;
 ///
 /// bitflags! {
 ///     struct Flags: u32 {
-///         const A   = 0b00000001;
-///         const B   = 0b00000010;
+///         const A = 0b00000001;
+///         const B = 0b00000010;
 ///     }
 /// }
 ///
@@ -714,16 +710,14 @@ mod tests {
         #[doc = "> "]
         #[doc = "> - Richard Feynman"]
         struct Flags: u32 {
-            const A       = 0b00000001;
+            const A = 0b00000001;
             #[doc = "<pcwalton> macros are way better at generating code than trans is"]
-            const B       = 0b00000010;
-            const C       = 0b00000100;
+            const B = 0b00000010;
+            const C = 0b00000100;
             #[doc = "* cmr bed"]
             #[doc = "* strcat table"]
             #[doc = "<strcat> wait what?"]
-            const ABC     = Self::A.bits
-                          | Self::B.bits
-                          | Self::C.bits;
+            const ABC = Self::A.bits | Self::B.bits | Self::C.bits;
         }
     }
 
@@ -1048,11 +1042,11 @@ mod tests {
         bitflags! {
             /// baz
             struct Flags: foo::Bar {
-                const A       = 0b00000001;
+                const A = 0b00000001;
                 #[cfg(foo)]
-                const B       = 0b00000010;
+                const B = 0b00000010;
                 #[cfg(foo)]
-                const C       = 0b00000010;
+                const C = 0b00000010;
             }
         }
     }
