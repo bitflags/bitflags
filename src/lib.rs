@@ -311,14 +311,9 @@ macro_rules! bitflags {
             )+
         }
     ) => {
-        #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
-        $(#[$outer])*
-        pub struct $BitFlags {
-            bits: $T,
-        }
-
-        __impl_bitflags! {
-            $BitFlags: $T {
+        __bitflags! {
+            $(#[$outer])*
+            (pub) $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
                     $Flag = $value;
@@ -335,9 +330,33 @@ macro_rules! bitflags {
             )+
         }
     ) => {
+        __bitflags! {
+            $(#[$outer])*
+            () $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    $Flag = $value;
+                )+
+            }
+        }
+    };
+}
+
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __bitflags {
+    (
+        $(#[$outer:meta])*
+        ($($vis:tt)*) $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                $Flag:ident = $value:expr;
+            )+
+        }
+    ) => {
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
         $(#[$outer])*
-        struct $BitFlags {
+        $($vis)* struct $BitFlags {
             bits: $T,
         }
 
