@@ -318,10 +318,10 @@ macro_rules! bitflags {
         }
 
         __impl_bitflags! {
-            struct $BitFlags: $T {
+            $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
-                    const $Flag = $value;
+                    $Flag = $value;
                 )+
             }
         }
@@ -342,10 +342,10 @@ macro_rules! bitflags {
         }
 
         __impl_bitflags! {
-            struct $BitFlags: $T {
+            $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
-                    const $Flag = $value;
+                    $Flag = $value;
                 )+
             }
         }
@@ -356,10 +356,10 @@ macro_rules! bitflags {
 #[doc(hidden)]
 macro_rules! __impl_bitflags {
     (
-        struct $BitFlags:ident: $T:ty {
+        $BitFlags:ident: $T:ty {
             $(
                 $(#[$attr:ident $($args:tt)*])*
-                const $Flag:ident = $value:expr;
+                $Flag:ident = $value:expr;
             )+
         }
     ) => {
