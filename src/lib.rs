@@ -23,12 +23,10 @@
 //!
 //! bitflags! {
 //!     struct Flags: u32 {
-//!         const A       = 0b00000001;
-//!         const B       = 0b00000010;
-//!         const C       = 0b00000100;
-//!         const ABC     = Self::A.bits
-//!                       | Self::B.bits
-//!                       | Self::C.bits;
+//!         const A = 0b00000001;
+//!         const B = 0b00000010;
+//!         const C = 0b00000100;
+//!         const ABC = Self::A.bits | Self::B.bits | Self::C.bits;
 //!     }
 //! }
 //!
@@ -56,8 +54,8 @@
 //!
 //! bitflags! {
 //!     struct Flags: u32 {
-//!         const A   = 0b00000001;
-//!         const B   = 0b00000010;
+//!         const A = 0b00000001;
+//!         const B = 0b00000010;
 //!     }
 //! }
 //!
@@ -90,19 +88,20 @@
 //! out of the current module by default. A definition can be exported out of
 //! the current module by adding `pub` before `flags`:
 //!
-//! ```ignore
+//! ```
 //! #[macro_use]
 //! extern crate bitflags;
 //!
 //! mod example {
 //!     bitflags! {
 //!         pub struct Flags1: u32 {
-//!             const A   = 0b00000001;
+//!             const A = 0b00000001;
 //!         }
 //!     }
 //!     bitflags! {
+//! #       pub
 //!         struct Flags2: u32 {
-//!             const B   = 0b00000010;
+//!             const B = 0b00000010;
 //!         }
 //!     }
 //! }
@@ -178,9 +177,9 @@
 //!     // Results in default value with bits: 0
 //!     #[derive(Default)]
 //!     struct Flags: u32 {
-//!         const A       = 0b00000001;
-//!         const B       = 0b00000010;
-//!         const C       = 0b00000100;
+//!         const A = 0b00000001;
+//!         const B = 0b00000010;
+//!         const C = 0b00000100;
 //!     }
 //! }
 //!
@@ -198,9 +197,9 @@
 //!
 //! bitflags! {
 //!     struct Flags: u32 {
-//!         const A       = 0b00000001;
-//!         const B       = 0b00000010;
-//!         const C       = 0b00000100;
+//!         const A = 0b00000001;
+//!         const B = 0b00000010;
+//!         const C = 0b00000100;
 //!     }
 //! }
 //!
@@ -246,12 +245,10 @@ pub extern crate core as _core;
 ///
 /// bitflags! {
 ///     struct Flags: u32 {
-///         const A       = 0b00000001;
-///         const B       = 0b00000010;
-///         const C       = 0b00000100;
-///         const ABC     = Self::A.bits
-///                       | Self::B.bits
-///                       | Self::C.bits;
+///         const A = 0b00000001;
+///         const B = 0b00000010;
+///         const C = 0b00000100;
+///         const ABC = Self::A.bits | Self::B.bits | Self::C.bits;
 ///     }
 /// }
 ///
@@ -276,8 +273,8 @@ pub extern crate core as _core;
 ///
 /// bitflags! {
 ///     struct Flags: u32 {
-///         const A   = 0b00000001;
-///         const B   = 0b00000010;
+///         const A = 0b00000001;
+///         const B = 0b00000010;
 ///     }
 /// }
 ///
@@ -344,17 +341,12 @@ macro_rules! bitflags {
             )+
         }
     ) => {
-        #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
-        $(#[$outer])*
-        pub struct $BitFlags {
-            bits: $T,
-        }
-
-        __impl_bitflags! {
-            struct $BitFlags: $T {
+        __bitflags! {
+            $(#[$outer])*
+            (pub) $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
-                    const $Flag = $value;
+                    $Flag = $value;
                 )+
             }
         }
@@ -368,17 +360,41 @@ macro_rules! bitflags {
             )+
         }
     ) => {
+        __bitflags! {
+            $(#[$outer])*
+            () $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    $Flag = $value;
+                )+
+            }
+        }
+    };
+}
+
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __bitflags {
+    (
+        $(#[$outer:meta])*
+        ($($vis:tt)*) $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                $Flag:ident = $value:expr;
+            )+
+        }
+    ) => {
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
         $(#[$outer])*
-        struct $BitFlags {
+        $($vis)* struct $BitFlags {
             bits: $T,
         }
 
         __impl_bitflags! {
-            struct $BitFlags: $T {
+            $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
-                    const $Flag = $value;
+                    $Flag = $value;
                 )+
             }
         }
@@ -389,10 +405,10 @@ macro_rules! bitflags {
 #[doc(hidden)]
 macro_rules! __impl_bitflags {
     (
-        struct $BitFlags:ident: $T:ty {
+        $BitFlags:ident: $T:ty {
             $(
                 $(#[$attr:ident $($args:tt)*])*
-                const $Flag:ident = $value:expr;
+                $Flag:ident = $value:expr;
             )+
         }
     ) => {
@@ -747,16 +763,14 @@ mod tests {
         #[doc = "> "]
         #[doc = "> - Richard Feynman"]
         struct Flags: u32 {
-            const A       = 0b00000001;
+            const A = 0b00000001;
             #[doc = "<pcwalton> macros are way better at generating code than trans is"]
-            const B       = 0b00000010;
-            const C       = 0b00000100;
+            const B = 0b00000010;
+            const C = 0b00000100;
             #[doc = "* cmr bed"]
             #[doc = "* strcat table"]
             #[doc = "<strcat> wait what?"]
-            const ABC     = Self::A.bits
-                          | Self::B.bits
-                          | Self::C.bits;
+            const ABC = Self::A.bits | Self::B.bits | Self::C.bits;
         }
     }
 
@@ -1081,11 +1095,11 @@ mod tests {
         bitflags! {
             /// baz
             struct Flags: foo::Bar {
-                const A       = 0b00000001;
+                const A = 0b00000001;
                 #[cfg(foo)]
-                const B       = 0b00000010;
+                const B = 0b00000010;
                 #[cfg(foo)]
-                const C       = 0b00000010;
+                const C = 0b00000010;
             }
         }
     }
