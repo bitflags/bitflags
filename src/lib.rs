@@ -220,6 +220,10 @@
 
 #![doc(html_root_url = "https://docs.rs/bitflags/1.0.0")]
 
+// Required for `pub (in some_module)` support.
+// TODO: remove once this is stabilized.
+#![cfg_attr(feature = "visibility", feature(macro_vis_matcher))]
+
 #[cfg(test)]
 #[macro_use]
 extern crate std;
@@ -296,6 +300,36 @@ pub extern crate core as _core;
 ///     assert_eq!(format!("{:?}", Flags::B), "B");
 /// }
 /// ```
+#[cfg(feature = "visibility")]
+#[macro_export]
+macro_rules! bitflags {
+    (
+        $(#[$outer:meta])*
+        $visibility:vis struct $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )+
+        }
+    ) => {
+        #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
+        $(#[$outer])*
+        $visibility struct $BitFlags {
+            bits: $T,
+        }
+
+        __impl_bitflags! {
+            struct $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    const $Flag = $value;
+                )+
+            }
+        }
+    };
+}
+
+#[cfg(not(feature = "visibility"))]
 #[macro_export]
 macro_rules! bitflags {
     (
@@ -1091,5 +1125,18 @@ mod tests {
                 const ONE = 1;
             }
         }
+    }
+
+    #[cfg(feature = "visibility")]
+    #[test]
+    fn test_pub_restricted() {
+        mod pub_restrict {
+            bitflags! {
+                pub (in super) struct TestFlags: u8 {
+                    const A = 1;
+                }
+            }
+        }
+        assert_eq!(pub_restrict::TestFlags::A.bits(), 1);
     }
 }
