@@ -376,7 +376,7 @@ macro_rules! __bitflags {
         }
 
         __impl_bitflags! {
-            $BitFlags: $T {
+            $BitFlags: $T: $crate::_core {
                 $(
                     $(#[$inner $($args)*])*
                     $Flag = $value;
@@ -390,15 +390,15 @@ macro_rules! __bitflags {
 #[doc(hidden)]
 macro_rules! __impl_bitflags {
     (
-        $BitFlags:ident: $T:ty {
+        $BitFlags:ident: $T:ty: $Core:path {
             $(
                 $(#[$attr:ident $($args:tt)*])*
                 $Flag:ident = $value:expr;
             )+
         }
     ) => {
-        impl $crate::_core::fmt::Debug for $BitFlags {
-            fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
+        impl $Core::fmt::Debug for $BitFlags {
+            fn fmt(&self, f: &mut $Core::fmt::Formatter) -> $Core::fmt::Result {
                 // This convoluted approach is to handle #[cfg]-based flag
                 // omission correctly. For example it needs to support:
                 //
@@ -444,24 +444,24 @@ macro_rules! __impl_bitflags {
                 Ok(())
             }
         }
-        impl $crate::_core::fmt::Binary for $BitFlags {
-            fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
-                $crate::_core::fmt::Binary::fmt(&self.bits, f)
+        impl $Core::fmt::Binary for $BitFlags {
+            fn fmt(&self, f: &mut $Core::fmt::Formatter) -> $Core::fmt::Result {
+                $Core::fmt::Binary::fmt(&self.bits, f)
             }
         }
-        impl $crate::_core::fmt::Octal for $BitFlags {
-            fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
-                $crate::_core::fmt::Octal::fmt(&self.bits, f)
+        impl $Core::fmt::Octal for $BitFlags {
+            fn fmt(&self, f: &mut $Core::fmt::Formatter) -> $Core::fmt::Result {
+                $Core::fmt::Octal::fmt(&self.bits, f)
             }
         }
-        impl $crate::_core::fmt::LowerHex for $BitFlags {
-            fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
-                $crate::_core::fmt::LowerHex::fmt(&self.bits, f)
+        impl $Core::fmt::LowerHex for $BitFlags {
+            fn fmt(&self, f: &mut $Core::fmt::Formatter) -> $Core::fmt::Result {
+                $Core::fmt::LowerHex::fmt(&self.bits, f)
             }
         }
-        impl $crate::_core::fmt::UpperHex for $BitFlags {
-            fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
-                $crate::_core::fmt::UpperHex::fmt(&self.bits, f)
+        impl $Core::fmt::UpperHex for $BitFlags {
+            fn fmt(&self, f: &mut $Core::fmt::Formatter) -> $Core::fmt::Result {
+                $Core::fmt::UpperHex::fmt(&self.bits, f)
             }
         }
 
@@ -509,11 +509,11 @@ macro_rules! __impl_bitflags {
             /// Convert from underlying bit representation, unless that
             /// representation contains bits that do not correspond to a flag.
             #[inline]
-            pub fn from_bits(bits: $T) -> $crate::_core::option::Option<$BitFlags> {
+            pub fn from_bits(bits: $T) -> $Core::option::Option<$BitFlags> {
                 if (bits & !$BitFlags::all().bits()) == 0 {
-                    $crate::_core::option::Option::Some($BitFlags { bits: bits })
+                    $Core::option::Option::Some($BitFlags { bits: bits })
                 } else {
-                    $crate::_core::option::Option::None
+                    $Core::option::Option::None
                 }
             }
 
@@ -577,7 +577,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::_core::ops::BitOr for $BitFlags {
+        impl $Core::ops::BitOr for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the union of the two sets of flags.
@@ -587,7 +587,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::_core::ops::BitOrAssign for $BitFlags {
+        impl $Core::ops::BitOrAssign for $BitFlags {
 
             /// Adds the set of flags.
             #[inline]
@@ -596,7 +596,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::_core::ops::BitXor for $BitFlags {
+        impl $Core::ops::BitXor for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the left flags, but with all the right flags toggled.
@@ -606,7 +606,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::_core::ops::BitXorAssign for $BitFlags {
+        impl $Core::ops::BitXorAssign for $BitFlags {
 
             /// Toggles the set of flags.
             #[inline]
@@ -615,7 +615,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::_core::ops::BitAnd for $BitFlags {
+        impl $Core::ops::BitAnd for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the intersection between the two sets of flags.
@@ -625,7 +625,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::_core::ops::BitAndAssign for $BitFlags {
+        impl $Core::ops::BitAndAssign for $BitFlags {
 
             /// Disables all flags disabled in the set.
             #[inline]
@@ -634,7 +634,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::_core::ops::Sub for $BitFlags {
+        impl $Core::ops::Sub for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the set difference of the two sets of flags.
@@ -644,7 +644,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::_core::ops::SubAssign for $BitFlags {
+        impl $Core::ops::SubAssign for $BitFlags {
 
             /// Disables all flags enabled in the set.
             #[inline]
@@ -653,7 +653,7 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::_core::ops::Not for $BitFlags {
+        impl $Core::ops::Not for $BitFlags {
             type Output = $BitFlags;
 
             /// Returns the complement of this set of flags.
@@ -663,16 +663,16 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::_core::iter::Extend<$BitFlags> for $BitFlags {
-            fn extend<T: $crate::_core::iter::IntoIterator<Item=$BitFlags>>(&mut self, iterator: T) {
+        impl $Core::iter::Extend<$BitFlags> for $BitFlags {
+            fn extend<T: $Core::iter::IntoIterator<Item=$BitFlags>>(&mut self, iterator: T) {
                 for item in iterator {
                     self.insert(item)
                 }
             }
         }
 
-        impl $crate::_core::iter::FromIterator<$BitFlags> for $BitFlags {
-            fn from_iter<T: $crate::_core::iter::IntoIterator<Item=$BitFlags>>(iterator: T) -> $BitFlags {
+        impl $Core::iter::FromIterator<$BitFlags> for $BitFlags {
+            fn from_iter<T: $Core::iter::IntoIterator<Item=$BitFlags>>(iterator: T) -> $BitFlags {
                 let mut result = Self::empty();
                 result.extend(iterator);
                 result
