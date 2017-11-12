@@ -391,6 +391,7 @@ macro_rules! __impl_bitflags {
                 #[allow(non_snake_case)]
                 trait __BitFlags {
                     $(
+                        #[inline]
                         fn $Flag(&self) -> bool { false }
                     )+
                 }
@@ -401,6 +402,7 @@ macro_rules! __impl_bitflags {
                     $(
                         __impl_bitflags! {
                             #[allow(deprecated)]
+                            #[inline]
                             $(? #[$attr $($args)*])*
                             fn $Flag(&self) -> bool {
                                 self.bits & Self::$Flag.bits == Self::$Flag.bits
@@ -466,6 +468,7 @@ macro_rules! __impl_bitflags {
                 #[allow(non_snake_case)]
                 trait __BitFlags {
                     $(
+                        #[inline]
                         fn $Flag() -> $T { 0 }
                     )+
                 }
@@ -473,6 +476,7 @@ macro_rules! __impl_bitflags {
                     $(
                         __impl_bitflags! {
                             #[allow(deprecated)]
+                            #[inline]
                             $(? #[$attr $($args)*])*
                             fn $Flag() -> $T { Self::$Flag.bits }
                         }
