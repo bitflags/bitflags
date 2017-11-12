@@ -1,3 +1,7 @@
+# 1.0.1
+- Add support for `pub(restricted)` specifier on the bitflags struct (#135)
+- Optimize performance of `all()` when called from a separate crate (#136)
+
 # 1.0.0
 - **[breaking change]** Macro now generates [associated constants](https://doc.rust-lang.org/reference/items.html#associated-constants) (#24)
 
