@@ -336,6 +336,25 @@ macro_rules! bitflags {
             }
         }
     };
+    (
+        $(#[$outer:meta])*
+        pub ($($vis:tt)+) struct $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )+
+        }
+    ) => {
+        __bitflags! {
+            $(#[$outer])*
+            (pub ($($vis)+)) $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    $Flag = $value;
+                )+
+            }
+        }
+    };
 }
 
 #[macro_export]
@@ -1091,5 +1110,47 @@ mod tests {
                 const ONE = 1;
             }
         }
+    }
+
+    #[test]
+    fn test_pub_crate() {
+        mod module {
+            bitflags! {
+                pub (crate) struct Test: u8 {
+                    const FOO = 1;
+                }
+            }
+        }
+
+        assert_eq!(module::Test::FOO.bits(), 1);
+    }
+
+    #[test]
+    fn test_pub_in_module() {
+        mod module {
+            mod submodule {
+                bitflags! {
+                    // `pub (in super)` means only the module `module` will
+                    // be able to access this.
+                    pub (in super) struct Test: u8 {
+                        const FOO = 1;
+                    }
+                }
+            }
+
+            mod test {
+                // Note: due to `pub (in super)`,
+                // this cannot be accessed directly by the testing code.
+                pub (in super) fn value() -> u8 {
+                    super::submodule::Test::FOO.bits()
+                }
+            }
+
+            pub fn value() -> u8 {
+                test::value()
+            }
+        }
+
+        assert_eq!(module::value(), 1)
     }
 }
