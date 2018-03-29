@@ -23,3 +23,9 @@ travis-ci = { repository = "rust-lang-nursery/bitflags" }
 [features]
 default = ["example_generated"]
 example_generated = []
+iterator = ["num-traits"]
+
+[dependencies.num-traits]
+version = "0.2"
+default-features = false
+optional = true

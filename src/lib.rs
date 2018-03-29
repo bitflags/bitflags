@@ -215,10 +215,20 @@
 //!     assert_eq!(implemented_default, (Flags::A | Flags::C));
 //! }
 //! ```
+//!
+//! # Iterator
+//!
+//!
 
 #![no_std]
 
 #![doc(html_root_url = "https://docs.rs/bitflags/1.0.1")]
+
+#[cfg(feature = "iterator")]
+extern crate num_traits;
+
+#[cfg(feature = "iterator")]
+pub mod iterator;
 
 #[cfg(test)]
 #[macro_use]
@@ -579,6 +589,12 @@ macro_rules! __impl_bitflags {
                     self.remove(other);
                 }
             }
+
+            /// Returns an iterator over the possibly contained set of flags.
+            #[cfg(feature = "iterator")]
+            pub fn iter<'a>(&'a self) -> $crate::iterator::BitFlagsIter<&'a $BitFlags> {
+                $crate::iterator::BitFlagsIter::new(self)
+            }
         }
 
         impl $crate::_core::ops::BitOr for $BitFlags {
@@ -680,6 +696,54 @@ macro_rules! __impl_bitflags {
                 let mut result = Self::empty();
                 result.extend(iterator);
                 result
+            }
+        }
+
+        #[cfg(feature = "iterator")]
+        impl $crate::iterator::BitFlags for $BitFlags {
+            type Bits = $T;
+            type Flags = $BitFlags;
+
+            fn as_bits(&self) -> Self::Bits {
+                self.bits()
+            }
+
+            fn from_bits(bits: Self::Bits) -> Self::Flags {
+                $BitFlags::from_bits_truncate(bits)
+            }
+        }
+
+        #[cfg(feature = "iterator")]
+        impl $crate::_core::iter::IntoIterator for $BitFlags {
+            type Item = $BitFlags;
+            type IntoIter = $crate::iterator::BitFlagsIter<$BitFlags>;
+
+            fn into_iter(self) -> Self::IntoIter {
+                $crate::iterator::BitFlagsIter::new(self)
+            }
+        }
+
+        #[cfg(feature = "iterator")]
+        impl<'a> $crate::iterator::BitFlags for &'a $BitFlags {
+            type Bits = $T;
+            type Flags = $BitFlags;
+
+            fn as_bits(&self) -> Self::Bits {
+                self.bits()
+            }
+
+            fn from_bits(bits: Self::Bits) -> Self::Flags {
+                $BitFlags::from_bits_truncate(bits)
+            }
+        }
+
+        #[cfg(feature = "iterator")]
+        impl<'a> $crate::_core::iter::IntoIterator for &'a $BitFlags {
+            type Item = $BitFlags;
+            type IntoIter = $crate::iterator::BitFlagsIter<&'a $BitFlags>;
+
+            fn into_iter(self) -> Self::IntoIter {
+                self.iter()
             }
         }
     };
@@ -1157,4 +1221,101 @@ mod tests {
 
         assert_eq!(module::value(), 1)
     }
+}
+
+#[cfg(all(test, feature = "iterator"))]
+mod iter_tests {
+    bitflags! {
+        struct Flags: u32 {
+            const A = 0b00000001;
+            const B = 0b00001000;
+            const D = 0b00010000;
+            const C = 0b10000000;
+            const ABCD = Self::A.bits | Self::B.bits | Self::C.bits | Self::D.bits;
+        }
+    }
+
+    bitflags! {
+        struct SignedFlags: i8 {
+            const U = 0;
+            const A = 0b00000001;
+            const B = 0b00000010;
+            const C = 0b00000100;
+            const D = 0b00001000;
+            const E = 0b00010000;
+            const F = 0b00100000;
+            const G = 0b01000000;
+        }
+    }
+
+    #[test]
+    fn test_iterator_simple() {
+        let mut iter = Flags::A.into_iter();
+        assert_eq!(iter.next(), Some(Flags::A));
+        assert_eq!(iter.next(), None);
+
+        let mut iter = Flags::B.into_iter();
+        assert_eq!(iter.next(), Some(Flags::B));
+        assert_eq!(iter.next(), None);
+
+        let mut iter = Flags::C.into_iter();
+        assert_eq!(iter.next(), Some(Flags::C));
+        assert_eq!(iter.next(), None);
+
+        let mut iter = Flags::D.into_iter();
+        assert_eq!(iter.next(), Some(Flags::D));
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn test_iterator_complex() {
+        let mut iter = Flags::ABCD.into_iter();
+        assert_eq!(iter.next(), Some(Flags::A));
+        assert_eq!(iter.next(), Some(Flags::B));
+        assert_eq!(iter.next(), Some(Flags::D));
+        assert_eq!(iter.next(), Some(Flags::C));
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn test_iterator_simple_complex() {
+        let mut iter = SignedFlags::all().into_iter();
+        assert_eq!(iter.next(), Some(SignedFlags::A));
+        assert_eq!(iter.next(), Some(SignedFlags::B));
+        assert_eq!(iter.next(), Some(SignedFlags::C));
+        assert_eq!(iter.next(), Some(SignedFlags::D));
+        assert_eq!(iter.next(), Some(SignedFlags::E));
+        assert_eq!(iter.next(), Some(SignedFlags::F));
+        assert_eq!(iter.next(), Some(SignedFlags::G));
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn test_iterator_for() {
+        let flags = Flags::all();
+        let expected = vec![Flags::A, Flags::B, Flags::D, Flags::C];
+
+        for (x, y) in flags.iter().zip(expected.iter()) {
+            assert_eq!(x, *y);
+        }
+    }
+
+    #[test]
+    fn test_iterator_for_signed() {
+        let flags = SignedFlags::all();
+        let expected = vec![
+            SignedFlags::A,
+            SignedFlags::B,
+            SignedFlags::C,
+            SignedFlags::D,
+            SignedFlags::E,
+            SignedFlags::F,
+            SignedFlags::G,
+        ];
+
+        for (x, y) in flags.iter().zip(expected.iter()) {
+            assert_eq!(x, *y);
+        }
+    }
+
 }
