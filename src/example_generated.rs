@@ -5,7 +5,7 @@ bitflags! {
     /// This is the same `Flags` struct defined in the [crate level example](../index.html#example).
     /// Note that this struct is just for documentation purposes only, it must not be used outside
     /// this crate.
-    struct Flags: u32 {
+    pub struct Flags: u32 {
         const A = 0b00000001;
         const B = 0b00000010;
         const C = 0b00000100;
