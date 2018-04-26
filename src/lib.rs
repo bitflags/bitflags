@@ -515,7 +515,7 @@ macro_rules! __impl_bitflags {
             #[inline]
             pub fn from_bits(bits: $T) -> $crate::_core::option::Option<$BitFlags> {
                 if (bits & !$BitFlags::all().bits()) == 0 {
-                    $crate::_core::option::Option::Some($BitFlags { bits: bits })
+                    $crate::_core::option::Option::Some($BitFlags { bits })
                 } else {
                     $crate::_core::option::Option::None
                 }
@@ -525,7 +525,7 @@ macro_rules! __impl_bitflags {
             /// that do not correspond to flags.
             #[inline]
             pub fn from_bits_truncate(bits: $T) -> $BitFlags {
-                $BitFlags { bits: bits } & $BitFlags::all()
+                $BitFlags { bits } & $BitFlags::all()
             }
 
             /// Returns `true` if no flags are currently stored.
