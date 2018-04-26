@@ -1,3 +1,15 @@
+# 1.0.2
+
+- 30% improvement in compile time of bitflags crate ([#156])
+
+- Documentation improvements ([#153])
+
+- Implementation cleanup ([#149])
+
+[#156]: https://github.com/rust-lang-nursery/bitflags/pull/156
+[#153]: https://github.com/rust-lang-nursery/bitflags/pull/153
+[#149]: https://github.com/rust-lang-nursery/bitflags/pull/149
+
 # 1.0.1
 - Add support for `pub(restricted)` specifier on the bitflags struct ([#135])
 - Optimize performance of `all()` when called from a separate crate ([#136])
