@@ -11,7 +11,7 @@ fn run_mode(mode: Mode) {
     let config = compiletest::Config {
         mode: mode,
         src_base: format!("tests/{}", mode).into(),
-        target_rustcflags: fs::read_dir("target/debug/deps")
+        target_rustcflags: fs::read_dir("../target/debug/deps")
             .unwrap()
             .map(Result::unwrap)
             .filter(|entry| {

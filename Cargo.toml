@@ -26,3 +26,6 @@ example_generated = []
 
 [package.metadata.docs.rs]
 features = [ "example_generated" ]
+
+[workspace]
+members = ["test_suite"]
