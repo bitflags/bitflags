@@ -1,3 +1,9 @@
+# 1.0.3
+
+- Improve zero value flag handling and documentation ([#157])
+
+[#157]: https://github.com/rust-lang-nursery/bitflags/pull/157
+
 # 1.0.2
 
 - 30% improvement in compile time of bitflags crate ([#156])
