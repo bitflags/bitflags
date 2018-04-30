@@ -1,5 +1,4 @@
 #![cfg(feature = "unstable")]
-
 #![feature(i128_type)]
 
 #[macro_use]
@@ -21,7 +20,10 @@ fn test_i128_bitflags() {
     assert_eq!(Flags128::A.bits, 0x0000_0000_0000_0000_0000_0000_0000_0001);
     assert_eq!(Flags128::B.bits, 0x0000_0000_0000_1000_0000_0000_0000_0000);
     assert_eq!(Flags128::C.bits, 0x8000_0000_0000_0000_0000_0000_0000_0000);
-    assert_eq!(Flags128::ABC.bits, 0x8000_0000_0000_1000_0000_0000_0000_0001);
+    assert_eq!(
+        Flags128::ABC.bits,
+        0x8000_0000_0000_1000_0000_0000_0000_0001
+    );
     assert_eq!(format!("{:?}", Flags128::A), "A");
     assert_eq!(format!("{:?}", Flags128::B), "B");
     assert_eq!(format!("{:?}", Flags128::C), "C");

@@ -14,6 +14,4 @@ bitflags! {
 }
 
 #[test]
-fn main() {
-
-}
+fn main() {}
