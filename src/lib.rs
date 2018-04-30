@@ -215,6 +215,36 @@
 //!     assert_eq!(implemented_default, (Flags::A | Flags::C));
 //! }
 //! ```
+//!
+//! # Zero Flags
+//!
+//! Flags with a value equal to zero will have some strange behavior that one should be aware of.
+//!
+//! ```
+//! #[macro_use]
+//! extern crate bitflags;
+//!
+//! bitflags! {
+//!     struct Flags: u32 {
+//!         const NONE = 0b00000000;
+//!         const SOME = 0b00000001;
+//!     }
+//! }
+//!
+//! fn main() {
+//!     let empty = Flags::empty();
+//!     let none = Flags::NONE;
+//!     let some = Flags::SOME;
+//!
+//!     // Zero flags are treated as always present
+//!     assert!(empty.contains(Flags::NONE));
+//!     assert!(none.contains(Flags::NONE));
+//!     assert!(some.contains(Flags::NONE));
+//!
+//!     // Zero flags will be ignored when testing for emptiness
+//!     assert!(none.is_empty());
+//! }
+//! ```
 
 #![no_std]
 
@@ -424,7 +454,11 @@ macro_rules! __impl_bitflags {
                             #[inline]
                             $(? #[$attr $($args)*])*
                             fn $Flag(&self) -> bool {
-                                self.bits & Self::$Flag.bits == Self::$Flag.bits
+                                if Self::$Flag.bits == 0 && self.bits != 0 {
+                                    false
+                                } else {
+                                    self.bits & Self::$Flag.bits == Self::$Flag.bits
+                                }
                             }
                         }
                     )+
@@ -1156,5 +1190,23 @@ mod tests {
         }
 
         assert_eq!(module::value(), 1)
+    }
+
+    #[test]
+    fn test_zero_value_flags() {
+        bitflags! {
+            struct Flags: u32 {
+                const NONE = 0b0;
+                const SOME = 0b1;
+            }
+        }
+        
+
+        assert!(Flags::empty().contains(Flags::NONE));
+        assert!(Flags::SOME.contains(Flags::NONE));
+        assert!(Flags::NONE.is_empty());
+
+        assert_eq!(format!("{:?}", Flags::empty()), "NONE");
+        assert_eq!(format!("{:?}", Flags::SOME), "SOME");
     }
 }
