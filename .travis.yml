@@ -4,7 +4,8 @@ matrix:
     # This version is tested to avoid unintentional bumping of the minimum supported Rust version
     - rust: 1.20.0
     - rust: stable
-    - os: osx
+    - rust: stable
+      os: osx
     - rust: beta
     - rust: nightly
       env: EXTRA_ARGS="--features unstable"
