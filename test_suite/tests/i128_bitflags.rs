@@ -1,5 +1,4 @@
 #![cfg(feature = "unstable")]
-#![feature(i128_type)]
 
 #[macro_use]
 extern crate bitflags;
