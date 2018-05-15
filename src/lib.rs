@@ -508,8 +508,15 @@ macro_rules! __impl_bitflags {
             )+
 
             /// Returns an empty set of flags.
+            #[cfg(not(feature = "const_empty"))]
             #[inline]
             pub fn empty() -> $BitFlags {
+                $BitFlags { bits: 0 }
+            }
+
+            #[cfg(feature = "const_empty")]
+            #[inline]
+            pub const fn empty() -> $BitFlags {
                 $BitFlags { bits: 0 }
             }
 
