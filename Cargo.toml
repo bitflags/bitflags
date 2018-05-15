@@ -22,6 +22,7 @@ travis-ci = { repository = "rust-lang-nursery/bitflags" }
 
 [features]
 default = []
+const_empty = []
 example_generated = []
 
 [package.metadata.docs.rs]
