@@ -16,6 +16,11 @@ categories = ["no-std"]
 description = """
 A macro to generate structures which behave like bitflags.
 """
+exclude = [
+    ".travis.yml",
+    "appveyor.yml",
+    "bors.toml"
+]
 
 [badges]
 travis-ci = { repository = "bitflags/bitflags" }
