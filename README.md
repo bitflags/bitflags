@@ -3,10 +3,10 @@ bitflags
 
 A Rust macro to generate structures which behave like a set of bitflags
 
-[![Build Status](https://travis-ci.org/rust-lang-nursery/bitflags.svg?branch=master)](https://travis-ci.org/rust-lang-nursery/bitflags)
+[![Build Status](https://travis-ci.org/bitflags/bitflags.svg?branch=master)](https://travis-ci.org/bitflags/bitflags)
 
 - [Documentation](https://docs.rs/bitflags)
-- [Release notes](https://github.com/rust-lang-nursery/bitflags/releases)
+- [Release notes](https://github.com/bitflags/bitflags/releases)
 
 ## Usage
 

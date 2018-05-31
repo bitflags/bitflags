@@ -722,7 +722,7 @@ macro_rules! __impl_bitflags {
     // Debug and all() we want to ignore everything but #[cfg] attributes. In
     // particular, including a #[deprecated] attribute on those items would fail
     // to compile.
-    // https://github.com/rust-lang-nursery/bitflags/issues/109
+    // https://github.com/bitflags/bitflags/issues/109
     //
     // Input:
     //
