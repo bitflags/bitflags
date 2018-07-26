@@ -325,7 +325,7 @@ pub extern crate core as _core;
 ///     assert_eq!(format!("{:?}", Flags::B), "B");
 /// }
 /// ```
-#[macro_export]
+#[macro_export(local_inner_macros)]
 macro_rules! bitflags {
     (
         $(#[$outer:meta])*
@@ -386,7 +386,7 @@ macro_rules! bitflags {
     };
 }
 
-#[macro_export]
+#[macro_export(local_inner_macros)]
 #[doc(hidden)]
 macro_rules! __bitflags {
     (
@@ -415,7 +415,7 @@ macro_rules! __bitflags {
     };
 }
 
-#[macro_export]
+#[macro_export(local_inner_macros)]
 #[doc(hidden)]
 macro_rules! __impl_bitflags {
     (
@@ -467,14 +467,14 @@ macro_rules! __impl_bitflags {
                 $(
                     if <$BitFlags as __BitFlags>::$Flag(self) {
                         if !first {
-                            try!(f.write_str(" | "));
+                            f.write_str(" | ")?;
                         }
                         first = false;
-                        try!(f.write_str(stringify!($Flag)));
+                        f.write_str(__bitflags_stringify!($Flag))?;
                     }
                 )+
                 if first {
-                    try!(f.write_str("(empty)"));
+                    f.write_str("(empty)")?;
                 }
                 Ok(())
             }
@@ -768,6 +768,16 @@ macro_rules! __impl_bitflags {
     ) => {
         $(#[$filtered])*
         fn $($item)*
+    };
+}
+
+// Same as std::stringify but callable from __impl_bitflags, which needs to use
+// local_inner_macros so can only directly call macros from this crate.
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __bitflags_stringify {
+    ($s:ident) => {
+        stringify!($s)
     };
 }
 
