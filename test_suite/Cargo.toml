@@ -1,9 +1,15 @@
+cargo-features = ["edition"]
+
 [project]
 name = "test_suite"
 version = "0.0.0"
 
 [features]
 unstable = ["compiletest_rs"]
+
+[[test]]
+name = "rust2018"
+edition = "2018"
 
 [dependencies]
 bitflags = { path = "../" }
