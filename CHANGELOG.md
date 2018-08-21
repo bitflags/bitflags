@@ -1,3 +1,13 @@
+# 1.0.4
+
+- Support Rust 2018 style macro imports ([#165])
+
+  ```rust
+  use bitflags::bitflags;
+  ```
+
+[#165]: https://github.com/rust-lang-nursery/bitflags/pull/165
+
 # 1.0.3
 
 - Improve zero value flag handling and documentation ([#157])
