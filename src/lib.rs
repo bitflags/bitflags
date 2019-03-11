@@ -1439,13 +1439,13 @@ mod tests {
     #[cfg(const_fn)]
     #[test]
     fn test_const_fn() {
-        const m1: Flags = Flags::empty();
+        const M1: Flags = Flags::empty();
 
-        const m2: Flags = m1.join(Flags::A);
-        assert_eq!(m2, Flags::A);
+        const M2: Flags = M1.join(Flags::A);
+        assert_eq!(M2, Flags::A);
 
-        const m3: Flags = m1.join(Flags::A).join(Flags::C);
-        assert_eq!(m3, Flags::A | Flags::C);
+        const M3: Flags = M1.join(Flags::A).join(Flags::C);
+        assert_eq!(M3, Flags::A | Flags::C);
     }
 
     #[test]
