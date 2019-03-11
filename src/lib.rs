@@ -418,7 +418,7 @@ macro_rules! __bitflags {
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
 #[cfg(const_fn)]
-macro_rules! __fn {
+macro_rules! __fn_bitflags {
     (
         $(#[$filtered:meta])*
         fn $($item:tt)*
@@ -438,7 +438,7 @@ macro_rules! __fn {
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
 #[cfg(not(const_fn))]
-macro_rules! _fn {
+macro_rules! __fn_bitflags {
     (
         $(#[$filtered:meta])*
         fn $($item:tt)*
@@ -548,7 +548,7 @@ macro_rules! __impl_bitflags {
             )+
 
             /// Returns an empty set of flags.
-            __fn! {
+            __fn_bitflags! {
                 #[inline]
                 pub fn empty() -> $BitFlags {
                     $BitFlags { bits: 0 }
@@ -556,7 +556,7 @@ macro_rules! __impl_bitflags {
             }
 
             /// Returns the set containing all flags.
-            __fn! {
+            __fn_bitflags! {
                 #[inline]
                 pub fn all() -> $BitFlags {
                     // See `Debug::fmt` for why this approach is taken.
@@ -582,7 +582,7 @@ macro_rules! __impl_bitflags {
             }
 
             /// Returns the raw value of the flags currently stored.
-            __fn! {
+            __fn_bitflags! {
                 #[inline]
                 pub fn bits(&self) -> $T {
                     self.bits
@@ -602,7 +602,7 @@ macro_rules! __impl_bitflags {
 
             /// Convert from underlying bit representation, dropping any bits
             /// that do not correspond to flags.
-            __fn! {
+            __fn_bitflags! {
                 #[inline]
                 pub fn from_bits_truncate(bits: $T) -> $BitFlags {
                     $BitFlags { bits: bits & $BitFlags::all().bits }
@@ -610,7 +610,7 @@ macro_rules! __impl_bitflags {
             }
 
             /// Returns `true` if no flags are currently stored.
-            __fn! {
+            __fn_bitflags! {
                 #[inline]
                 pub fn is_empty(&self) -> bool {
                     self.bits() == $BitFlags::empty().bits()
@@ -618,7 +618,7 @@ macro_rules! __impl_bitflags {
             }
 
             /// Returns `true` if all flags are currently set.
-            __fn! {
+            __fn_bitflags! {
                 #[inline]
                 pub fn is_all(&self) -> bool {
                     self.bits == $BitFlags::all().bits
@@ -626,7 +626,7 @@ macro_rules! __impl_bitflags {
             }
 
             /// Returns `true` if there are flags common to both `self` and `other`.
-            __fn! {
+            __fn_bitflags! {
                 #[inline]
                 pub fn intersects(&self, other: $BitFlags) -> bool {
                     !$BitFlags{ bits: self.bits & other.bits}.is_empty()
@@ -634,7 +634,7 @@ macro_rules! __impl_bitflags {
             }
 
             /// Returns `true` all of the flags in `other` are contained within `self`.
-            __fn! {
+            __fn_bitflags! {
                 #[inline]
                 pub fn contains(&self, other: $BitFlags) -> bool {
                     (self.bits & other.bits) == other.bits
@@ -642,7 +642,7 @@ macro_rules! __impl_bitflags {
             }
 
             /// Joins to set of flags into a new one
-            __fn! {
+            __fn_bitflags! {
                 #[inline]
                 pub fn join(&self, other: $BitFlags) -> $BitFlags {
                     $BitFlags{ bits: self.bits | other.bits }
