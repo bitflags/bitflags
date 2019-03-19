@@ -1108,30 +1108,6 @@ mod tests {
     }
 
     #[test]
-    fn test_join() {
-        let mut m1 = Flags::empty();
-
-        m1 = m1.join(Flags::A);
-        assert_eq!(m1, Flags::A);
-
-        m1 = m1.join(Flags::C);
-        assert_eq!(m1, Flags::A | Flags::C);
-    }
-
-
-    #[cfg(bitflags_const_fn)]
-    #[test]
-    fn test_const_fn() {
-        const M1: Flags = Flags::empty();
-
-        const M2: Flags = M1.join(Flags::A);
-        assert_eq!(M2, Flags::A);
-
-        const M3: Flags = M1.join(Flags::A).join(Flags::C);
-        assert_eq!(M3, Flags::A | Flags::C);
-    }
-
-    #[test]
     fn test_extend() {
         let mut flags;
 
