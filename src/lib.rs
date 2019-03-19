@@ -1107,6 +1107,19 @@ mod tests {
         assert_eq!(m1, e1);
     }
 
+
+    #[cfg(bitflags_const_fn)]
+    #[test]
+    fn test_const_fn() {
+        const M1: Flags = Flags::empty();
+
+        const M2: Flags = Flags::A;
+        assert_eq!(M2, Flags::A);
+
+        const M3: Flags = Flags::C;
+        assert_eq!(M3, Flags::C);
+    }
+
     #[test]
     fn test_extend() {
         let mut flags;
