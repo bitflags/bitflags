@@ -417,18 +417,18 @@ macro_rules! __bitflags {
 
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
-#[cfg(const_fn)]
+#[cfg(bitflags_const_fn)]
 macro_rules! __fn_bitflags {
     (
         $(#[$filtered:meta])*
-        fn $($item:tt)*
+        const fn $($item:tt)*
     ) => {
         $(#[$filtered])*
         const fn $($item)*
     };
     (
         $(#[$filtered:meta])*
-        pub fn $($item:tt)*
+        pub const fn $($item:tt)*
     ) => {
         $(#[$filtered])*
         pub const fn $($item)*
@@ -437,18 +437,18 @@ macro_rules! __fn_bitflags {
 
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
-#[cfg(not(const_fn))]
+#[cfg(not(bitflags_const_fn))]
 macro_rules! __fn_bitflags {
     (
         $(#[$filtered:meta])*
-        fn $($item:tt)*
+        const fn $($item:tt)*
     ) => {
         $(#[$filtered])*
         fn $($item)*
     };
     (
         $(#[$filtered:meta])*
-        pub fn $($item:tt)*
+        pub const fn $($item:tt)*
     ) => {
         $(#[$filtered])*
         pub fn $($item)*
@@ -550,7 +550,7 @@ macro_rules! __impl_bitflags {
             /// Returns an empty set of flags.
             __fn_bitflags! {
                 #[inline]
-                pub fn empty() -> $BitFlags {
+                pub const fn empty() -> $BitFlags {
                     $BitFlags { bits: 0 }
                 }
             }
@@ -558,7 +558,7 @@ macro_rules! __impl_bitflags {
             /// Returns the set containing all flags.
             __fn_bitflags! {
                 #[inline]
-                pub fn all() -> $BitFlags {
+                pub const fn all() -> $BitFlags {
                     // See `Debug::fmt` for why this approach is taken.
                     #[allow(non_snake_case)]
                     trait __BitFlags {
@@ -584,7 +584,7 @@ macro_rules! __impl_bitflags {
             /// Returns the raw value of the flags currently stored.
             __fn_bitflags! {
                 #[inline]
-                pub fn bits(&self) -> $T {
+                pub const fn bits(&self) -> $T {
                     self.bits
                 }
             }
@@ -604,7 +604,7 @@ macro_rules! __impl_bitflags {
             /// that do not correspond to flags.
             __fn_bitflags! {
                 #[inline]
-                pub fn from_bits_truncate(bits: $T) -> $BitFlags {
+                pub const fn from_bits_truncate(bits: $T) -> $BitFlags {
                     $BitFlags { bits: bits & $BitFlags::all().bits }
                 }
             }
@@ -612,7 +612,7 @@ macro_rules! __impl_bitflags {
             /// Returns `true` if no flags are currently stored.
             __fn_bitflags! {
                 #[inline]
-                pub fn is_empty(&self) -> bool {
+                pub const fn is_empty(&self) -> bool {
                     self.bits() == $BitFlags::empty().bits()
                 }
             }
@@ -620,7 +620,7 @@ macro_rules! __impl_bitflags {
             /// Returns `true` if all flags are currently set.
             __fn_bitflags! {
                 #[inline]
-                pub fn is_all(&self) -> bool {
+                pub const fn is_all(&self) -> bool {
                     self.bits == $BitFlags::all().bits
                 }
             }
@@ -628,7 +628,7 @@ macro_rules! __impl_bitflags {
             /// Returns `true` if there are flags common to both `self` and `other`.
             __fn_bitflags! {
                 #[inline]
-                pub fn intersects(&self, other: $BitFlags) -> bool {
+                pub const fn intersects(&self, other: $BitFlags) -> bool {
                     !$BitFlags{ bits: self.bits & other.bits}.is_empty()
                 }
             }
@@ -636,16 +636,8 @@ macro_rules! __impl_bitflags {
             /// Returns `true` all of the flags in `other` are contained within `self`.
             __fn_bitflags! {
                 #[inline]
-                pub fn contains(&self, other: $BitFlags) -> bool {
+                pub const fn contains(&self, other: $BitFlags) -> bool {
                     (self.bits & other.bits) == other.bits
-                }
-            }
-
-            /// Joins to set of flags into a new one
-            __fn_bitflags! {
-                #[inline]
-                pub fn join(&self, other: $BitFlags) -> $BitFlags {
-                    $BitFlags{ bits: self.bits | other.bits }
                 }
             }
 
@@ -833,8 +825,6 @@ macro_rules! __impl_bitflags {
         $(#[$filtered])*
         fn $($item)*
     };
-
-
 
     // Every attribute that the user writes on a const is applied to the
     // corresponding const that we generate, but within the implementation of
@@ -1129,7 +1119,7 @@ mod tests {
     }
 
 
-    #[cfg(const_fn)]
+    #[cfg(bitflags_const_fn)]
     #[test]
     fn test_const_fn() {
         const M1: Flags = Flags::empty();

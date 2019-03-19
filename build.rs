@@ -10,7 +10,7 @@ fn main(){
 
     // const fn stabilized in Rust 1.31:
     if minor >= 31 {
-        println!("cargo:rustc-cfg=const_fn");
+        println!("cargo:rustc-cfg=bitflags_const_fn");
     }
 }
 
