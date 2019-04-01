@@ -473,6 +473,14 @@ macro_rules! __impl_bitflags {
                         f.write_str(__bitflags_stringify!($Flag))?;
                     }
                 )+
+                if self.extra_bits() != 0 {
+                    if !first {
+                        f.write_str(" | ")?;
+                    }
+                    first = false;
+                    f.write_str("0x")?;
+                    $crate::_core::fmt::LowerHex::fmt(&self.extra_bits(),f)?;
+                }
                 if first {
                     f.write_str("(empty)")?;
                 }
@@ -543,6 +551,12 @@ macro_rules! __impl_bitflags {
                 self.bits
             }
 
+            /// Returns raw value if there are any "extra" flags
+            #[inline]
+            pub fn extra_bits(&self) -> $T {
+                self.bits & !$BitFlags::all().bits()
+            }
+
             /// Convert from underlying bit representation, unless that
             /// representation contains bits that do not correspond to a flag.
             #[inline]
@@ -559,6 +573,12 @@ macro_rules! __impl_bitflags {
             #[inline]
             pub fn from_bits_truncate(bits: $T) -> $BitFlags {
                 $BitFlags { bits } & $BitFlags::all()
+            }
+
+            /// Convert from underlying bit representation, allowing any bits
+            /// that do not correspond to flags.
+            pub fn from_bits_extra(bits: $T)-> $BitFlags {
+                $BitFlags{ bits }
             }
 
             /// Returns `true` if no flags are currently stored.
