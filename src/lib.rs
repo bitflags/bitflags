@@ -420,17 +420,17 @@ macro_rules! __bitflags {
 #[cfg(bitflags_const_fn)]
 macro_rules! __fn_bitflags {
     (
-        $(#[$filtered:meta])*
+        $(#[$attr:ident $($attr_args:tt)*])*
         const fn $($item:tt)*
     ) => {
-        $(#[$filtered])*
+        $(#[$attr $($attr_args)*])*
         const fn $($item)*
     };
     (
-        $(#[$filtered:meta])*
+        $(#[$attr:ident $($attr_args:tt)*])*
         pub const fn $($item:tt)*
     ) => {
-        $(#[$filtered])*
+        $(#[$attr $($attr_args)*])*
         pub const fn $($item)*
     };
 }
@@ -440,17 +440,17 @@ macro_rules! __fn_bitflags {
 #[cfg(not(bitflags_const_fn))]
 macro_rules! __fn_bitflags {
     (
-        $(#[$filtered:meta])*
+        $(#[$attr:ident $($attr_args:tt)*])*
         const fn $($item:tt)*
     ) => {
-        $(#[$filtered])*
+        $(#[$attr $($attr_args)*])*
         fn $($item)*
     };
     (
-        $(#[$filtered:meta])*
+        $(#[$attr:ident $($attr_args:tt)*])*
         pub const fn $($item:tt)*
     ) => {
-        $(#[$filtered])*
+        $(#[$attr $($attr_args)*])*
         pub fn $($item)*
     };
 }
@@ -547,16 +547,16 @@ macro_rules! __impl_bitflags {
                 pub const $Flag: $BitFlags = $BitFlags { bits: $value };
             )+
 
-            /// Returns an empty set of flags.
             __fn_bitflags! {
+                /// Returns an empty set of flags
                 #[inline]
                 pub const fn empty() -> $BitFlags {
                     $BitFlags { bits: 0 }
                 }
             }
 
-            /// Returns the set containing all flags.
             __fn_bitflags! {
+                /// Returns the set containing all flags.
                 #[inline]
                 pub const fn all() -> $BitFlags {
                     // See `Debug::fmt` for why this approach is taken.
@@ -581,8 +581,8 @@ macro_rules! __impl_bitflags {
                 }
             }
 
-            /// Returns the raw value of the flags currently stored.
             __fn_bitflags! {
+                /// Returns the raw value of the flags currently stored.
                 #[inline]
                 pub const fn bits(&self) -> $T {
                     self.bits
@@ -600,41 +600,41 @@ macro_rules! __impl_bitflags {
                 }
             }
 
+            __fn_bitflags! {
             /// Convert from underlying bit representation, dropping any bits
             /// that do not correspond to flags.
-            __fn_bitflags! {
                 #[inline]
                 pub const fn from_bits_truncate(bits: $T) -> $BitFlags {
                     $BitFlags { bits: bits & $BitFlags::all().bits }
                 }
             }
 
-            /// Returns `true` if no flags are currently stored.
             __fn_bitflags! {
+                /// Returns `true` if no flags are currently stored.
                 #[inline]
                 pub const fn is_empty(&self) -> bool {
                     self.bits() == $BitFlags::empty().bits()
                 }
             }
 
-            /// Returns `true` if all flags are currently set.
             __fn_bitflags! {
+                /// Returns `true` if all flags are currently set.
                 #[inline]
                 pub const fn is_all(&self) -> bool {
                     self.bits == $BitFlags::all().bits
                 }
             }
 
-            /// Returns `true` if there are flags common to both `self` and `other`.
             __fn_bitflags! {
+            /// Returns `true` if there are flags common to both `self` and `other`.
                 #[inline]
                 pub const fn intersects(&self, other: $BitFlags) -> bool {
                     !$BitFlags{ bits: self.bits & other.bits}.is_empty()
                 }
             }
 
-            /// Returns `true` all of the flags in `other` are contained within `self`.
             __fn_bitflags! {
+            /// Returns `true` all of the flags in `other` are contained within `self`.
                 #[inline]
                 pub const fn contains(&self, other: $BitFlags) -> bool {
                     (self.bits & other.bits) == other.bits
