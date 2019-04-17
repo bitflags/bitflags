@@ -420,17 +420,17 @@ macro_rules! __bitflags {
 #[cfg(bitflags_const_fn)]
 macro_rules! __fn_bitflags {
     (
-        $(#[$attr:ident $($attr_args:tt)*])*
+        $(# $attr_args:tt)*
         const fn $($item:tt)*
     ) => {
-        $(#[$attr $($attr_args)*])*
+        $(# $attr_args)*
         const fn $($item)*
     };
     (
-        $(#[$attr:ident $($attr_args:tt)*])*
+        $(# $attr_args:tt)*
         pub const fn $($item:tt)*
     ) => {
-        $(#[$attr $($attr_args)*])*
+        $(# $attr_args)*
         pub const fn $($item)*
     };
 }
@@ -440,17 +440,17 @@ macro_rules! __fn_bitflags {
 #[cfg(not(bitflags_const_fn))]
 macro_rules! __fn_bitflags {
     (
-        # $($attr_args:tt)*
+        $(# $attr_args:tt)*
         const fn $($item:tt)*
     ) => {
-        # $($attr_args)*
+        $(# $attr_args)*
         fn $($item)*
     };
     (
-        # $($attr_args:tt)*
+        $(# $attr_args:tt)*
         pub const fn $($item:tt)*
     ) => {
-        # $($attr_args)*
+        $(# $attr_args)*
         pub fn $($item)*
     };
 }
