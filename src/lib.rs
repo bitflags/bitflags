@@ -440,17 +440,17 @@ macro_rules! __fn_bitflags {
 #[cfg(not(bitflags_const_fn))]
 macro_rules! __fn_bitflags {
     (
-        $(#[$attr:ident $($attr_args:tt)*])*
+        # $($attr_args:tt)*
         const fn $($item:tt)*
     ) => {
-        $(#[$attr $($attr_args)*])*
+        # $($attr_args)*
         fn $($item)*
     };
     (
-        $(#[$attr:ident $($attr_args:tt)*])*
+        # $($attr_args:tt)*
         pub const fn $($item:tt)*
     ) => {
-        $(#[$attr $($attr_args)*])*
+        # $($attr_args)*
         pub fn $($item)*
     };
 }
@@ -601,8 +601,8 @@ macro_rules! __impl_bitflags {
             }
 
             __fn_bitflags! {
-            /// Convert from underlying bit representation, dropping any bits
-            /// that do not correspond to flags.
+                /// Convert from underlying bit representation, dropping any bits
+                /// that do not correspond to flags.
                 #[inline]
                 pub const fn from_bits_truncate(bits: $T) -> $BitFlags {
                     $BitFlags { bits: bits & $BitFlags::all().bits }
@@ -626,7 +626,7 @@ macro_rules! __impl_bitflags {
             }
 
             __fn_bitflags! {
-            /// Returns `true` if there are flags common to both `self` and `other`.
+                /// Returns `true` if there are flags common to both `self` and `other`.
                 #[inline]
                 pub const fn intersects(&self, other: $BitFlags) -> bool {
                     !$BitFlags{ bits: self.bits & other.bits}.is_empty()
@@ -634,7 +634,7 @@ macro_rules! __impl_bitflags {
             }
 
             __fn_bitflags! {
-            /// Returns `true` all of the flags in `other` are contained within `self`.
+                /// Returns `true` all of the flags in `other` are contained within `self`.
                 #[inline]
                 pub const fn contains(&self, other: $BitFlags) -> bool {
                     (self.bits & other.bits) == other.bits
