@@ -21,6 +21,7 @@ exclude = [
     "appveyor.yml",
     "bors.toml"
 ]
+build = "build.rs"
 
 [badges]
 travis-ci = { repository = "bitflags/bitflags" }
