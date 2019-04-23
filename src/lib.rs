@@ -398,8 +398,8 @@ macro_rules! __bitflags {
             )+
         }
     ) => {
-        #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
         $(#[$outer])*
+        #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
         $($vis)* struct $BitFlags {
             bits: $T,
         }
