@@ -1,3 +1,7 @@
+# 1.1.0
+
+This is a re-release of `1.0.5`, which was yanked due to a bug in the RLS.
+
 # 1.0.5
 
 - Use compiletest_rs flags supported by stable toolchain ([#171])
