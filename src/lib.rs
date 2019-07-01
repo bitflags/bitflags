@@ -399,6 +399,7 @@ macro_rules! __bitflags {
         }
     ) => {
         $(#[$outer])*
+        #[repr(transparent)]
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
         $($vis)* struct $BitFlags {
             bits: $T,
@@ -606,6 +607,30 @@ macro_rules! __impl_bitflags {
                 #[inline]
                 pub const fn from_bits_truncate(bits: $T) -> $BitFlags {
                     $BitFlags { bits: bits & $BitFlags::all().bits }
+                }
+            }
+
+            /// A cheap reference-to-reference conversion.
+            /// Used to convert from an existing bit representation,
+            /// unless that representation contains bits that do not correspond to a flag.
+            #[inline]
+            fn from_bits_ref(bits: &$T) -> Option<&$BitFlags> {
+                if (*bits & !$BitFlags::all().bits()) == 0 {
+                    $crate::_core::option::Option::Some(unsafe { &*(bits as *const _ as *const _) })
+                } else {
+                    $crate::_core::option::Option::None
+                }
+            }
+
+            /// A cheap, mutable reference-to-mutable reference conversion.
+            /// Used to convert from an existing bit representation,
+            /// unless that representation contains bits that do not correspond to a flag.
+            #[inline]
+            fn from_bits_mut(bits: &mut $T) -> Option<&mut $BitFlags> {
+                if (*bits & !$BitFlags::all().bits()) == 0 {
+                    $crate::_core::option::Option::Some(unsafe { &mut *(bits as *mut _ as *mut _) })
+                } else {
+                    $crate::_core::option::Option::None
                 }
             }
 
@@ -1349,5 +1374,36 @@ mod tests {
 
         assert_eq!(format!("{:?}", Flags::empty()), "NONE");
         assert_eq!(format!("{:?}", Flags::SOME), "SOME");
+    }
+
+    #[test]
+    fn test_from_bits_ref_or_mut() {
+        bitflags! {
+            struct Flags: u32 {
+                const NONE = 0b0;
+                const SOME = 0b1;
+            }
+        }
+
+        let mut n: u32 = 0;
+
+        if let Some(flags) = Flags::from_bits_ref(&n) {
+            assert!(flags.is_empty());
+            assert!(!flags.contains(Flags::SOME));
+        }
+
+        if let Some(flags) = Flags::from_bits_mut(&mut n) {
+            flags.insert(Flags::SOME);
+
+            assert!(!flags.is_empty());
+            assert!(flags.contains(Flags::SOME));
+        }
+
+        if let Some(flags) = Flags::from_bits_ref(&n) {
+            assert!(!flags.is_empty());
+            assert!(flags.contains(Flags::SOME));
+        }
+
+        assert_eq!(n, 1);
     }
 }
