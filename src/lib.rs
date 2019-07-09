@@ -128,7 +128,7 @@
 //! too: `Extend` adds the union of the instances of the `struct` iterated over,
 //! while `FromIterator` calculates the union.
 //!
-//! The `Binary`, `Debug`, `LowerExp`, `Octal` and `UpperExp` trait is also
+//! The `Binary`, `Debug`, `LowerHex`, `Octal` and `UpperHex` trait is also
 //! implemented by displaying the bits value of the internal struct.
 //!
 //! ## Operators
