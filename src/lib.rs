@@ -919,12 +919,12 @@ mod tests {
 
     bitflags! {
         struct _CfgFlags: u32 {
-            #[cfg(windows)]
-            const _CFG_A = 0b01;
             #[cfg(unix)]
-            const _CFG_B = 0b01;
+            const _CFG_A = 0b01;
             #[cfg(windows)]
-            const _CFG_C = _CFG_A.bits | 0b10;
+            const _CFG_B = 0b01;
+            #[cfg(unix)]
+            const _CFG_C = Self::_CFG_A.bits | 0b10;
         }
     }
 
