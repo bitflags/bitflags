@@ -1111,7 +1111,7 @@ mod tests {
     #[cfg(bitflags_const_fn)]
     #[test]
     fn test_const_fn() {
-        const M1: Flags = Flags::empty();
+        const _M1: Flags = Flags::empty();
 
         const M2: Flags = Flags::A;
         assert_eq!(M2, Flags::A);
