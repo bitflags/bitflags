@@ -613,6 +613,7 @@ macro_rules! __impl_bitflags {
             /// A cheap reference-to-reference conversion.
             /// Used to convert from an existing bit representation,
             /// unless that representation contains bits that do not correspond to a flag.
+            #[cfg(feature = "unsafe")]
             #[inline]
             fn from_bits_ref(bits: &$T) -> Option<&$BitFlags> {
                 if (*bits & !$BitFlags::all().bits()) == 0 {
@@ -625,6 +626,7 @@ macro_rules! __impl_bitflags {
             /// A cheap, mutable reference-to-mutable reference conversion.
             /// Used to convert from an existing bit representation,
             /// unless that representation contains bits that do not correspond to a flag.
+            #[cfg(feature = "unsafe")]
             #[inline]
             fn from_bits_mut(bits: &mut $T) -> Option<&mut $BitFlags> {
                 if (*bits & !$BitFlags::all().bits()) == 0 {
@@ -1132,7 +1134,6 @@ mod tests {
         assert_eq!(m1, e1);
     }
 
-
     #[cfg(bitflags_const_fn)]
     #[test]
     fn test_const_fn() {
@@ -1376,6 +1377,7 @@ mod tests {
         assert_eq!(format!("{:?}", Flags::SOME), "SOME");
     }
 
+    #[cfg(feature = "unsafe")]
     #[test]
     fn test_from_bits_ref_or_mut() {
         bitflags! {

@@ -28,6 +28,7 @@ travis-ci = { repository = "bitflags/bitflags" }
 
 [features]
 default = []
+unsafe = []
 example_generated = []
 
 [package.metadata.docs.rs]
