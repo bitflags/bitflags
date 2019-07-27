@@ -146,14 +146,21 @@
 //! The following methods are defined for the generated `struct`:
 //!
 //! - `empty`: an empty set of flags
-//! - `all`: the set of all flags
-//! - `bits`: the raw value of the flags currently stored
+//! - `all`: the set of all known flags
+//! - `bits`: the raw value of the flags currently stored (includes both known
+//!           and unknown bits)
+//! - `known_bits`: the raw value of the flags currently stored with any
+//!                 unknown bits masked out
+//! - `unknown_bits`: the raw value of the flags currently stored with any
+//!                   known bits masked out
 //! - `from_bits`: convert from underlying bit representation, unless that
 //!                representation contains bits that do not correspond to a flag
 //! - `from_bits_truncate`: convert from underlying bit representation, dropping
 //!                         any bits that do not correspond to flags
+//! - `from_bits_unknown`: convert from underlying bit representation, keeping
+//!                        all bits (even those not corresponding to flags)
 //! - `is_empty`: `true` if no flags are currently stored
-//! - `is_all`: `true` if all flags are currently set
+//! - `is_all`: `true` if all flags are currently set (with no unknown flags)
 //! - `intersects`: `true` if there are flags common to both `self` and `other`
 //! - `contains`: `true` all of the flags in `other` are contained within `self`
 //! - `insert`: inserts the specified flags in-place
@@ -513,6 +520,14 @@ macro_rules! __impl_bitflags {
                         f.write_str(__bitflags_stringify!($Flag))?;
                     }
                 )+
+                if self.unknown_bits() != 0 {
+                    if !first {
+                        f.write_str(" | ")?;
+                    }
+                    first = false;
+                    f.write_str("0x")?;
+                    $crate::_core::fmt::LowerHex::fmt(&self.unknown_bits(), f)?;
+                }
                 if first {
                     f.write_str("(empty)")?;
                 }
@@ -589,6 +604,22 @@ macro_rules! __impl_bitflags {
                 }
             }
 
+            __fn_bitflags! {
+                /// Returns the raw value of any "known" flags currently stored.
+                #[inline]
+                pub const fn known_bits(&self) -> $T {
+                    self.bits & $BitFlags::all().bits()
+                }
+            }
+
+            __fn_bitflags! {
+                /// Returns the raw value of any "unknown" flags currently stored.
+                #[inline]
+                pub const fn unknown_bits(&self) -> $T {
+                    self.bits & !$BitFlags::all().bits()
+                }
+            }
+
             /// Convert from underlying bit representation, unless that
             /// representation contains bits that do not correspond to a flag.
             #[inline]
@@ -606,6 +637,15 @@ macro_rules! __impl_bitflags {
                 #[inline]
                 pub const fn from_bits_truncate(bits: $T) -> $BitFlags {
                     $BitFlags { bits: bits & $BitFlags::all().bits }
+                }
+            }
+
+            __fn_bitflags! {
+                /// Convert from underlying bit representation, allowing
+                /// "unknown" bits that do not correspond to a flag.
+                #[inline]
+                pub const fn from_bits_unknown(bits: $T) -> $BitFlags {
+                    $BitFlags { bits }
                 }
             }
 
@@ -980,6 +1020,35 @@ mod tests {
     }
 
     #[test]
+    fn test_from_bits_unknown() {
+        let u = Flags::from_bits_unknown(0b1000);
+        assert_eq!(Flags::from_bits_unknown(0), Flags::empty());
+        assert_eq!(Flags::from_bits_unknown(0b1), Flags::A);
+        assert_eq!(Flags::from_bits_unknown(0b10), Flags::B);
+        assert_eq!(Flags::from_bits_unknown(0b11), (Flags::A | Flags::B));
+        assert_eq!(Flags::from_bits_unknown(0b1000), (u | Flags::empty()));
+        assert_eq!(Flags::from_bits_unknown(0b1001), (u | Flags::A));
+    }
+
+    #[test]
+    fn test_known_unknown_bits() {
+        let known = Flags::ABC;
+        let known_bits = known.bits();
+        assert_eq!(known_bits, 0b111);
+
+        let unknown = Flags::from_bits_unknown(0b1000);
+        let unknown_bits = unknown.bits();
+        assert_eq!(unknown_bits, 0b1000);
+
+        assert_eq!(known.unknown_bits(), 0b0000);
+        assert_eq!(unknown.known_bits(), 0b0000);
+
+        assert_eq!((known | unknown).bits(), (known_bits | unknown_bits));
+        assert_eq!((known | unknown).known_bits(), known_bits);
+        assert_eq!((known | unknown).unknown_bits(), unknown_bits);
+    }
+
+    #[test]
     fn test_is_empty() {
         assert!(Flags::empty().is_empty());
         assert!(!Flags::A.is_empty());
@@ -1078,6 +1147,22 @@ mod tests {
         let mut m4 = AnotherSetOfFlags::empty();
         m4.toggle(AnotherSetOfFlags::empty());
         assert_eq!(m4, AnotherSetOfFlags::empty());
+    }
+
+    #[test]
+    fn test_operators_unknown() {
+        let unknown = Flags::from_bits_unknown(0b1000);
+        let e1 = Flags::A | Flags::C | unknown;
+        let e2 = Flags::B | Flags::C;
+        assert_eq!((e1 | e2), (Flags::ABC | unknown)); // union
+        assert_eq!((e1 & e2), Flags::C); // intersection
+        assert_eq!((e1 - e2), (Flags::A | unknown)); // set difference
+        assert_eq!(!e2, Flags::A); // set complement
+        assert_eq!(!e1, Flags::B); // set complement
+        assert_eq!(e1 ^ e2, Flags::A | Flags::B | unknown); // toggle
+        let mut e3 = e1;
+        e3.toggle(e2);
+        assert_eq!(e3, Flags::A | Flags::B | unknown);
     }
 
     #[test]
@@ -1203,30 +1288,46 @@ mod tests {
         assert_eq!(format!("{:?}", Flags::A | Flags::B), "A | B");
         assert_eq!(format!("{:?}", Flags::empty()), "(empty)");
         assert_eq!(format!("{:?}", Flags::ABC), "A | B | C | ABC");
+        let unknown = Flags::from_bits_unknown(0xb8);
+        assert_eq!(format!("{:?}", unknown), "0xb8");
+        assert_eq!(format!("{:?}", Flags::A | unknown), "A | 0xb8");
+        assert_eq!(format!("{:?}", Flags::ABC | unknown), "A | B | C | ABC | 0xb8");
     }
 
     #[test]
     fn test_binary() {
         assert_eq!(format!("{:b}", Flags::ABC), "111");
         assert_eq!(format!("{:#b}", Flags::ABC), "0b111");
+        let unknown = Flags::from_bits_unknown(0b1010000);
+        assert_eq!(format!("{:b}", Flags::ABC | unknown), "1010111");
+        assert_eq!(format!("{:#b}", Flags::ABC | unknown), "0b1010111");
     }
 
     #[test]
     fn test_octal() {
         assert_eq!(format!("{:o}", LongFlags::LONG_A), "177777");
         assert_eq!(format!("{:#o}", LongFlags::LONG_A), "0o177777");
+        let unknown = LongFlags::from_bits_unknown(0o5000000);
+        assert_eq!(format!("{:o}", LongFlags::LONG_A | unknown), "5177777");
+        assert_eq!(format!("{:#o}", LongFlags::LONG_A | unknown), "0o5177777");
     }
 
     #[test]
     fn test_lowerhex() {
         assert_eq!(format!("{:x}", LongFlags::LONG_A), "ffff");
         assert_eq!(format!("{:#x}", LongFlags::LONG_A), "0xffff");
+        let unknown = LongFlags::from_bits_unknown(0xe00000);
+        assert_eq!(format!("{:x}", LongFlags::LONG_A | unknown), "e0ffff");
+        assert_eq!(format!("{:#x}", LongFlags::LONG_A | unknown), "0xe0ffff");
     }
 
     #[test]
     fn test_upperhex() {
         assert_eq!(format!("{:X}", LongFlags::LONG_A), "FFFF");
         assert_eq!(format!("{:#X}", LongFlags::LONG_A), "0xFFFF");
+        let unknown = LongFlags::from_bits_unknown(0xe00000);
+        assert_eq!(format!("{:X}", LongFlags::LONG_A | unknown), "E0FFFF");
+        assert_eq!(format!("{:#X}", LongFlags::LONG_A | unknown), "0xE0FFFF");
     }
 
     mod submodule {
