@@ -10,6 +10,8 @@ matrix:
     - rust: 1.20.0
       # This version don't support unstable features
       env: EXTRA_ARGS=""
+      script:
+        - cargo test
     - rust: stable
     - rust: stable
       os: osx
