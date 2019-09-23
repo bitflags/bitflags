@@ -1,3 +1,12 @@
+# 1.2.0
+
+- Fix typo: {Lower, Upper}Exp - {Lower, Upper}Hex ([#183])
+
+- Add support for "unknown" bits ([#188])
+
+[#183]: https://github.com/rust-lang-nursery/bitflags/pull/183
+[#188]: https://github.com/rust-lang-nursery/bitflags/pull/188
+
 # 1.1.0
 
 This is a re-release of `1.0.5`, which was yanked due to a bug in the RLS.

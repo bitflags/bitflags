@@ -251,7 +251,7 @@
 //! ```
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/bitflags/1.1.0")]
+#![doc(html_root_url = "https://docs.rs/bitflags/1.2.0")]
 
 #[cfg(test)]
 #[macro_use]
