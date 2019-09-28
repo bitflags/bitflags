@@ -3,25 +3,36 @@ branches:
   - /.*(.tmp)$/
 
 language: rust
-env: EXTRA_ARGS="--features unstable"
 matrix:
   include:
     # This version is tested to avoid unintentional bumping of the minimum supported Rust version
     - rust: 1.20.0
-      # This version don't support unstable features
-      env: EXTRA_ARGS=""
+      env:
+        - LABEL="msrv"
       script:
         - cargo test
+    - rust: stable
+      env:
+        - LABEL="no-std"
+      script:
+        - rustup target add thumbv6m-none-eabi
+        - cargo build --features example_generated --target thumbv6m-none-eabi
+    - rust: nightly
+      env:
+        - LABEL="compiletest"
+      script:
+        - cargo test
+        - cargo test -p test_suite --features unstable
     - rust: stable
     - rust: stable
       os: osx
     - rust: beta
+  allow_failures:
     - rust: nightly
 
 sudo: false
 script:
-  - cargo test
-  - (cd ./test_suite && cargo test $EXTRA_ARGS)
+  - cargo test --all
 
 notifications:
   email:
