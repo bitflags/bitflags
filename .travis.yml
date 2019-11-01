@@ -22,7 +22,7 @@ matrix:
         - LABEL="compiletest"
       script:
         - cargo test
-        - cargo test -p test_suite --features unstable
+        - cargo test -p test_suite
     - rust: stable
     - rust: stable
       os: osx

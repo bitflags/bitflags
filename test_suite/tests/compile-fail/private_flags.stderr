@@ -1,0 +1,5 @@
+error[E0603]: struct `Flags2` is private
+  --> $DIR/private_flags.rs:19:26
+   |
+19 |     let flag2 = example::Flags2::FLAG_B;
+   |                          ^^^^^^
