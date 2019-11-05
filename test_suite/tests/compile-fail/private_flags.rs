@@ -16,5 +16,5 @@ mod example {
 
 fn main() {
     let flag1 = example::Flags1::FLAG_A;
-    let flag2 = example::Flags2::FLAG_B; //~ ERROR struct `Flags2` is private
+    let flag2 = example::Flags2::FLAG_B;
 }
