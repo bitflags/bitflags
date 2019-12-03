@@ -575,7 +575,7 @@ macro_rules! __impl_bitflags {
             )+
 
             __fn_bitflags! {
-                /// Returns an empty set of flags
+                /// Returns an empty set of flags.
                 #[inline]
                 pub const fn empty() -> $BitFlags {
                     $BitFlags { bits: 0 }
