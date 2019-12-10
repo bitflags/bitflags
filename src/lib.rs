@@ -805,6 +805,19 @@ macro_rules! __impl_bitflags {
                 result
             }
         }
+
+        impl $crate::_core::iter::Iterator for $BitFlags {
+            type Item = $BitFlags;
+            fn next(&mut self) -> Option<$BitFlags> {
+                if self.is_empty() {
+                    None
+                }else{
+                    let r = unsafe{ Self::from_bits_unchecked(1 << self.bits.trailing_zeros()) };
+                    self.remove(r);
+                    Some(r)
+                }
+            }
+        }
     };
 
     // Every attribute that the user writes on a const is applied to the
