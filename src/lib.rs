@@ -820,7 +820,6 @@ macro_rules! __impl_bitflags {
         }
 
         impl $crate::_core::iter::ExactSizeIterator for $BitFlags {
-            // We can easily calculate the remaining number of iterations.
             fn len(&self) -> usize {
                 self.bits.count_ones()
             }
