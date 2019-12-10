@@ -1446,4 +1446,33 @@ mod tests {
         assert_eq!(format!("{:?}", Flags::empty()), "NONE");
         assert_eq!(format!("{:?}", Flags::SOME), "SOME");
     }
+
+    #[test]
+    fn test_iter() {
+        bitflags! {
+            struct Flags: u32 {
+                const ONE  = 0b001;
+                const TWO  = 0b010;
+                const THREE = 0b100;
+            }
+        }
+
+        let mut flags = Flags::all();
+        assert_eq!(flags.count(), 3);
+        assert_eq!(flags.next().unwrap(), Flags::ONE);
+        assert_eq!(flags.next().unwrap(), Flags::TWO);
+        assert_eq!(flags.next().unwrap(), Flags::THREE);
+        assert_eq!(flags.next(), None);
+        assert_eq!(flags.count(), 0);
+
+        let flags = Flags::empty();
+        assert_eq!(flags.count(), 0);
+
+        let mut flags = Flags::ONE | Flags::THREE;
+        assert_eq!(flags.count(), 2);
+        assert_eq!(flags.next().unwrap(), Flags::ONE);
+        assert_eq!(flags.next().unwrap(), Flags::THREE);
+        assert_eq!(flags.next(), None);
+        assert_eq!(flags.count(), 0);
+    }
 }
