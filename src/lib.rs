@@ -193,7 +193,7 @@
 //! }
 //! ```
 //!
-//! If your default value is not equal to `0` you need to implement `Default` yourself:
+//! If your default value is not equal to `0` you can use the `default()` suffix:
 //!
 //! ```
 //! #[macro_use]
@@ -204,19 +204,14 @@
 //!         const A = 0b00000001;
 //!         const B = 0b00000010;
 //!         const C = 0b00000100;
-//!     }
-//! }
 //!
-//! // explicit `Default` implementation
-//! impl Default for Flags {
-//!     fn default() -> Flags {
-//!         Flags::A | Flags::C
+//!         default(A | C);
 //!     }
 //! }
 //!
 //! fn main() {
-//!     let implemented_default: Flags = Default::default();
-//!     assert_eq!(implemented_default, (Flags::A | Flags::C));
+//!     let suffixed_default: Flags = Default::default();
+//!     assert_eq!(suffixed_default, (Flags::A | Flags::C));
 //! }
 //! ```
 //!
@@ -352,6 +347,49 @@ macro_rules! bitflags {
                     $(#[$inner $($args)*])*
                     $Flag = $value;
                 )+
+            }
+        }
+    };
+
+    (
+        $(#[$outer:meta])*
+        $vis:vis struct $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )+
+
+            default($($default:ident)|*);
+        }
+    ) => {
+        $(#[$outer])*
+        #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
+        $vis struct $BitFlags {
+            bits: $T,
+        }
+
+        __impl_bitflags! {
+            $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    $Flag = $value;
+                )+
+            }
+        }
+
+        impl $BitFlags {
+            pub const fn default() -> Self {
+                unsafe {
+                    $BitFlags::from_bits_unchecked(
+                        0 $(| $BitFlags::$default.bits())*
+                    )
+                }
+            }
+        }
+
+        impl $crate::_core::default::Default for $BitFlags {
+            fn default() -> Self {
+                Self::default()
             }
         }
     };
@@ -1291,5 +1329,56 @@ mod tests {
 
         assert_eq!(format!("{:?}", Flags::empty()), "NONE");
         assert_eq!(format!("{:?}", Flags::SOME), "SOME");
+    }
+
+    #[test]
+    fn test_default_zero() {
+        bitflags! {
+            struct Flags: u32 {
+                const FOO = 0b001;
+                const BAR = 0b010;
+                const BAZ = 0b100;
+
+                default();
+            }
+        }
+
+        const FLAGS: Flags = Flags::default();
+        assert_eq!(FLAGS, Flags::empty());
+        assert_eq!(FLAGS, Default::default());
+    }
+
+    #[test]
+    fn test_default_one() {
+        bitflags! {
+            struct Flags: u32 {
+                const FOO = 0b001;
+                const BAR = 0b010;
+                const BAZ = 0b100;
+
+                default(FOO);
+            }
+        }
+
+        const FLAGS: Flags = Flags::default();
+        assert_eq!(FLAGS, Flags::FOO);
+        assert_eq!(FLAGS, Default::default());
+    }
+
+    #[test]
+    fn test_default_two() {
+        bitflags! {
+            struct Flags: u32 {
+                const FOO = 0b001;
+                const BAR = 0b010;
+                const BAZ = 0b100;
+
+                default(FOO | BAZ);
+            }
+        }
+
+        const FLAGS: Flags = Flags::default();
+        assert_eq!(FLAGS, Flags::FOO | Flags::BAZ);
+        assert_eq!(FLAGS, Default::default());
     }
 }
