@@ -333,78 +333,16 @@ pub extern crate core as _core;
 macro_rules! bitflags {
     (
         $(#[$outer:meta])*
-        pub struct $BitFlags:ident: $T:ty {
+        $vis:vis struct $BitFlags:ident: $T:ty {
             $(
                 $(#[$inner:ident $($args:tt)*])*
                 const $Flag:ident = $value:expr;
-            )+
-        }
-    ) => {
-        __bitflags! {
-            $(#[$outer])*
-            (pub) $BitFlags: $T {
-                $(
-                    $(#[$inner $($args)*])*
-                    $Flag = $value;
-                )+
-            }
-        }
-    };
-    (
-        $(#[$outer:meta])*
-        struct $BitFlags:ident: $T:ty {
-            $(
-                $(#[$inner:ident $($args:tt)*])*
-                const $Flag:ident = $value:expr;
-            )+
-        }
-    ) => {
-        __bitflags! {
-            $(#[$outer])*
-            () $BitFlags: $T {
-                $(
-                    $(#[$inner $($args)*])*
-                    $Flag = $value;
-                )+
-            }
-        }
-    };
-    (
-        $(#[$outer:meta])*
-        pub ($($vis:tt)+) struct $BitFlags:ident: $T:ty {
-            $(
-                $(#[$inner:ident $($args:tt)*])*
-                const $Flag:ident = $value:expr;
-            )+
-        }
-    ) => {
-        __bitflags! {
-            $(#[$outer])*
-            (pub ($($vis)+)) $BitFlags: $T {
-                $(
-                    $(#[$inner $($args)*])*
-                    $Flag = $value;
-                )+
-            }
-        }
-    };
-}
-
-#[macro_export(local_inner_macros)]
-#[doc(hidden)]
-macro_rules! __bitflags {
-    (
-        $(#[$outer:meta])*
-        ($($vis:tt)*) $BitFlags:ident: $T:ty {
-            $(
-                $(#[$inner:ident $($args:tt)*])*
-                $Flag:ident = $value:expr;
             )+
         }
     ) => {
         $(#[$outer])*
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
-        $($vis)* struct $BitFlags {
+        $vis struct $BitFlags {
             bits: $T,
         }
 
