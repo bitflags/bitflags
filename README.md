@@ -22,11 +22,10 @@ Add this to your `Cargo.toml`:
 bitflags = "1.2"
 ```
 
-and this to your crate root:
+and this to your source code wherever you use the `bitflags!{}` macro:
 
 ```rust
-#[macro_use]
-extern crate bitflags;
+use bitflags::bitflags;
 ```
 
 ## Rust Version Support
