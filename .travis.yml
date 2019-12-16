@@ -6,7 +6,7 @@ language: rust
 matrix:
   include:
     # This version is tested to avoid unintentional bumping of the minimum supported Rust version
-    - rust: 1.30.0
+    - rust: 1.31.0
       env:
         - LABEL="msrv"
       script:
