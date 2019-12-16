@@ -1,5 +1,4 @@
-#[macro_use]
-extern crate bitflags;
+use bitflags::bitflags;
 
 #[macro_use]
 extern crate serde_derive;
