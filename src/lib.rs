@@ -159,7 +159,7 @@
 //! - `is_empty`: `true` if no flags are currently stored
 //! - `is_all`: `true` if currently set flags exactly equal all defined flags
 //! - `intersects`: `true` if there are flags common to both `self` and `other`
-//! - `contains`: `true` all of the flags in `other` are contained within `self`
+//! - `contains`: `true` if all of the flags in `other` are contained within `self`
 //! - `insert`: inserts the specified flags in-place
 //! - `remove`: removes the specified flags in-place
 //! - `toggle`: the specified flags will be inserted if not present, and removed
