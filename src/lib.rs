@@ -637,6 +637,15 @@ macro_rules! __impl_bitflags {
             __fn_bitflags! {
                 /// Convert from underlying bit representation, preserving all
                 /// bits (even those not corresponding to a defined flag).
+                ///
+                /// # Safety
+                ///
+                /// The caller of the `bitflags!` macro can chose to allow or
+                /// disallow extra bits for their bitflags type.
+                ///
+                /// The caller of `from_bits_unchecked()` has to ensure that
+                /// all bits correspond to a defined flag or that extra bits
+                /// are valid for this bitflags type.
                 #[inline]
                 pub const unsafe fn from_bits_unchecked(bits: $T) -> $BitFlags {
                     $BitFlags { bits }
