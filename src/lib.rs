@@ -664,7 +664,7 @@ macro_rules! __impl_bitflags {
                 /// Returns `true` if all flags are currently set.
                 #[inline]
                 pub const fn is_all(&self) -> bool {
-                    self.bits == $BitFlags::all().bits
+                    $BitFlags::all().bits | self.bits == self.bits
                 }
             }
 
@@ -1047,6 +1047,11 @@ mod tests {
         assert!(Flags::all().is_all());
         assert!(!Flags::A.is_all());
         assert!(Flags::ABC.is_all());
+
+        let extra = unsafe { Flags::from_bits_unchecked(0b1000) };
+        assert!(!extra.is_all());
+        assert!(!(Flags::A | extra).is_all());
+        assert!((Flags::ABC | extra).is_all());
 
         assert!(AnotherSetOfFlags::ANOTHER_FLAG.is_all());
     }
