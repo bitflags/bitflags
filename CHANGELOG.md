@@ -1,3 +1,7 @@
+# 1.3.0
+
+- Add support for multiple bitflags in one macro invocation.
+
 # 1.2.1
 
 - Remove extraneous `#[inline]` attributes ([#194])

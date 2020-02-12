@@ -11,7 +11,7 @@
 //! A typesafe bitmask flag generator useful for sets of C-style bitmask flags.
 //! It can be used for creating typesafe wrappers around C APIs.
 //!
-//! The `bitflags!` macro generates a `struct` that manages a set of flags. The
+//! The `bitflags!` macro generates `struct`s that manage a set of flags. The
 //! flags should only be defined for integer types, otherwise unexpected type
 //! errors may occur at compile time.
 //!
@@ -84,9 +84,9 @@
 //!
 //! # Visibility
 //!
-//! The generated struct and its associated flag constants are not exported
+//! The generated structs and their associated flag constants are not exported
 //! out of the current module by default. A definition can be exported out of
-//! the current module by adding `pub` before `flags`:
+//! the current module by adding `pub` before `struct`:
 //!
 //! ```
 //! #[macro_use]
@@ -97,8 +97,7 @@
 //!         pub struct Flags1: u32 {
 //!             const A = 0b00000001;
 //!         }
-//!     }
-//!     bitflags! {
+//!
 //! #       pub
 //!         struct Flags2: u32 {
 //!             const B = 0b00000010;
@@ -114,17 +113,17 @@
 //!
 //! # Attributes
 //!
-//! Attributes can be attached to the generated `struct` by placing them
-//! before the `flags` keyword.
+//! Attributes can be attached to the generated `struct`s by placing them
+//! before the `struct` keyword.
 //!
 //! # Trait implementations
 //!
 //! The `Copy`, `Clone`, `PartialEq`, `Eq`, `PartialOrd`, `Ord` and `Hash`
-//! traits automatically derived for the `struct` using the `derive` attribute.
+//! traits are automatically derived for the `struct`s using the `derive` attribute.
 //! Additional traits can be derived by providing an explicit `derive`
-//! attribute on `flags`.
+//! attribute on `struct`.
 //!
-//! The `Extend` and `FromIterator` traits are implemented for the `struct`,
+//! The `Extend` and `FromIterator` traits are implemented for the `struct`s,
 //! too: `Extend` adds the union of the instances of the `struct` iterated over,
 //! while `FromIterator` calculates the union.
 //!
@@ -133,7 +132,7 @@
 //!
 //! ## Operators
 //!
-//! The following operator traits are implemented for the generated `struct`:
+//! The following operator traits are implemented for the generated `struct`s:
 //!
 //! - `BitOr` and `BitOrAssign`: union
 //! - `BitAnd` and `BitAndAssign`: intersection
@@ -143,7 +142,7 @@
 //!
 //! # Methods
 //!
-//! The following methods are defined for the generated `struct`:
+//! The following methods are defined for the generated `struct`s:
 //!
 //! - `empty`: an empty set of flags
 //! - `all`: the set of all defined flags
@@ -168,7 +167,7 @@
 //!
 //! ## Default
 //!
-//! The `Default` trait is not automatically implemented for the generated struct.
+//! The `Default` trait is not automatically implemented for the generated structs.
 //!
 //! If your default value is equal to `0` (which is the same value as calling `empty()`
 //! on the generated struct), you can simply derive `Default`:
@@ -251,7 +250,7 @@
 //! ```
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/bitflags/1.2.1")]
+#![doc(html_root_url = "https://docs.rs/bitflags/1.3.0")]
 
 #[cfg(test)]
 #[macro_use]
@@ -262,7 +261,7 @@ extern crate std;
 #[doc(hidden)]
 pub extern crate core as _core;
 
-/// The macro used to generate the flag structure.
+/// The macro used to generate the flag structures.
 ///
 /// See the [crate level docs](../bitflags/index.html) for complete documentation.
 ///
@@ -339,6 +338,7 @@ macro_rules! bitflags {
                 const $Flag:ident = $value:expr;
             )+
         }
+        $($t:tt)*
     ) => {
         __bitflags! {
             $(#[$outer])*
@@ -348,6 +348,7 @@ macro_rules! bitflags {
                     $Flag = $value;
                 )+
             }
+            $($t)*
         }
     };
     (
@@ -358,6 +359,7 @@ macro_rules! bitflags {
                 const $Flag:ident = $value:expr;
             )+
         }
+        $($t:tt)*
     ) => {
         __bitflags! {
             $(#[$outer])*
@@ -367,6 +369,7 @@ macro_rules! bitflags {
                     $Flag = $value;
                 )+
             }
+            $($t)*
         }
     };
     (
@@ -377,6 +380,7 @@ macro_rules! bitflags {
                 const $Flag:ident = $value:expr;
             )+
         }
+        $($t:tt)*
     ) => {
         __bitflags! {
             $(#[$outer])*
@@ -386,8 +390,10 @@ macro_rules! bitflags {
                     $Flag = $value;
                 )+
             }
+            $($t)*
         }
     };
+    () => {};
 }
 
 #[macro_export(local_inner_macros)]
@@ -401,6 +407,7 @@ macro_rules! __bitflags {
                 $Flag:ident = $value:expr;
             )+
         }
+        $($t:tt)*
     ) => {
         $(#[$outer])*
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
@@ -416,6 +423,8 @@ macro_rules! __bitflags {
                 )+
             }
         }
+
+        bitflags!($($t)*);
     };
 }
 
@@ -958,9 +967,7 @@ mod tests {
             #[doc = "<strcat> wait what?"]
             const ABC = Self::A.bits | Self::B.bits | Self::C.bits;
         }
-    }
 
-    bitflags! {
         struct _CfgFlags: u32 {
             #[cfg(unix)]
             const _CFG_A = 0b01;
@@ -969,15 +976,11 @@ mod tests {
             #[cfg(unix)]
             const _CFG_C = Self::_CFG_A.bits | 0b10;
         }
-    }
 
-    bitflags! {
         struct AnotherSetOfFlags: i8 {
             const ANOTHER_FLAG = -1_i8;
         }
-    }
 
-    bitflags! {
         struct LongFlags: u32 {
             const LONG_A = 0b1111111111111111;
         }
@@ -1320,8 +1323,7 @@ mod tests {
             pub struct PublicFlags: i8 {
                 const X = 0;
             }
-        }
-        bitflags! {
+
             struct PrivateFlags: i8 {
                 const Y = 0;
             }
