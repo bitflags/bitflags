@@ -29,6 +29,7 @@ travis-ci = { repository = "bitflags/bitflags" }
 [features]
 default = []
 example_generated = []
+constant = []
 
 [package.metadata.docs.rs]
 features = [ "example_generated" ]
