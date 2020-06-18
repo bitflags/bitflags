@@ -33,7 +33,7 @@ pub trait BitFlags<T>:
     fn bits(&self) -> T;
     /// Convert from underlying bit representation, unless that
     /// representation contains bits that do not correspond to a flag.
-    fn from_bits(bits: T) -> core::option::Option<Self>;
+    fn from_bits(bits: T) -> _core::option::Option<Self>;
     /// Convert from underlying bit representation, dropping any bits
     /// that do not correspond to flags.
     unsafe fn from_bits_truncate(bits: T) -> Self;
