@@ -10,6 +10,18 @@ pub trait BitFlags<T>:
     + core::ops::Not<Output = Self>
     + core::iter::Extend<Self>
     + core::iter::FromIterator<Self>
+    + core::fmt::Debug
+    + core::cmp::PartialEq<Self>
+    + core::cmp::Eq
+    + core::cmp::PartialOrd<Self>
+    + core::cmp::Ord
+    + core::hash::Hash
+    + Copy
+    + core::fmt::Octal
+    + core::fmt::Binary
+    + core::fmt::LowerHex
+    + core::fmt::UpperHex
+    + Clone
 {
     /// Returns an empty set of flags.
     fn empty() -> Self;
