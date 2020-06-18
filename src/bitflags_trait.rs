@@ -1,27 +1,29 @@
+use core as _core;
+
 pub trait BitFlags<T>:
-    core::ops::BitOr<Output = Self>
-    + core::ops::BitOrAssign
-    + core::ops::BitXor<Output = Self>
-    + core::ops::BitXorAssign
-    + core::ops::BitAnd<Output = Self>
-    + core::ops::BitAndAssign
-    + core::ops::Sub<Output = Self>
-    + core::ops::SubAssign
-    + core::ops::Not<Output = Self>
-    + core::iter::Extend<Self>
-    + core::iter::FromIterator<Self>
-    + core::fmt::Debug
-    + core::cmp::PartialEq<Self>
-    + core::cmp::Eq
-    + core::cmp::PartialOrd<Self>
-    + core::cmp::Ord
-    + core::hash::Hash
-    + Copy
-    + core::fmt::Octal
-    + core::fmt::Binary
-    + core::fmt::LowerHex
-    + core::fmt::UpperHex
+    _core::ops::BitOr<Output = Self>
+    + _core::ops::BitOrAssign
+    + _core::ops::BitXor<Output = Self>
+    + _core::ops::BitXorAssign
+    + _core::ops::BitAnd<Output = Self>
+    + _core::ops::BitAndAssign
+    + _core::ops::Sub<Output = Self>
+    + _core::ops::SubAssign
+    + _core::ops::Not<Output = Self>
+    + _core::iter::Extend<Self>
+    + _core::iter::FromIterator<Self>
+    + _core::fmt::Debug
+    + _core::cmp::PartialEq<Self>
+    + _core::cmp::Eq
+    + _core::cmp::PartialOrd<Self>
+    + _core::cmp::Ord
+    + _core::hash::Hash
+    + _core::fmt::Octal
+    + _core::fmt::Binary
+    + _core::fmt::LowerHex
+    + _core::fmt::UpperHex
     + Clone
+    + Copy
 {
     /// Returns an empty set of flags.
     fn empty() -> Self;
