@@ -703,6 +703,7 @@ macro_rules! __impl_bitflags {
                 }
             }
 
+            /// Returns an iterator over every bit set
             pub fn iter(&self) -> impl Iterator<Item = $BitFlags> {
                 let mut copy = self.clone();
                 $crate::_core::iter::from_fn(move || {
