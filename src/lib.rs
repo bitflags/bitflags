@@ -262,6 +262,11 @@ extern crate std;
 #[doc(hidden)]
 pub extern crate core as _core;
 
+#[doc(inlined)]
+pub use bitflags_trait::BitFlags;
+
+mod bitflags_trait;
+
 /// The macro used to generate the flag structure.
 ///
 /// See the [crate level docs](../bitflags/index.html) for complete documentation.
@@ -812,6 +817,64 @@ macro_rules! __impl_bitflags {
                 let mut result = Self::empty();
                 result.extend(iterator);
                 result
+            }
+        }
+
+        impl $crate::BitFlags<$T> for $BitFlags {
+            fn empty() -> Self {
+                $BitFlags::empty()
+            }
+
+            fn all() -> Self {
+                $BitFlags::all()
+            }
+
+            fn bits(&self) -> $T {
+                $BitFlags::bits(self)
+            }
+
+            fn from_bits(bits: $T) -> $crate::_core::option::Option<$BitFlags> {
+                $BitFlags::from_bits(bits)
+            }
+
+            unsafe fn from_bits_truncate(bits: $T) -> $BitFlags {
+                $BitFlags::from_bits_truncate(bits)
+            }
+
+            unsafe fn from_bits_unchecked(bits: $T) -> $BitFlags {
+                $BitFlags::from_bits_unchecked(bits)
+            }
+
+            fn is_empty(&self) -> bool {
+                $BitFlags::is_empty(self)
+            }
+
+            fn is_all(&self) -> bool {
+                $BitFlags::is_all(self)
+            }
+
+            fn intersects(&self, other: $BitFlags) -> bool {
+                $BitFlags::intersects(self, other)
+            }
+
+            fn contains(&self, other: $BitFlags) -> bool {
+                $BitFlags::contains(self, other)
+            }
+
+            fn insert(&mut self, other: $BitFlags) {
+                $BitFlags::insert(self, other)
+            }
+
+            fn remove(&mut self, other: $BitFlags) {
+                $BitFlags::remove(self, other)
+            }
+
+            fn toggle(&mut self, other: $BitFlags) {
+                $BitFlags::toggle(self, other)
+            }
+
+            fn set(&mut self, other: $BitFlags, value: bool) {
+                $BitFlags::set(self, other, value)
             }
         }
     };
