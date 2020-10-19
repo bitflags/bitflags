@@ -617,7 +617,7 @@ macro_rules! __impl_bitflags {
             /// Convert from underlying bit representation, unless that
             /// representation contains bits that do not correspond to a flag.
             #[inline]
-            pub fn from_bits(bits: $T) -> $crate::_core::option::Option<$BitFlags> {
+            pub const fn from_bits(bits: $T) -> $crate::_core::option::Option<$BitFlags> {
                 if (bits & !$BitFlags::all().bits()) == 0 {
                     $crate::_core::option::Option::Some($BitFlags { bits })
                 } else {
