@@ -1455,4 +1455,9 @@ mod tests {
         assert_eq!(format!("{:?}", Flags::empty()), "NONE");
         assert_eq!(format!("{:?}", Flags::SOME), "SOME");
     }
+
+    #[test]
+    fn test_empty_bitflags() {
+        bitflags! {}
+    }
 }

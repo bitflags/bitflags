@@ -1,16 +1,18 @@
 error[E0603]: struct `Flags2` is private
-  --> $DIR/private_flags.rs:19:26
+  --> $DIR/private_flags.rs:18:26
    |
-19 |     let flag2 = example::Flags2::FLAG_B;
+18 |     let flag2 = example::Flags2::FLAG_B;
    |                          ^^^^^^ private struct
    |
 note: the struct `Flags2` is defined here
-  --> $DIR/private_flags.rs:10:5
+  --> $DIR/private_flags.rs:5:5
    |
-10 | /     bitflags! {
-11 | |         struct Flags2: u32 {
-12 | |             const FLAG_B = 0b00000010;
-13 | |         }
-14 | |     }
+5  | /     bitflags! {
+6  | |         pub struct Flags1: u32 {
+7  | |             const FLAG_A = 0b00000001;
+8  | |         }
+...  |
+12 | |         }
+13 | |     }
    | |_____^
    = note: this error originates in a macro (in Nightly builds, run with -Z macro-backtrace for more info)
