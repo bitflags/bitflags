@@ -2,7 +2,7 @@ use std::env;
 use std::process::Command;
 use std::str::{self, FromStr};
 
-fn main(){
+fn main() {
     let minor = match rustc_minor_version() {
         Some(minor) => minor,
         None => return,
