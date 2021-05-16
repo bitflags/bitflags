@@ -1465,7 +1465,7 @@ fn test_iter() {
     let flags = Flags::empty();
     assert_eq!(flags.iter().count(), 0);
 
-    let flags = (Flags::ONE | Flags::THREE);
+    let flags = Flags::ONE | Flags::THREE;
     assert_eq!(flags.iter().count(), 2);
     let mut iter = flags.iter();
     assert_eq!(iter.next().unwrap(), Flags::ONE);
