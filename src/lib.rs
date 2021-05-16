@@ -436,61 +436,7 @@ macro_rules! __bitflags {
 
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
-#[cfg(bitflags_const_fn)]
-macro_rules! __fn_bitflags {
-    (
-        $(# $attr_args:tt)*
-        const fn $($item:tt)*
-    ) => {
-        $(# $attr_args)*
-        const fn $($item)*
-    };
-    (
-        $(# $attr_args:tt)*
-        pub const fn $($item:tt)*
-    ) => {
-        $(# $attr_args)*
-        pub const fn $($item)*
-    };
-    (
-        $(# $attr_args:tt)*
-        pub const unsafe fn $($item:tt)*
-    ) => {
-        $(# $attr_args)*
-        pub const unsafe fn $($item)*
-    };
-}
-
-#[macro_export(local_inner_macros)]
-#[doc(hidden)]
-#[cfg(not(bitflags_const_fn))]
-macro_rules! __fn_bitflags {
-    (
-        $(# $attr_args:tt)*
-        const fn $($item:tt)*
-    ) => {
-        $(# $attr_args)*
-        fn $($item)*
-    };
-    (
-        $(# $attr_args:tt)*
-        pub const fn $($item:tt)*
-    ) => {
-        $(# $attr_args)*
-        pub fn $($item)*
-    };
-    (
-        $(# $attr_args:tt)*
-        pub const unsafe fn $($item:tt)*
-    ) => {
-        $(# $attr_args)*
-        pub unsafe fn $($item)*
-    };
-}
-
-#[macro_export(local_inner_macros)]
-#[doc(hidden)]
-macro_rules! __all_bitflags {
+macro_rules! __impl_all_bitflags {
     (
         $BitFlags:ident: $T:ty {
             $(
@@ -499,41 +445,28 @@ macro_rules! __all_bitflags {
             )+
         }
     ) => {
-        __fn_bitflags! {
-            /// Returns the set containing all flags.
-            #[inline]
-            pub const fn all() -> $BitFlags {
-                // See `Debug::fmt` for why this approach is taken.
-                #[allow(non_snake_case)]
-                trait __BitFlags {
-                    $(
-                        const $Flag: $T = 0;
-                    )+
-                }
-                impl __BitFlags for $BitFlags {
-                    $(
-                        __impl_bitflags! {
-                            #[allow(deprecated)]
-                            $(? #[$attr $($args)*])*
-                            const $Flag: $T = Self::$Flag.bits;
-                        }
-                    )+
-                }
-                $BitFlags { bits: $(<$BitFlags as __BitFlags>::$Flag)|+ }
-            }
+        // See `Debug::fmt` for why this approach is taken.
+        #[allow(non_snake_case)]
+        trait __BitFlags {
+            $(
+                const $Flag: $T = 0;
+            )+
         }
+        impl __BitFlags for $BitFlags {
+            $(
+                __impl_bitflags! {
+                    #[allow(deprecated)]
+                    $(? #[$attr $($args)*])*
+                    const $Flag: $T = Self::$Flag.bits;
+                }
+            )+
+        }
+        $BitFlags { bits: $(<$BitFlags as __BitFlags>::$Flag)|+ }
     };
     (
-        $BitFlags:ident: $T:ty {
-        }
+        $BitFlags:ident: $T:ty { }
     ) => {
-        __fn_bitflags! {
-            /// Returns the set containing all flags.
-            #[inline]
-            pub const fn all() -> $BitFlags {
-                $BitFlags { bits: 0 }
-            }
-        }
+        $BitFlags { bits: 0 }
     };
 }
 
@@ -638,15 +571,16 @@ macro_rules! __impl_bitflags {
                 pub const $Flag: $BitFlags = $BitFlags { bits: $value };
             )*
 
-            __fn_bitflags! {
-                /// Returns an empty set of flags.
-                #[inline]
-                pub const fn empty() -> $BitFlags {
-                    $BitFlags { bits: 0 }
-                }
+            /// Returns an empty set of flags.
+            #[inline]
+            pub const fn empty() -> $BitFlags {
+                $BitFlags { bits: 0 }
             }
 
-                __all_bitflags! {
+            /// Returns the set containing all flags.
+            #[inline]
+            pub const fn all() -> $BitFlags {
+                __impl_all_bitflags! {
                     $BitFlags: $T {
                         $(
                             $(#[$attr $($args)*])*
@@ -654,13 +588,12 @@ macro_rules! __impl_bitflags {
                         )*
                     }
                 }
+            }            
 
-            __fn_bitflags! {
-                /// Returns the raw value of the flags currently stored.
-                #[inline]
-                pub const fn bits(&self) -> $T {
-                    self.bits
-                }
+            /// Returns the raw value of the flags currently stored.
+            #[inline]
+            pub const fn bits(&self) -> $T {
+                self.bits
             }
 
             /// Convert from underlying bit representation, unless that
@@ -674,63 +607,51 @@ macro_rules! __impl_bitflags {
                 }
             }
 
-            __fn_bitflags! {
-                /// Convert from underlying bit representation, dropping any bits
-                /// that do not correspond to flags.
-                #[inline]
-                pub const fn from_bits_truncate(bits: $T) -> $BitFlags {
-                    $BitFlags { bits: bits & $BitFlags::all().bits }
-                }
+            /// Convert from underlying bit representation, dropping any bits
+            /// that do not correspond to flags.
+            #[inline]
+            pub const fn from_bits_truncate(bits: $T) -> $BitFlags {
+                $BitFlags { bits: bits & $BitFlags::all().bits }
             }
 
-            __fn_bitflags! {
-                /// Convert from underlying bit representation, preserving all
-                /// bits (even those not corresponding to a defined flag).
-                ///
-                /// # Safety
-                ///
-                /// The caller of the `bitflags!` macro can chose to allow or
-                /// disallow extra bits for their bitflags type.
-                ///
-                /// The caller of `from_bits_unchecked()` has to ensure that
-                /// all bits correspond to a defined flag or that extra bits
-                /// are valid for this bitflags type.
-                #[inline]
-                pub const unsafe fn from_bits_unchecked(bits: $T) -> $BitFlags {
-                    $BitFlags { bits }
-                }
+            /// Convert from underlying bit representation, preserving all
+            /// bits (even those not corresponding to a defined flag).
+            ///
+            /// # Safety
+            ///
+            /// The caller of the `bitflags!` macro can chose to allow or
+            /// disallow extra bits for their bitflags type.
+            ///
+            /// The caller of `from_bits_unchecked()` has to ensure that
+            /// all bits correspond to a defined flag or that extra bits
+            /// are valid for this bitflags type.
+            #[inline]
+            pub const unsafe fn from_bits_unchecked(bits: $T) -> $BitFlags {
+                $BitFlags { bits }
             }
 
-            __fn_bitflags! {
-                /// Returns `true` if no flags are currently stored.
-                #[inline]
-                pub const fn is_empty(&self) -> bool {
-                    self.bits() == $BitFlags::empty().bits()
-                }
+            /// Returns `true` if no flags are currently stored.
+            #[inline]
+            pub const fn is_empty(&self) -> bool {
+                self.bits() == $BitFlags::empty().bits()
             }
 
-            __fn_bitflags! {
-                /// Returns `true` if all flags are currently set.
-                #[inline]
-                pub const fn is_all(&self) -> bool {
-                    $BitFlags::all().bits | self.bits == self.bits
-                }
+            /// Returns `true` if all flags are currently set.
+            #[inline]
+            pub const fn is_all(&self) -> bool {
+                $BitFlags::all().bits | self.bits == self.bits
             }
 
-            __fn_bitflags! {
-                /// Returns `true` if there are flags common to both `self` and `other`.
-                #[inline]
-                pub const fn intersects(&self, other: $BitFlags) -> bool {
-                    !$BitFlags{ bits: self.bits & other.bits}.is_empty()
-                }
+            /// Returns `true` if there are flags common to both `self` and `other`.
+            #[inline]
+            pub const fn intersects(&self, other: $BitFlags) -> bool {
+                !$BitFlags{ bits: self.bits & other.bits}.is_empty()
             }
 
-            __fn_bitflags! {
-                /// Returns `true` all of the flags in `other` are contained within `self`.
-                #[inline]
-                pub const fn contains(&self, other: $BitFlags) -> bool {
-                    (self.bits & other.bits) == other.bits
-                }
+            /// Returns `true` all of the flags in `other` are contained within `self`.
+            #[inline]
+            pub const fn contains(&self, other: $BitFlags) -> bool {
+                (self.bits & other.bits) == other.bits
             }
 
             /// Inserts the specified flags in-place.
@@ -1262,7 +1183,6 @@ mod tests {
         assert_eq!(m1, e1);
     }
 
-    #[cfg(bitflags_const_fn)]
     #[test]
     fn test_const_fn() {
         const _M1: Flags = Flags::empty();
