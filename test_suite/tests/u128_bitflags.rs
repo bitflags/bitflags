@@ -14,7 +14,7 @@ bitflags! {
 }
 
 #[test]
-fn test_i128_bitflags() {
+fn test_u128_bitflags() {
     assert_eq!(Flags128::ABC, Flags128::A | Flags128::B | Flags128::C);
     assert_eq!(Flags128::A.bits, 0x0000_0000_0000_0000_0000_0000_0000_0001);
     assert_eq!(Flags128::B.bits, 0x0000_0000_0000_1000_0000_0000_0000_0000);
