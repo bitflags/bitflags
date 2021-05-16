@@ -360,7 +360,7 @@ macro_rules! bitflags {
             $(
                 $(#[$inner:ident $($args:tt)*])*
                 const $Flag:ident = $value:expr;
-            )+
+            )*
         }
         $($t:tt)*
     ) => {
@@ -370,7 +370,7 @@ macro_rules! bitflags {
                 $(
                     $(#[$inner $($args)*])*
                     $Flag = $value;
-                )+
+                )*
             }
         }
 
@@ -414,7 +414,7 @@ macro_rules! __bitflags {
             $(
                 $(#[$inner:ident $($args:tt)*])*
                 $Flag:ident = $value:expr;
-            )+
+            )*
         }
     ) => {
         $(#[$outer])*
@@ -428,7 +428,7 @@ macro_rules! __bitflags {
                 $(
                     $(#[$inner $($args)*])*
                     $Flag = $value;
-                )+
+                )*
             }
         }
     };
@@ -490,13 +490,62 @@ macro_rules! __fn_bitflags {
 
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
-macro_rules! __impl_bitflags {
+macro_rules! __all_bitflags {
     (
         $BitFlags:ident: $T:ty {
             $(
                 $(#[$attr:ident $($args:tt)*])*
                 $Flag:ident = $value:expr;
             )+
+        }
+    ) => {
+        __fn_bitflags! {
+            /// Returns the set containing all flags.
+            #[inline]
+            pub const fn all() -> $BitFlags {
+                // See `Debug::fmt` for why this approach is taken.
+                #[allow(non_snake_case)]
+                trait __BitFlags {
+                    $(
+                        const $Flag: $T = 0;
+                    )+
+                }
+                impl __BitFlags for $BitFlags {
+                    $(
+                        __impl_bitflags! {
+                            #[allow(deprecated)]
+                            $(? #[$attr $($args)*])*
+                            const $Flag: $T = Self::$Flag.bits;
+                        }
+                    )+
+                }
+                $BitFlags { bits: $(<$BitFlags as __BitFlags>::$Flag)|+ }
+            }
+        }
+    };
+    (
+        $BitFlags:ident: $T:ty {
+        }
+    ) => {
+        __fn_bitflags! {
+            /// Returns the set containing all flags.
+            #[inline]
+            pub const fn all() -> $BitFlags {
+                $BitFlags { bits: 0 }
+            }
+        }
+    };
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! __impl_bitflags {
+    (
+        $BitFlags:ident: $T:ty {
+            $(
+                $(#[$attr:ident $($args:tt)*])*
+                $Flag:ident = $value:expr;
+            )*
         }
     ) => {
         impl $crate::_core::fmt::Debug for $BitFlags {
@@ -514,7 +563,7 @@ macro_rules! __impl_bitflags {
                     $(
                         #[inline]
                         fn $Flag(&self) -> bool { false }
-                    )+
+                    )*
                 }
 
                 // Conditionally override the check for just those flags that
@@ -533,7 +582,7 @@ macro_rules! __impl_bitflags {
                                 }
                             }
                         }
-                    )+
+                    )*
                 }
 
                 let mut first = true;
@@ -545,7 +594,7 @@ macro_rules! __impl_bitflags {
                         first = false;
                         f.write_str(__bitflags_stringify!($Flag))?;
                     }
-                )+
+                )*
                 let extra_bits = self.bits & !$BitFlags::all().bits();
                 if extra_bits != 0 {
                     if !first {
@@ -587,7 +636,7 @@ macro_rules! __impl_bitflags {
             $(
                 $(#[$attr $($args)*])*
                 pub const $Flag: $BitFlags = $BitFlags { bits: $value };
-            )+
+            )*
 
             __fn_bitflags! {
                 /// Returns an empty set of flags.
@@ -597,29 +646,14 @@ macro_rules! __impl_bitflags {
                 }
             }
 
-            __fn_bitflags! {
-                /// Returns the set containing all flags.
-                #[inline]
-                pub const fn all() -> $BitFlags {
-                    // See `Debug::fmt` for why this approach is taken.
-                    #[allow(non_snake_case)]
-                    trait __BitFlags {
+                __all_bitflags! {
+                    $BitFlags: $T {
                         $(
-                            const $Flag: $T = 0;
-                        )+
+                            $(#[$attr $($args)*])*
+                            $Flag = $value;
+                        )*
                     }
-                    impl __BitFlags for $BitFlags {
-                        $(
-                            __impl_bitflags! {
-                                #[allow(deprecated)]
-                                $(? #[$attr $($args)*])*
-                                const $Flag: $T = Self::$Flag.bits;
-                            }
-                        )+
-                    }
-                    $BitFlags { bits: $(<$BitFlags as __BitFlags>::$Flag)|+ }
                 }
-            }
 
             __fn_bitflags! {
                 /// Returns the raw value of the flags currently stored.
@@ -992,6 +1026,11 @@ mod tests {
         }
     }
 
+    bitflags! {
+        struct EmptyFlags: u32 {
+        }
+    }
+
     #[test]
     fn test_bits() {
         assert_eq!(Flags::empty().bits(), 0b00000000);
@@ -1000,6 +1039,8 @@ mod tests {
 
         assert_eq!(AnotherSetOfFlags::empty().bits(), 0b00);
         assert_eq!(AnotherSetOfFlags::ANOTHER_FLAG.bits(), !0_i8);
+
+        assert_eq!(EmptyFlags::empty().bits(), 0b00000000);
     }
 
     #[test]
@@ -1014,6 +1055,9 @@ mod tests {
             AnotherSetOfFlags::from_bits(!0_i8),
             Some(AnotherSetOfFlags::ANOTHER_FLAG)
         );
+
+        assert_eq!(EmptyFlags::from_bits(0), Some(EmptyFlags::empty()));
+        assert_eq!(EmptyFlags::from_bits(0b1), None);
     }
 
     #[test]
@@ -1029,6 +1073,9 @@ mod tests {
             AnotherSetOfFlags::from_bits_truncate(0_i8),
             AnotherSetOfFlags::empty()
         );
+
+        assert_eq!(EmptyFlags::from_bits_truncate(0), EmptyFlags::empty());
+        assert_eq!(EmptyFlags::from_bits_truncate(0b1), EmptyFlags::empty());
     }
 
     #[test]
@@ -1037,6 +1084,7 @@ mod tests {
         assert_eq!(unsafe { Flags::from_bits_unchecked(0) }, Flags::empty());
         assert_eq!(unsafe { Flags::from_bits_unchecked(0b1) }, Flags::A);
         assert_eq!(unsafe { Flags::from_bits_unchecked(0b10) }, Flags::B);
+
         assert_eq!(
             unsafe { Flags::from_bits_unchecked(0b11) },
             (Flags::A | Flags::B)
@@ -1049,6 +1097,12 @@ mod tests {
             unsafe { Flags::from_bits_unchecked(0b1001) },
             (extra | Flags::A)
         );
+      
+        let extra = unsafe { EmptyFlags::from_bits_unchecked(0b1000) };
+        assert_eq!(
+          unsafe { EmptyFlags::from_bits_unchecked(0b1000) },
+          (extra | EmptyFlags::empty())
+      );
     }
 
     #[test]
@@ -1058,6 +1112,9 @@ mod tests {
         assert!(!Flags::ABC.is_empty());
 
         assert!(!AnotherSetOfFlags::ANOTHER_FLAG.is_empty());
+
+        assert!(EmptyFlags::empty().is_empty());
+        assert!(EmptyFlags::all().is_empty());
     }
 
     #[test]
@@ -1067,6 +1124,9 @@ mod tests {
         assert!(Flags::ABC.is_all());
 
         assert!(AnotherSetOfFlags::ANOTHER_FLAG.is_all());
+
+        assert!(EmptyFlags::all().is_all());
+        assert!(EmptyFlags::empty().is_all());
     }
 
     #[test]
@@ -1108,6 +1168,8 @@ mod tests {
         assert!(Flags::ABC.contains(e2));
 
         assert!(AnotherSetOfFlags::ANOTHER_FLAG.contains(AnotherSetOfFlags::ANOTHER_FLAG));
+
+        assert!(EmptyFlags::empty().contains(EmptyFlags::empty()));
     }
 
     #[test]
@@ -1293,10 +1355,16 @@ mod tests {
         let extra = unsafe { Flags::from_bits_unchecked(0xb8) };
         assert_eq!(format!("{:?}", extra), "0xb8");
         assert_eq!(format!("{:?}", Flags::A | extra), "A | 0xb8");
+
         assert_eq!(
             format!("{:?}", Flags::ABC | extra),
             "A | B | C | ABC | 0xb8"
         );
+
+        assert_eq!(
+          format!("{:?}", EmptyFlags::empty()),
+          "(empty)"
+      );
     }
 
     #[test]
