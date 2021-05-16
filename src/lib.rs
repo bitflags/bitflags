@@ -869,7 +869,9 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        impl $crate::BitFlags<$T> for $BitFlags {
+        impl $crate::BitFlags for $BitFlags {
+            type Bits = $T;
+
             fn empty() -> Self {
                 $BitFlags::empty()
             }
@@ -886,7 +888,7 @@ macro_rules! __impl_bitflags {
                 $BitFlags::from_bits(bits)
             }
 
-            unsafe fn from_bits_truncate(bits: $T) -> $BitFlags {
+            fn from_bits_truncate(bits: $T) -> $BitFlags {
                 $BitFlags::from_bits_truncate(bits)
             }
 

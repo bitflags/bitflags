@@ -1,42 +1,20 @@
 use core as _core;
 
-pub trait BitFlags<T>:
-    _core::ops::BitOr<Output = Self>
-    + _core::ops::BitOrAssign
-    + _core::ops::BitXor<Output = Self>
-    + _core::ops::BitXorAssign
-    + _core::ops::BitAnd<Output = Self>
-    + _core::ops::BitAndAssign
-    + _core::ops::Sub<Output = Self>
-    + _core::ops::SubAssign
-    + _core::ops::Not<Output = Self>
-    + _core::iter::Extend<Self>
-    + _core::iter::FromIterator<Self>
-    + _core::fmt::Debug
-    + _core::cmp::PartialEq<Self>
-    + _core::cmp::Eq
-    + _core::cmp::PartialOrd<Self>
-    + _core::cmp::Ord
-    + _core::hash::Hash
-    + _core::fmt::Octal
-    + _core::fmt::Binary
-    + _core::fmt::LowerHex
-    + _core::fmt::UpperHex
-    + Clone
-    + Copy
-{
+pub trait BitFlags {
+    type Bits;
     /// Returns an empty set of flags.
     fn empty() -> Self;
     /// Returns the set containing all flags.
     fn all() -> Self;
     /// Returns the raw value of the flags currently stored.
-    fn bits(&self) -> T;
+    fn bits(&self) -> Self::Bits;
     /// Convert from underlying bit representation, unless that
     /// representation contains bits that do not correspond to a flag.
-    fn from_bits(bits: T) -> _core::option::Option<Self>;
+    fn from_bits(bits: Self::Bits) -> _core::option::Option<Self>
+    where Self: Sized;
     /// Convert from underlying bit representation, dropping any bits
     /// that do not correspond to flags.
-    unsafe fn from_bits_truncate(bits: T) -> Self;
+    fn from_bits_truncate(bits: Self::Bits) -> Self;
     /// Convert from underlying bit representation, preserving all
     /// bits (even those not corresponding to a defined flag).
     ///
@@ -48,7 +26,7 @@ pub trait BitFlags<T>:
     /// The caller of `from_bits_unchecked()` has to ensure that
     /// all bits correspond to a defined flag or that extra bits
     /// are valid for this bitflags type.
-    unsafe fn from_bits_unchecked(bits: T) -> Self;
+    unsafe fn from_bits_unchecked(bits: Self::Bits) -> Self;
     /// Returns `true` if no flags are currently stored.
     fn is_empty(&self) -> bool;
     /// Returns `true` if all flags are currently set.
