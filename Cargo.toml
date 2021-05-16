@@ -17,7 +17,6 @@ description = """
 A macro to generate structures which behave like bitflags.
 """
 exclude = [
-    ".travis.yml",
     "appveyor.yml",
     "bors.toml"
 ]
@@ -26,9 +25,6 @@ build = "build.rs"
 [dependencies]
 core = { version = '1.0.0', optional = true, package = 'rustc-std-workspace-core' }
 compiler_builtins = { version = '0.1.2', optional = true }
-
-[badges]
-travis-ci = { repository = "bitflags/bitflags" }
 
 [features]
 default = []
