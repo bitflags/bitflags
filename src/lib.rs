@@ -663,14 +663,16 @@ macro_rules! __impl_bitflags {
                 }
             }
 
-            /// Convert from underlying bit representation, unless that
-            /// representation contains bits that do not correspond to a flag.
-            #[inline]
-            pub const fn from_bits(bits: $T) -> $crate::_core::option::Option<$BitFlags> {
-                if (bits & !$BitFlags::all().bits()) == 0 {
-                    $crate::_core::option::Option::Some($BitFlags { bits })
-                } else {
-                    $crate::_core::option::Option::None
+            __fn_bitflags! {
+                /// Convert from underlying bit representation, unless that
+                /// representation contains bits that do not correspond to a flag.
+                #[inline]
+                pub const fn from_bits(bits: $T) -> $crate::_core::option::Option<$BitFlags> {
+                    if (bits & !$BitFlags::all().bits()) == 0 {
+                        $crate::_core::option::Option::Some($BitFlags { bits })
+                    } else {
+                        $crate::_core::option::Option::None
+                    }
                 }
             }
 
@@ -1097,7 +1099,7 @@ mod tests {
             unsafe { Flags::from_bits_unchecked(0b1001) },
             (extra | Flags::A)
         );
-      
+
         let extra = unsafe { EmptyFlags::from_bits_unchecked(0b1000) };
         assert_eq!(
           unsafe { EmptyFlags::from_bits_unchecked(0b1000) },
