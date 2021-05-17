@@ -490,6 +490,60 @@ macro_rules! __fn_bitflags {
 
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
+#[cfg(bitflags_const_fn_cond)]
+macro_rules! __fn_bitflags_cond {
+    (
+        $(# $attr_args:tt)*
+        const fn $($item:tt)*
+    ) => {
+        $(# $attr_args)*
+        const fn $($item)*
+    };
+    (
+        $(# $attr_args:tt)*
+        pub const fn $($item:tt)*
+    ) => {
+        $(# $attr_args)*
+        pub const fn $($item)*
+    };
+    (
+        $(# $attr_args:tt)*
+        pub const unsafe fn $($item:tt)*
+    ) => {
+        $(# $attr_args)*
+        pub const unsafe fn $($item)*
+    };
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+#[cfg(not(bitflags_const_fn_cond))]
+macro_rules! __fn_bitflags_cond {
+    (
+        $(# $attr_args:tt)*
+        const fn $($item:tt)*
+    ) => {
+        $(# $attr_args)*
+        fn $($item)*
+    };
+    (
+        $(# $attr_args:tt)*
+        pub const fn $($item:tt)*
+    ) => {
+        $(# $attr_args)*
+        pub fn $($item)*
+    };
+    (
+        $(# $attr_args:tt)*
+        pub const unsafe fn $($item:tt)*
+    ) => {
+        $(# $attr_args)*
+        pub unsafe fn $($item)*
+    };
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
 macro_rules! __all_bitflags {
     (
         $BitFlags:ident: $T:ty {
@@ -663,7 +717,7 @@ macro_rules! __impl_bitflags {
                 }
             }
 
-            __fn_bitflags! {
+            __fn_bitflags_cond! {
                 /// Convert from underlying bit representation, unless that
                 /// representation contains bits that do not correspond to a flag.
                 #[inline]
