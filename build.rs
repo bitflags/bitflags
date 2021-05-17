@@ -13,8 +13,8 @@ fn main() {
         println!("cargo:rustc-cfg=bitflags_const_fn");
     }
 
-    // const fn conditionals stabilized in Rust 1.32:
-    if minor >= 32 {
+    // const fn conditionals stabilized in Rust 1.33:
+    if minor >= 33 {
         println!("cargo:rustc-cfg=bitflags_const_fn_cond");
     }
 }
