@@ -681,6 +681,20 @@ macro_rules! __impl_bitflags {
                     self.remove(other);
                 }
             }
+
+            pub fn iter(&self) -> impl Iterator<Item = $BitFlags> {
+                let mut copy = self.clone();
+                $crate::_core::iter::from_fn(move || {
+                    if copy.is_empty() {
+                        None
+                    }else{
+                        let bits = 1 << copy.bits.trailing_zeros() as $T;
+                        let r = $BitFlags { bits };
+                        copy.remove(r);
+                        Some(r)
+                    }
+                })
+            }
         }
 
         impl $crate::_core::ops::BitOr for $BitFlags {
@@ -1453,4 +1467,33 @@ mod tests {
     fn test_empty_bitflags() {
         bitflags! {}
     }
+}
+
+#[test]
+fn test_iter() {
+    bitflags! {
+        struct Flags: u32 {
+            const ONE  = 0b001;
+            const TWO  = 0b010;
+            const THREE = 0b100;
+        }
+    }
+
+    let flags = Flags::all();
+    assert_eq!(flags.iter().count(), 3);
+    let mut iter = flags.iter();
+    assert_eq!(iter.next().unwrap(), Flags::ONE);
+    assert_eq!(iter.next().unwrap(), Flags::TWO);
+    assert_eq!(iter.next().unwrap(), Flags::THREE);
+    assert_eq!(iter.next(), None);
+
+    let flags = Flags::empty();
+    assert_eq!(flags.iter().count(), 0);
+
+    let flags = (Flags::ONE | Flags::THREE);
+    assert_eq!(flags.iter().count(), 2);
+    let mut iter = flags.iter();
+    assert_eq!(iter.next().unwrap(), Flags::ONE);
+    assert_eq!(iter.next().unwrap(), Flags::THREE);
+    assert_eq!(iter.next(), None);
 }
