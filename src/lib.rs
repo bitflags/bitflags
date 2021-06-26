@@ -648,7 +648,7 @@ macro_rules! __impl_bitflags {
                 !$BitFlags{ bits: self.bits & other.bits}.is_empty()
             }
 
-            /// Returns `true` all of the flags in `other` are contained within `self`.
+            /// Returns `true` if all of the flags in `other` are contained within `self`.
             #[inline]
             pub const fn contains(&self, other: $BitFlags) -> bool {
                 (self.bits & other.bits) == other.bits
@@ -796,7 +796,7 @@ macro_rules! __impl_bitflags {
     // Input:
     //
     //     ? #[cfg(feature = "advanced")]
-    //     ? #[deprecated(note = "Use somthing else.")]
+    //     ? #[deprecated(note = "Use something else.")]
     //     ? #[doc = r"High quality documentation."]
     //     fn f() -> i32 { /* ... */ }
     //
@@ -851,7 +851,7 @@ macro_rules! __impl_bitflags {
     // Input:
     //
     //     ? #[cfg(feature = "advanced")]
-    //     ? #[deprecated(note = "Use somthing else.")]
+    //     ? #[deprecated(note = "Use something else.")]
     //     ? #[doc = r"High quality documentation."]
     //     const f: i32 { /* ... */ }
     //
