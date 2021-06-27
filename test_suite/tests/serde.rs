@@ -1,10 +1,9 @@
 #[macro_use]
-extern crate bitflags;
-
-#[macro_use]
 extern crate serde_derive;
 extern crate serde;
 extern crate serde_json;
+
+use bitflags::bitflags;
 
 bitflags! {
     #[derive(Serialize, Deserialize)]
