@@ -332,94 +332,18 @@ pub extern crate core as _core;
 macro_rules! bitflags {
     (
         $(#[$outer:meta])*
-        pub struct $BitFlags:ident: $T:ty {
-            $(
-                $(#[$inner:ident $($args:tt)*])*
-                const $Flag:ident = $value:expr;
-            )+
-        }
-        $($t:tt)*
-    ) => {
-        __bitflags! {
-            $(#[$outer])*
-            (pub) $BitFlags: $T {
-                $(
-                    $(#[$inner $($args)*])*
-                    $Flag = $value;
-                )+
-            }
-        }
-
-        bitflags! {
-            $($t)*
-        }
-    };
-    (
-        $(#[$outer:meta])*
-        struct $BitFlags:ident: $T:ty {
+        $vis:vis struct $BitFlags:ident: $T:ty {
             $(
                 $(#[$inner:ident $($args:tt)*])*
                 const $Flag:ident = $value:expr;
             )*
         }
+
         $($t:tt)*
-    ) => {
-        __bitflags! {
-            $(#[$outer])*
-            () $BitFlags: $T {
-                $(
-                    $(#[$inner $($args)*])*
-                    $Flag = $value;
-                )*
-            }
-        }
-
-        bitflags! {
-            $($t)*
-        }
-    };
-    (
-        $(#[$outer:meta])*
-        pub ($($vis:tt)+) struct $BitFlags:ident: $T:ty {
-            $(
-                $(#[$inner:ident $($args:tt)*])*
-                const $Flag:ident = $value:expr;
-            )+
-        }
-        $($t:tt)*
-    ) => {
-        __bitflags! {
-            $(#[$outer])*
-            (pub ($($vis)+)) $BitFlags: $T {
-                $(
-                    $(#[$inner $($args)*])*
-                    $Flag = $value;
-                )+
-            }
-        }
-
-        bitflags! {
-            $($t)*
-        }
-    };
-    () => {};
-}
-
-#[macro_export(local_inner_macros)]
-#[doc(hidden)]
-macro_rules! __bitflags {
-    (
-        $(#[$outer:meta])*
-        ($($vis:tt)*) $BitFlags:ident: $T:ty {
-            $(
-                $(#[$inner:ident $($args:tt)*])*
-                $Flag:ident = $value:expr;
-            )*
-        }
     ) => {
         $(#[$outer])*
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
-        $($vis)* struct $BitFlags {
+        $vis struct $BitFlags {
             bits: $T,
         }
 
@@ -431,7 +355,12 @@ macro_rules! __bitflags {
                 )*
             }
         }
+
+        bitflags! {
+            $($t)*
+        }
     };
+    () => {};
 }
 
 #[macro_export(local_inner_macros)]
