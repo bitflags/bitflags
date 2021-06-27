@@ -18,8 +18,7 @@
 //! # Example
 //!
 //! ```
-//! #[macro_use]
-//! extern crate bitflags;
+//! use bitflags::bitflags;
 //!
 //! bitflags! {
 //!     struct Flags: u32 {
@@ -47,10 +46,9 @@
 //! implementations:
 //!
 //! ```
-//! #[macro_use]
-//! extern crate bitflags;
-//!
 //! use std::fmt;
+//!
+//! use bitflags::bitflags;
 //!
 //! bitflags! {
 //!     struct Flags: u32 {
@@ -89,10 +87,9 @@
 //! the current module by adding `pub` before `struct`:
 //!
 //! ```
-//! #[macro_use]
-//! extern crate bitflags;
-//!
 //! mod example {
+//!     use bitflags::bitflags;
+//!
 //!     bitflags! {
 //!         pub struct Flags1: u32 {
 //!             const A = 0b00000001;
@@ -173,8 +170,7 @@
 //! on the generated struct), you can simply derive `Default`:
 //!
 //! ```
-//! #[macro_use]
-//! extern crate bitflags;
+//! use bitflags::bitflags;
 //!
 //! bitflags! {
 //!     // Results in default value with bits: 0
@@ -195,8 +191,7 @@
 //! If your default value is not equal to `0` you need to implement `Default` yourself:
 //!
 //! ```
-//! #[macro_use]
-//! extern crate bitflags;
+//! use bitflags::bitflags;
 //!
 //! bitflags! {
 //!     struct Flags: u32 {
@@ -224,8 +219,7 @@
 //! Flags with a value equal to zero will have some strange behavior that one should be aware of.
 //!
 //! ```
-//! #[macro_use]
-//! extern crate bitflags;
+//! use bitflags::bitflags;
 //!
 //! bitflags! {
 //!     struct Flags: u32 {
@@ -249,12 +243,8 @@
 //! }
 //! ```
 
-#![no_std]
+#![cfg_attr(not(test), no_std)]
 #![doc(html_root_url = "https://docs.rs/bitflags/1.2.1")]
-
-#[cfg(test)]
-#[macro_use]
-extern crate std;
 
 // Re-export libcore using an alias so that the macros can work without
 // requiring `extern crate core` downstream.
@@ -268,8 +258,7 @@ pub extern crate core as _core;
 /// # Example
 ///
 /// ```
-/// #[macro_use]
-/// extern crate bitflags;
+/// use bitflags::bitflags;
 ///
 /// bitflags! {
 ///     struct Flags: u32 {
@@ -294,10 +283,9 @@ pub extern crate core as _core;
 /// implementations:
 ///
 /// ```
-/// #[macro_use]
-/// extern crate bitflags;
-///
 /// use std::fmt;
+///
+/// use bitflags::bitflags;
 ///
 /// bitflags! {
 ///     struct Flags: u32 {
