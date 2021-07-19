@@ -325,6 +325,7 @@ macro_rules! bitflags {
         $($t:tt)*
     ) => {
         $(#[$outer])*
+        #[repr(transparent)]
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
         $vis struct $BitFlags {
             bits: $T,
@@ -500,7 +501,7 @@ macro_rules! __impl_bitflags {
                         )*
                     }
                 }
-            }            
+            }
 
             /// Returns the raw value of the flags currently stored.
             #[inline]
@@ -930,12 +931,12 @@ mod tests {
             unsafe { Flags::from_bits_unchecked(0b1001) },
             (extra | Flags::A)
         );
-      
+
         let extra = unsafe { EmptyFlags::from_bits_unchecked(0b1000) };
         assert_eq!(
-          unsafe { EmptyFlags::from_bits_unchecked(0b1000) },
-          (extra | EmptyFlags::empty())
-      );
+            unsafe { EmptyFlags::from_bits_unchecked(0b1000) },
+            (extra | EmptyFlags::empty())
+        );
     }
 
     #[test]
@@ -1198,10 +1199,7 @@ mod tests {
             "A | B | C | ABC | 0xb8"
         );
 
-        assert_eq!(
-          format!("{:?}", EmptyFlags::empty()),
-          "(empty)"
-      );
+        assert_eq!(format!("{:?}", EmptyFlags::empty()), "(empty)");
     }
 
     #[test]
