@@ -1,5 +1,3 @@
-#![cfg(feature = "unstable")]
-
 use bitflags::bitflags;
 
 bitflags! {

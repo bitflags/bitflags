@@ -1,10 +1,10 @@
 [package]
-
 name = "bitflags"
 # NB: When modifying, also modify:
 #   1. html_root_url in lib.rs
 #   2. number in readme (for breaking changes)
 version = "1.2.1"
+edition = "2018"
 authors = ["The Rust Project Developers"]
 license = "MIT/Apache-2.0"
 keywords = ["bit", "bitmask", "bitflags", "flags"]
@@ -16,14 +16,17 @@ categories = ["no-std"]
 description = """
 A macro to generate structures which behave like bitflags.
 """
-exclude = [
-    "appveyor.yml",
-    "bors.toml"
-]
+exclude = ["bors.toml"]
 
 [dependencies]
 core = { version = '1.0.0', optional = true, package = 'rustc-std-workspace-core' }
 compiler_builtins = { version = '0.1.2', optional = true }
+
+[dev-dependencies]
+trybuild = "1.0"
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
 
 [features]
 default = []
@@ -31,7 +34,4 @@ example_generated = []
 rustc-dep-of-std = ["core", "compiler_builtins"]
 
 [package.metadata.docs.rs]
-features = [ "example_generated" ]
-
-[workspace]
-members = ["test_suite"]
+features = ["example_generated"]
