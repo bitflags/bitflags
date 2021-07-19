@@ -1,5 +1,5 @@
 mod example {
-    use bitflags::bitflags
+    use bitflags::bitflags;
 
     bitflags! {
         pub struct Flags1: u32 {
