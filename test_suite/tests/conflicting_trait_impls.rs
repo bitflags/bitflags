@@ -1,10 +1,9 @@
 #![no_std]
 
-#[macro_use]
-extern crate bitflags;
-
 #[allow(unused_imports)]
 use core::fmt::Display;
+
+use bitflags::bitflags;
 
 bitflags! {
     /// baz
