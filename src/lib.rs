@@ -454,7 +454,7 @@ macro_rules! __impl_bitflags {
                             f.write_str(" | ")?;
                         }
                         first = false;
-                        f.write_str(__bitflags_stringify!($Flag))?;
+                        f.write_str($crate::_core::stringify!($Flag))?;
                     }
                 )*
                 let extra_bits = self.bits & !Self::all().bits();
@@ -907,16 +907,6 @@ macro_rules! __impl_bitflags {
     ) => {
         $(#[$filtered])*
         const $($item)*
-    };
-}
-
-// Same as `std::stringify` but callable from `__impl_bitflags!`, which needs to use
-// `local_inner_macros`, so it can only directly call macros from this crate.
-#[macro_export]
-#[doc(hidden)]
-macro_rules! __bitflags_stringify {
-    ($s:ident) => {
-        $crate::_core::stringify!($s)
     };
 }
 
