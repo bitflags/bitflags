@@ -1205,7 +1205,7 @@ mod tests {
     #[test]
     fn test_set_ops_const() {
         // These just test that these compile and don't cause use-site panics
-        // (would be possible if we had some sort of UB), which is enoug
+        // (would be possible if we had some sort of UB)
         const INTERSECT: Flags = Flags::all().intersection(Flags::C);
         const UNION: Flags = Flags::A.union(Flags::C);
         const DIFFERENCE: Flags = Flags::all().difference(Flags::A);
