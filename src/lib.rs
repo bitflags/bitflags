@@ -258,7 +258,7 @@
 //! Users should generally avoid defining a flag with a value of zero.
 
 #![cfg_attr(not(test), no_std)]
-#![doc(html_root_url = "https://docs.rs/bitflags/1.2.1")]
+#![doc(html_root_url = "https://docs.rs/bitflags/1.3.0")]
 
 #[doc(hidden)]
 pub extern crate core as _core;
