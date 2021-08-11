@@ -342,7 +342,6 @@ macro_rules! bitflags {
         $($t:tt)*
     ) => {
         $(#[$outer])*
-        #[repr(transparent)]
         #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
         $vis struct $BitFlags {
             bits: $T,
