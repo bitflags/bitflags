@@ -254,9 +254,11 @@
 //!     assert!(none.is_empty());
 //! }
 //! ```
+//!
+//! Users should generally avoid defining a flag with a value of zero.
 
 #![cfg_attr(not(test), no_std)]
-#![doc(html_root_url = "https://docs.rs/bitflags/1.2.1")]
+#![doc(html_root_url = "https://docs.rs/bitflags/1.3.0")]
 
 #[doc(hidden)]
 pub extern crate core as _core;
@@ -1203,7 +1205,7 @@ mod tests {
     #[test]
     fn test_set_ops_const() {
         // These just test that these compile and don't cause use-site panics
-        // (would be possible if we had some sort of UB), which is enoug
+        // (would be possible if we had some sort of UB)
         const INTERSECT: Flags = Flags::all().intersection(Flags::C);
         const UNION: Flags = Flags::A.union(Flags::C);
         const DIFFERENCE: Flags = Flags::all().difference(Flags::A);
