@@ -28,6 +28,7 @@
 
 - Use `Self` and fix bug when overriding `stringify!` ([#249])
 
+[#187]: https://github.com/bitflags/bitflags/pull/187
 [#202]: https://github.com/bitflags/bitflags/pull/202
 [#206]: https://github.com/bitflags/bitflags/pull/206
 [#207]: https://github.com/bitflags/bitflags/pull/207
