@@ -1,6 +1,6 @@
 # 1.3.0
 
-- End empty doc comment with full stop ([#202])
+- End `empty` doc comment with full stop ([#202])
 
 - Fix typo in crate root docs ([#206])
 
