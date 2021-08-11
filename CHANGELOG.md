@@ -6,7 +6,7 @@
 
 - Document from_bits_unchecked unsafety ([#207])
 
-- Let `is_all()` ignore extra bits ([#211])
+- Let `is_all` ignore extra bits ([#211])
 
 - Allows empty flag definition ([#225])
 
