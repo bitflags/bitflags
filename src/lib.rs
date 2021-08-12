@@ -924,6 +924,7 @@ mod tests {
         #[doc = "> you are the easiest person to fool."]
         #[doc = "> "]
         #[doc = "> - Richard Feynman"]
+        #[derive(Default)]
         struct Flags: u32 {
             const A = 0b00000001;
             #[doc = "<pcwalton> macros are way better at generating code than trans is"]
@@ -1458,6 +1459,11 @@ mod tests {
         x = Flags::all();
         y = Flags::ABC;
         assert_eq!(hash(&x), hash(&y));
+    }
+
+    #[test]
+    fn test_default() {
+        assert_eq!(Flags::empty(), Flags::default());
     }
 
     #[test]
