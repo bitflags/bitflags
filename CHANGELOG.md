@@ -1,4 +1,10 @@
-# 1.3.0
+# 1.3.1
+
+- Revert unconditional `#[repr(transparent)]` ([#252])
+
+[#252]: https://github.com/bitflags/bitflags/pull/252
+
+# 1.3.0 (yanked)
 
 - Add `#[repr(transparent)]` ([#187])
 
