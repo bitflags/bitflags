@@ -1,16 +1,10 @@
-#![no_std]
-
-#[allow(unused_imports)]
-use core::fmt::Display;
-
 use bitflags::bitflags;
 
 bitflags! {
-    /// baz
+    #[derive(Clone, Copy)]
     struct Flags: u32 {
         const A = 0b00000001;
     }
 }
 
-#[test]
 fn main() {}

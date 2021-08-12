@@ -924,6 +924,7 @@ mod tests {
         #[doc = "> you are the easiest person to fool."]
         #[doc = "> "]
         #[doc = "> - Richard Feynman"]
+        #[derive(Default)]
         struct Flags: u32 {
             const A = 0b00000001;
             #[doc = "<pcwalton> macros are way better at generating code than trans is"]
@@ -1461,6 +1462,11 @@ mod tests {
     }
 
     #[test]
+    fn test_default() {
+        assert_eq!(Flags::empty(), Flags::default());
+    }
+
+    #[test]
     fn test_debug() {
         assert_eq!(format!("{:?}", Flags::A | Flags::B), "A | B");
         assert_eq!(format!("{:?}", Flags::empty()), "(empty)");
@@ -1637,5 +1643,67 @@ mod tests {
     #[test]
     fn test_empty_bitflags() {
         bitflags! {}
+    }
+
+    #[test]
+    fn test_u128_bitflags() {
+        bitflags! {
+            struct Flags128: u128 {
+                const A = 0x0000_0000_0000_0000_0000_0000_0000_0001;
+                const B = 0x0000_0000_0000_1000_0000_0000_0000_0000;
+                const C = 0x8000_0000_0000_0000_0000_0000_0000_0000;
+                const ABC = Self::A.bits | Self::B.bits | Self::C.bits;
+            }
+        }
+
+        assert_eq!(Flags128::ABC, Flags128::A | Flags128::B | Flags128::C);
+        assert_eq!(Flags128::A.bits, 0x0000_0000_0000_0000_0000_0000_0000_0001);
+        assert_eq!(Flags128::B.bits, 0x0000_0000_0000_1000_0000_0000_0000_0000);
+        assert_eq!(Flags128::C.bits, 0x8000_0000_0000_0000_0000_0000_0000_0000);
+        assert_eq!(
+            Flags128::ABC.bits,
+            0x8000_0000_0000_1000_0000_0000_0000_0001
+        );
+        assert_eq!(format!("{:?}", Flags128::A), "A");
+        assert_eq!(format!("{:?}", Flags128::B), "B");
+        assert_eq!(format!("{:?}", Flags128::C), "C");
+        assert_eq!(format!("{:?}", Flags128::ABC), "A | B | C | ABC");
+    }
+
+    #[test]
+    fn test_serde_bitflags_serialize() {
+        let flags = SerdeFlags::A | SerdeFlags::B;
+
+        let serialized = serde_json::to_string(&flags).unwrap();
+
+        assert_eq!(serialized, r#"{"bits":3}"#);
+    }
+
+    #[test]
+    fn test_serde_bitflags_deserialize() {
+        let deserialized: SerdeFlags = serde_json::from_str(r#"{"bits":12}"#).unwrap();
+
+        let expected = SerdeFlags::C | SerdeFlags::D;
+
+        assert_eq!(deserialized.bits, expected.bits);
+    }
+
+    #[test]
+    fn test_serde_bitflags_roundtrip() {
+        let flags = SerdeFlags::A | SerdeFlags::B;
+
+        let deserialized: SerdeFlags = serde_json::from_str(&serde_json::to_string(&flags).unwrap()).unwrap();
+
+        assert_eq!(deserialized.bits, flags.bits);
+    }
+
+    bitflags! {
+        #[derive(serde::Serialize, serde::Deserialize)]
+        struct SerdeFlags: u32 {
+            const A = 1;
+            const B = 2;
+            const C = 4;
+            const D = 8;
+        }
     }
 }
