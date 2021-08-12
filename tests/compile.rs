@@ -6,11 +6,17 @@ use std::{
 };
 
 #[test]
-fn compile_fail() {
+fn fail() {
     prepare_stderr_files("tests/compile-fail").unwrap();
 
     let t = trybuild::TestCases::new();
-    t.compile_fail("tests/compile-fail/*.rs");
+    t.compile_fail("tests/compile-fail/**/*.rs");
+}
+
+#[test]
+fn pass() {
+    let t = trybuild::TestCases::new();
+    t.pass("tests/compile-pass/**/*.rs");
 }
 
 // Compiler messages may change between versions

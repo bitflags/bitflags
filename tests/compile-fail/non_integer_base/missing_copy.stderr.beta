@@ -1,0 +1,25 @@
+error[E0601]: `main` function not found in crate `$CRATE`
+  --> $DIR/missing_copy.rs:1:1
+   |
+1  | / use bitflags::bitflags;
+2  | |
+3  | | struct MyInt(u8);
+4  | |
+...  |
+10 | |     }
+11 | | }
+   | |_^ consider adding a `main` function to `$DIR/tests\compile-fail\non_integer_base\missing_copy.rs`
+
+error[E0204]: the trait `Copy` may not be implemented for this type
+  --> $DIR/missing_copy.rs:5:1
+   |
+5  | / bitflags! {
+6  | |     struct Flags128: MyInt {
+7  | |         const A = MyInt(0b0000_0001);
+8  | |         const B = MyInt(0b0000_0010);
+9  | |         const C = MyInt(0b0000_0100);
+10 | |     }
+11 | | }
+   | |_^ this field does not implement `Copy`
+   |
+   = note: this error originates in the derive macro `Copy` (in Nightly builds, run with -Z macro-backtrace for more info)

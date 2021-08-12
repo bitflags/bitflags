@@ -15,6 +15,6 @@ bitflags! {
 }
 
 #[test]
-fn smoke() {
+fn basic() {
     assert_eq!(Flags::ABC, Flags::A | Flags::B | Flags::C);
 }
