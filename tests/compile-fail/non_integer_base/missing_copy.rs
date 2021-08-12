@@ -9,3 +9,5 @@ bitflags! {
         const C = MyInt(0b0000_0100);
     }
 }
+
+fn main() {}

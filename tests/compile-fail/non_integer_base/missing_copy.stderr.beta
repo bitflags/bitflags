@@ -1,15 +1,3 @@
-error[E0601]: `main` function not found in crate `$CRATE`
-  --> $DIR/missing_copy.rs:1:1
-   |
-1  | / use bitflags::bitflags;
-2  | |
-3  | | struct MyInt(u8);
-4  | |
-...  |
-10 | |     }
-11 | | }
-   | |_^ consider adding a `main` function to `$DIR/tests\compile-fail\non_integer_base\missing_copy.rs`
-
 error[E0204]: the trait `Copy` may not be implemented for this type
   --> $DIR/missing_copy.rs:5:1
    |

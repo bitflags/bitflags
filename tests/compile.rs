@@ -5,6 +5,8 @@ use std::{
     path::Path,
 };
 
+use walkdir::WalkDir;
+
 #[test]
 fn fail() {
     prepare_stderr_files("tests/compile-fail").unwrap();
@@ -28,7 +30,7 @@ fn pass() {
 // any `.stderr` files in the `compile-fail` directory, and copying `.stderr.beta` files
 // when we happen to be running on a beta compiler.
 fn prepare_stderr_files(path: impl AsRef<Path>) -> io::Result<()> {
-    for entry in fs::read_dir(path)? {
+    for entry in WalkDir::new(path) {
         let entry = entry?;
 
         if entry.path().extension().and_then(OsStr::to_str) == Some("beta") {
