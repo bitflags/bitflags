@@ -1,3 +1,9 @@
+# 1.3.2
+
+- Allow `non_snake_case` in generated flags types ([#256])
+
+[#252]: https://github.com/bitflags/bitflags/pull/256
+
 # 1.3.1
 
 - Revert unconditional `#[repr(transparent)]` ([#252])
