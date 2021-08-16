@@ -2,7 +2,7 @@
 
 - Allow `non_snake_case` in generated flags types ([#256])
 
-[#252]: https://github.com/bitflags/bitflags/pull/256
+[#256]: https://github.com/bitflags/bitflags/pull/256
 
 # 1.3.1
 
@@ -11,6 +11,8 @@
 [#252]: https://github.com/bitflags/bitflags/pull/252
 
 # 1.3.0 (yanked)
+
+**This release bumps the Minimum Supported Rust Version to `1.46.0`**
 
 - Add `#[repr(transparent)]` ([#187])
 
