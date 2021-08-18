@@ -27,6 +27,11 @@ and this to your source code:
 use bitflags::bitflags;
 ```
 
+Enable the `impl_arbitrary` feature to enable implementations of the
+[`Arbitrary`] trait for the generated structures.
+
+[`Arbitrary`]: https://docs.rs/arbitrary/1.0.1/arbitrary/trait.Arbitrary.html
+
 ## Rust Version Support
 
 The minimum supported Rust version is 1.46 due to use of associated constants and const functions.
