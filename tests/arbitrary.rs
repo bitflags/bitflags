@@ -1,4 +1,4 @@
-#![cfg(feature = "impl_arbitrary")]
+#![cfg(feature = "arbitrary")]
 
 use arbitrary::Arbitrary;
 

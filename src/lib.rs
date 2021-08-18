@@ -933,27 +933,35 @@ macro_rules! __impl_bitflags {
     };
 }
 
-// When "impl_arbitrary" is enabled, emit code to implement the `Arbitrary` trait.
-#[cfg(feature = "impl_arbitrary")]
+// When "arbitrary" is enabled, emit code to implement the `Arbitrary` trait.
+#[cfg(feature = "arbitrary")]
 #[macro_export]
 #[doc(hidden)]
 macro_rules! __impl_arbitrary_for_bitflags {
     ($BitFlags:ident) => {
-        impl<'a> ::arbitrary::Arbitrary<'a> for $BitFlags {
-            fn arbitrary(u: &mut ::arbitrary::Unstructured<'a>) -> ::arbitrary::Result<Self> {
-                 Self::from_bits(u.arbitrary()?).ok_or_else(|| ::arbitrary::Error::IncorrectFormat)
+        impl<'a> $crate::_arbitrary::Arbitrary<'a> for $BitFlags {
+            fn arbitrary(
+                u: &mut $crate::_arbitrary::Unstructured<'a>
+            ) -> $crate::_arbitrary::Result<Self> {
+                 Self::from_bits(u.arbitrary()?).ok_or_else(|| $crate::_arbitrary::Error::IncorrectFormat)
             }
         }
     };
 }
 
-// When "impl_arbitrary" is not enabled, don't emit any code for it.
-#[cfg(not(feature = "impl_arbitrary"))]
+// When "arbitrary" is not enabled, don't emit any code for it.
+#[cfg(not(feature = "arbitrary"))]
 #[macro_export]
 #[doc(hidden)]
 macro_rules! __impl_arbitrary_for_bitflags {
     ($BitFlags:ident) => {};
 }
+
+// Re-export `arbitrary` so that our macro expansions can refer to it by a
+// known name.
+#[cfg(feature = "arbitrary")]
+#[doc(hidden)]
+pub extern crate arbitrary as _arbitrary;
 
 #[cfg(feature = "example_generated")]
 pub mod example_generated;

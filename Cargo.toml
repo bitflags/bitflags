@@ -34,9 +34,8 @@ arbitrary = "1"
 
 [features]
 default = []
-example_generated = ["impl_arbitrary", "arbitrary"]
+example_generated = ["arbitrary"]
 rustc-dep-of-std = ["core", "compiler_builtins"]
-impl_arbitrary = []
 
 [package.metadata.docs.rs]
 features = ["example_generated"]

@@ -27,8 +27,8 @@ and this to your source code:
 use bitflags::bitflags;
 ```
 
-Enable the `impl_arbitrary` feature to enable implementations of the
-[`Arbitrary`] trait for the generated structures.
+Enable the `arbitrary` feature to enable implementations of the [`Arbitrary`]
+trait for the generated structures.
 
 [`Arbitrary`]: https://docs.rs/arbitrary/1.0.1/arbitrary/trait.Arbitrary.html
 
