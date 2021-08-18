@@ -933,9 +933,9 @@ macro_rules! __impl_bitflags {
     };
 }
 
-// When "arbitrary" is not enabled, emit code to implement the `Arbitrary` trait.
+// When "impl_arbitrary" is enabled, emit code to implement the `Arbitrary` trait.
 #[cfg(feature = "impl_arbitrary")]
-#[macro_export(local_inner_macros)]
+#[macro_export]
 #[doc(hidden)]
 macro_rules! __impl_arbitrary_for_bitflags {
     ($BitFlags:ident) => {
@@ -947,9 +947,9 @@ macro_rules! __impl_arbitrary_for_bitflags {
     };
 }
 
-// When "arbitrary" is not enabled, don't emit any code for it.
+// When "impl_arbitrary" is not enabled, don't emit any code for it.
 #[cfg(not(feature = "impl_arbitrary"))]
-#[macro_export(local_inner_macros)]
+#[macro_export]
 #[doc(hidden)]
 macro_rules! __impl_arbitrary_for_bitflags {
     ($BitFlags:ident) => {};
