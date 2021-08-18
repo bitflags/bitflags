@@ -939,9 +939,9 @@ macro_rules! __impl_bitflags {
 #[doc(hidden)]
 macro_rules! __impl_arbitrary_for_bitflags {
     ($BitFlags:ident) => {
-        impl<'a> arbitrary::Arbitrary<'a> for $BitFlags {
-            fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
-                 Self::from_bits(u.arbitrary()?).ok_or_else(|| arbitrary::Error::IncorrectFormat)
+        impl<'a> ::arbitrary::Arbitrary<'a> for $BitFlags {
+            fn arbitrary(u: &mut ::arbitrary::Unstructured<'a>) -> ::arbitrary::Result<Self> {
+                 Self::from_bits(u.arbitrary()?).ok_or_else(|| ::arbitrary::Error::IncorrectFormat)
             }
         }
     };
