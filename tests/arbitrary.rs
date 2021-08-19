@@ -11,7 +11,7 @@ bitflags::bitflags! {
 }
 
 #[test]
-fn test_arbitary() {
+fn test_arbitrary() {
     let mut unstructured = arbitrary::Unstructured::new(&[0_u8; 256]);
     let _color = Color::arbitrary(&mut unstructured);
 }
