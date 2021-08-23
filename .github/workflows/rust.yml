@@ -16,7 +16,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.32.0
+          - 1.46.0
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
@@ -54,28 +54,3 @@ jobs:
         with:
           command: build
           args: -Z avoid-dev-deps --features example_generated --target thumbv6m-none-eabi
-
-  suite:
-    name: Test suite
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        rust:
-          - nightly
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          override: true
-
-      - name: Default features
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: -p test_suite

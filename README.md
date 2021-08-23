@@ -18,16 +18,15 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-bitflags = "1.2"
+bitflags = "1.3"
 ```
 
-and this to your crate root:
+and this to your source code:
 
 ```rust
-#[macro_use]
-extern crate bitflags;
+use bitflags::bitflags;
 ```
 
 ## Rust Version Support
 
-The minimum supported Rust version is 1.20 due to use of associated constants.
+The minimum supported Rust version is 1.46 due to use of associated constants and const functions.
