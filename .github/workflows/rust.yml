@@ -32,7 +32,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --features example_generated
+          args: --features example_generated,arbitrary
 
   embedded:
     name: Build (embedded)
