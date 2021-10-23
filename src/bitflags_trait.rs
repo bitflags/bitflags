@@ -1,6 +1,9 @@
 use core as _core;
 
-pub trait BitFlags {
+#[doc(hidden)]
+pub trait ImplementedByBitFlagsMacro {}
+
+pub trait BitFlags: ImplementedByBitFlagsMacro {
     type Bits;
     /// Returns an empty set of flags.
     fn empty() -> Self;
