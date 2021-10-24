@@ -1,5 +1,3 @@
-use core as _core;
-
 #[doc(hidden)]
 pub trait ImplementedByBitFlagsMacro {}
 
