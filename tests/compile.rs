@@ -1,4 +1,5 @@
 use std::{
+    env,
     fs,
     ffi::OsStr,
     io,
@@ -12,7 +13,14 @@ fn fail() {
     prepare_stderr_files("tests/compile-fail").unwrap();
 
     let t = trybuild::TestCases::new();
+
     t.compile_fail("tests/compile-fail/**/*.rs");
+
+    // `trybuild` will run its tests on `drop`
+    // We want to get a chance to use its output first
+    drop(t);
+
+    overwrite_stderr_files("tests/compile-fail").unwrap();
 }
 
 #[test]
@@ -47,6 +55,43 @@ fn prepare_stderr_files(path: impl AsRef<Path>) -> io::Result<()> {
         }
     }
 
+    Ok(())
+}
+
+// If we want to overwrite the expected compiler output then rename it
+// to use our `.stderr.beta` convention. Otherwise the renamed file won't
+// actually get picked up on the next run
+fn overwrite_stderr_files(path: impl AsRef<Path>) -> io::Result<()> {
+    if env::var("TRYBUILD").ok().filter(|o| o == "overwrite").is_some() {
+        for entry in WalkDir::new(path) {
+            let entry = entry?;
+    
+            // Look for any `.stderr` files and rename them to `.stderr.beta`
+            // If there's an existing `.beta` file then we want to remove it
+            if entry.path().extension().and_then(OsStr::to_str) == Some("stderr") {
+                let renamed = entry.path().with_extension("stderr.beta");
+
+                if renamed.exists() {
+                    remove_beta_stderr(&renamed)?;
+                }
+    
+                rename_beta_stderr(entry.path(), renamed)?;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+#[rustversion::beta]
+fn remove_beta_stderr(path: impl AsRef<Path>) -> io::Result<()> {
+    fs::remove_file(path)?;
+
+    Ok(())
+}
+
+#[rustversion::not(beta)]
+fn remove_beta_stderr(_: impl AsRef<Path>) -> io::Result<()> {
     Ok(())
 }
 
