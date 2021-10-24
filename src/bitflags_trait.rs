@@ -3,10 +3,9 @@ use core as _core;
 #[doc(hidden)]
 pub trait ImplementedByBitFlagsMacro {}
 
-/// A flags enum.
-/// 
-/// Manual implementations of this trait are not supported.
-/// It should only be automatically implemented through the `bitflags!` macro.
+/// A trait that is automatically implemented for all bitflags.
+///
+/// It should not be implemented manually.
 pub trait BitFlags: ImplementedByBitFlagsMacro {
     type Bits;
     /// Returns an empty set of flags.
