@@ -14,7 +14,7 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     fn bits(&self) -> Self::Bits;
     /// Convert from underlying bit representation, unless that
     /// representation contains bits that do not correspond to a flag.
-    fn from_bits(bits: Self::Bits) -> _core::option::Option<Self>
+    fn from_bits(bits: Self::Bits) -> Option<Self>
     where Self: Sized;
     /// Convert from underlying bit representation, dropping any bits
     /// that do not correspond to flags.
