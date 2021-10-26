@@ -286,6 +286,11 @@ pub use bitflags_trait::BitFlags;
 
 mod bitflags_trait;
 
+#[doc(hidden)]
+pub mod __private {
+    pub use crate::bitflags_trait::ImplementedByBitFlagsMacro;
+}
+
 /// The macro used to generate the flag structure.
 ///
 /// See the [crate level docs](../bitflags/index.html) for complete documentation.
@@ -885,6 +890,8 @@ macro_rules! __impl_bitflags {
                 $BitFlags::set(self, other, value)
             }
         }
+
+        impl $crate::__private::ImplementedByBitFlagsMacro for $BitFlags {}
     };
 
     // Every attribute that the user writes on a const is applied to the

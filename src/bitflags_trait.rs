@@ -1,6 +1,10 @@
-use core as _core;
+#[doc(hidden)]
+pub trait ImplementedByBitFlagsMacro {}
 
-pub trait BitFlags {
+/// A trait that is automatically implemented for all bitflags.
+///
+/// It should not be implemented manually.
+pub trait BitFlags: ImplementedByBitFlagsMacro {
     type Bits;
     /// Returns an empty set of flags.
     fn empty() -> Self;
@@ -10,7 +14,7 @@ pub trait BitFlags {
     fn bits(&self) -> Self::Bits;
     /// Convert from underlying bit representation, unless that
     /// representation contains bits that do not correspond to a flag.
-    fn from_bits(bits: Self::Bits) -> _core::option::Option<Self>
+    fn from_bits(bits: Self::Bits) -> Option<Self>
     where Self: Sized;
     /// Convert from underlying bit representation, dropping any bits
     /// that do not correspond to flags.

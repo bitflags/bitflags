@@ -10,7 +10,7 @@ error[E0308]: mismatched types
 121 | | }
     | |_^ expected struct `MyInt`, found integer
     |
-    = note: this error originates in the macro `__impl_all_bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+    = note: this error originates in the macro `__impl_bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0308]: mismatched types
    --> $DIR/all_defined.rs:115:1
@@ -24,4 +24,4 @@ error[E0308]: mismatched types
 121 | | }
     | |_^ expected struct `MyInt`, found integer
     |
-    = note: this error originates in the macro `__impl_bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+    = note: this error originates in the macro `__impl_all_bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
