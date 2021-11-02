@@ -374,7 +374,6 @@ macro_rules! bitflags {
         $($t:tt)*
     ) => {
         $(#[$outer])*
-        #[derive(Copy, PartialEq, Eq, Clone, PartialOrd, Ord, Hash)]
         $vis struct $BitFlags(<Self as $crate::__private::BitFlagsField>::Field);
 
         const _: () = {
