@@ -6,6 +6,7 @@ pub trait ImplementedByBitFlagsMacro {}
 /// It should not be implemented manually.
 pub trait BitFlags: ImplementedByBitFlagsMacro {
     type Bits;
+
     /// Returns an empty set of flags.
     fn empty() -> Self;
     /// Returns the set containing all flags.
@@ -21,16 +22,7 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     fn from_bits_truncate(bits: Self::Bits) -> Self;
     /// Convert from underlying bit representation, preserving all
     /// bits (even those not corresponding to a defined flag).
-    ///
-    /// # Safety
-    ///
-    /// The caller of the `bitflags!` macro can chose to allow or
-    /// disallow extra bits for their bitflags type.
-    ///
-    /// The caller of `from_bits_unchecked()` has to ensure that
-    /// all bits correspond to a defined flag or that extra bits
-    /// are valid for this bitflags type.
-    unsafe fn from_bits_unchecked(bits: Self::Bits) -> Self;
+    fn from_bits_preserve(bits: Self::Bits) -> Self;
     /// Returns `true` if no flags are currently stored.
     fn is_empty(&self) -> bool;
     /// Returns `true` if all flags are currently set.
