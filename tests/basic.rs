@@ -3,14 +3,20 @@
 use bitflags::bitflags;
 
 bitflags! {
-    /// baz
+    /// A set of flags.
+    #[derive(Debug, PartialEq)]
     struct Flags: u32 {
+        /// A flag for the first bit.
         const A = 0b00000001;
-        #[doc = "bar"]
+        
+        /// A flag for the second bit.
         const B = 0b00000010;
+
+        /// A flag for the third bit.
         const C = 0b00000100;
-        #[doc = "foo"]
-        const ABC = Flags::A.bits | Flags::B.bits | Flags::C.bits;
+        
+        /// A combination of `A`, `B`, and `C`.
+        const ABC = Flags::A.bits() | Flags::B.bits() | Flags::C.bits();
     }
 }
 
