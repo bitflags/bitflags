@@ -623,6 +623,12 @@ macro_rules! __impl_bitflags {
                 &mut self.0
             }
 
+            /// Convert from a bitflags-defined field.
+            #[inline]
+            const fn from_bit_field(field: InternalBitField) -> Self {
+                Self(field)
+            }
+
             /// Convert from underlying bit representation, unless that
             /// representation contains bits that do not correspond to a flag.
             #[inline]
