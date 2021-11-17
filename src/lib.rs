@@ -205,7 +205,7 @@
 //!
 //! impl Borrow<u32> for Flags {
 //!     fn borrow(&self) -> &u32 {
-//!         self.bits_ref()
+//!         self.as_bits()
 //!     }
 //! }
 //! ```
@@ -402,7 +402,7 @@ macro_rules! bitflags {
         $($t:tt)*
     ) => {
         $(#[$outer])*
-        $vis struct $BitFlags(<Self as $crate::_private::BitFlagsField>::Field);
+        $vis struct $BitFlags(#[deprecated(note = "accessing the internal field directly is deprecated. Use the `bits()` / `as_bits()` methods for the raw bits value or the private `bit_field()` / `as_bit_field()` / `as_bit_field_mut()` for bitflags-specific trait implementations.")] <Self as $crate::_private::BitFlagsField>::Field);
 
         const _: () = {
             __impl_bitflags! {
@@ -420,83 +420,6 @@ macro_rules! bitflags {
         }
     };
     () => {};
-}
-
-// A helper macro to implement the `all` function.
-#[macro_export(local_inner_macros)]
-#[doc(hidden)]
-macro_rules! __impl_all_bitflags {
-    (
-        $BitFlags:ident: $T:ty {
-            $(
-                $(#[$attr:ident $($args:tt)*])*
-                $Flag:ident = $value:expr;
-            )+
-        }
-    ) => {
-        // See `Debug::fmt` for why this approach is taken.
-        #[allow(non_snake_case)]
-        trait __BitFlags {
-            $(
-                const $Flag: $T = 0;
-            )+
-        }
-        #[allow(non_snake_case)]
-        impl __BitFlags for $BitFlags {
-            $(
-                __impl_bitflags! {
-                    #[allow(deprecated)]
-                    $(? #[$attr $($args)*])*
-                    const $Flag: $T = Self::$Flag.bits();
-                }
-            )+
-        }
-
-        Self::from_bits_preserve($(<Self as __BitFlags>::$Flag)|+)
-    };
-    (
-        $BitFlags:ident: $T:ty { }
-    ) => {
-        Self::from_bits_preserve(0)
-    };
-}
-
-// A helper macro to implement `serde` traits.
-#[doc(hidden)]
-#[macro_export]
-#[cfg(feature = "serde")]
-macro_rules! __impl_serde_bitflags {
-    (
-        $Field:ident: $T:ty
-    ) => {
-        impl $crate::_serde::Serialize for $Field {
-            fn serialize<S>(&self, serializer: S) -> $crate::_core::result::Result<S::Ok, S::Error>
-            where
-                S: $crate::_serde::Serializer,
-            {
-                self.0.serialize(serializer)
-            }
-        }
-
-        impl<'de> $crate::_serde::Deserialize<'de> for $Field {
-            fn deserialize<D>(deserializer: D) -> $crate::_core::result::Result<$Field, D::Error>
-            where
-                D: $crate::_serde::Deserializer<'de>,
-            {
-                let bits = $T::deserialize(deserializer)?;
-
-                Ok($Field(bits))
-            }
-        }
-    };
-}
-#[doc(hidden)]
-#[macro_export]
-#[cfg(not(feature = "serde"))]
-macro_rules! __impl_serde_bitflags {
-    (
-        $Field:ident: $T:ty
-    ) => { };
 }
 
 #[macro_export(local_inner_macros)]
@@ -619,29 +542,29 @@ macro_rules! __impl_bitflags {
 
         impl $crate::_core::fmt::Binary for $BitFlags {
             fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
-                $crate::_core::fmt::Binary::fmt(&self.0, f)
+                $crate::_core::fmt::Binary::fmt(self.as_bit_field(), f)
             }
         }
 
         impl $crate::_core::fmt::Octal for $BitFlags {
             fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
-                $crate::_core::fmt::Octal::fmt(&self.0, f)
+                $crate::_core::fmt::Octal::fmt(self.as_bit_field(), f)
             }
         }
 
         impl $crate::_core::fmt::LowerHex for $BitFlags {
             fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
-                $crate::_core::fmt::LowerHex::fmt(&self.0, f)
+                $crate::_core::fmt::LowerHex::fmt(self.as_bit_field(), f)
             }
         }
 
         impl $crate::_core::fmt::UpperHex for $BitFlags {
             fn fmt(&self, f: &mut $crate::_core::fmt::Formatter) -> $crate::_core::fmt::Result {
-                $crate::_core::fmt::UpperHex::fmt(&self.0, f)
+                $crate::_core::fmt::UpperHex::fmt(self.as_bit_field(), f)
             }
         }
 
-        #[allow(dead_code)]
+        #[allow(dead_code, deprecated)]
         impl $BitFlags {
             $(
                 $(#[$attr $($args)*])*
@@ -670,13 +593,34 @@ macro_rules! __impl_bitflags {
             /// Returns the raw value of the flags currently stored.
             #[inline]
             pub const fn bits(&self) -> $T {
-                (self.0).0
+                self.bit_field().0
             }
 
             /// Returns a reference to the raw value of the flags currently stored.
             #[inline]
-            pub const fn bits_ref(&self) -> &$T {
-                &(self.0).0
+            pub const fn as_bits(&self) -> &$T {
+                &self.as_bit_field().0
+            }
+
+            /// Returns the internal bitflags-defined field.
+            #[inline]
+            const fn bit_field(&self) -> InternalBitField {
+                #[allow(deprecated)]
+                self.0
+            }
+
+            /// Returns a reference to the bitflags-defined field.
+            #[inline]
+            const fn as_bit_field(&self) -> &InternalBitField {
+                #[allow(deprecated)]
+                &self.0
+            }
+
+            /// Returns a mutable reference to the bitflags-defined field.
+            #[inline]
+            fn as_bit_field_mut(&mut self) -> &mut InternalBitField {
+                #[allow(deprecated)]
+                &mut self.0
             }
 
             /// Convert from underlying bit representation, unless that
@@ -740,19 +684,19 @@ macro_rules! __impl_bitflags {
             /// Inserts the specified flags in-place.
             #[inline]
             pub fn insert(&mut self, other: Self) {
-                (self.0).0 |= other.bits();
+                self.as_bit_field_mut().0 |= other.bits();
             }
 
             /// Removes the specified flags in-place.
             #[inline]
             pub fn remove(&mut self, other: Self) {
-                (self.0).0 &= !other.bits();
+                self.as_bit_field_mut().0 &= !other.bits();
             }
 
             /// Toggles the specified flags in-place.
             #[inline]
             pub fn toggle(&mut self, other: Self) {
-                (self.0).0 ^= other.bits();
+                self.as_bit_field_mut().0 ^= other.bits();
             }
 
             /// Inserts or removes the specified flags depending on the passed value.
@@ -870,7 +814,7 @@ macro_rules! __impl_bitflags {
             /// Adds the set of flags.
             #[inline]
             fn bitor_assign(&mut self, other: Self) {
-                (self.0).0 |= other.bits();
+                self.as_bit_field_mut().0 |= other.bits();
             }
         }
 
@@ -888,7 +832,7 @@ macro_rules! __impl_bitflags {
             /// Toggles the set of flags.
             #[inline]
             fn bitxor_assign(&mut self, other: Self) {
-                (self.0).0 ^= other.bits();
+                self.as_bit_field_mut().0 ^= other.bits();
             }
         }
 
@@ -906,7 +850,7 @@ macro_rules! __impl_bitflags {
             /// Disables all flags disabled in the set.
             #[inline]
             fn bitand_assign(&mut self, other: Self) {
-                (self.0).0 &= other.bits();
+                self.as_bit_field_mut().0 &= other.bits();
             }
         }
 
@@ -924,7 +868,7 @@ macro_rules! __impl_bitflags {
             /// Disables all flags enabled in the set.
             #[inline]
             fn sub_assign(&mut self, other: Self) {
-                (self.0).0 &= !other.bits();
+                self.as_bit_field_mut().0 &= !other.bits();
             }
         }
 
@@ -1124,6 +1068,83 @@ macro_rules! __impl_bitflags {
         $(#[$filtered])*
         const $($item)*
     };
+}
+
+// A helper macro to implement the `all` function.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! __impl_all_bitflags {
+    (
+        $BitFlags:ident: $T:ty {
+            $(
+                $(#[$attr:ident $($args:tt)*])*
+                $Flag:ident = $value:expr;
+            )+
+        }
+    ) => {
+        // See `Debug::fmt` for why this approach is taken.
+        #[allow(non_snake_case)]
+        trait __BitFlags {
+            $(
+                const $Flag: $T = 0;
+            )+
+        }
+        #[allow(non_snake_case)]
+        impl __BitFlags for $BitFlags {
+            $(
+                __impl_bitflags! {
+                    #[allow(deprecated)]
+                    $(? #[$attr $($args)*])*
+                    const $Flag: $T = Self::$Flag.bits();
+                }
+            )+
+        }
+
+        Self::from_bits_preserve($(<Self as __BitFlags>::$Flag)|+)
+    };
+    (
+        $BitFlags:ident: $T:ty { }
+    ) => {
+        Self::from_bits_preserve(0)
+    };
+}
+
+// A helper macro to implement `serde` traits.
+#[doc(hidden)]
+#[macro_export]
+#[cfg(feature = "serde")]
+macro_rules! __impl_serde_bitflags {
+    (
+        $Field:ident: $T:ty
+    ) => {
+        impl $crate::_serde::Serialize for $Field {
+            fn serialize<S>(&self, serializer: S) -> $crate::_core::result::Result<S::Ok, S::Error>
+            where
+                S: $crate::_serde::Serializer,
+            {
+                self.0.serialize(serializer)
+            }
+        }
+
+        impl<'de> $crate::_serde::Deserialize<'de> for $Field {
+            fn deserialize<D>(deserializer: D) -> $crate::_core::result::Result<$Field, D::Error>
+            where
+                D: $crate::_serde::Deserializer<'de>,
+            {
+                let bits = $T::deserialize(deserializer)?;
+
+                Ok($Field(bits))
+            }
+        }
+    };
+}
+#[doc(hidden)]
+#[macro_export]
+#[cfg(not(feature = "serde"))]
+macro_rules! __impl_serde_bitflags {
+    (
+        $Field:ident: $T:ty
+    ) => { };
 }
 
 #[cfg(feature = "example_generated")]
