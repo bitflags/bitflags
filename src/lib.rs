@@ -500,7 +500,7 @@ macro_rules! __impl_bitflags {
                 if first {
                     f.write_str("(empty)")?;
                 }
-                Ok(())
+                $crate::_core::fmt::Result::Ok(())
             }
         }
         impl $crate::_core::fmt::Binary for $BitFlags {
