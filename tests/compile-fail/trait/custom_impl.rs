@@ -62,4 +62,4 @@ impl BitFlags for BootlegFlags {
     }
 }
 
-fn main() { }
+fn main() {}

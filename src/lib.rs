@@ -494,8 +494,7 @@ macro_rules! __impl_bitflags {
                         f.write_str(" | ")?;
                     }
                     first = false;
-                    f.write_str("0x")?;
-                    $crate::_core::fmt::LowerHex::fmt(&extra_bits, f)?;
+                    $crate::_core::write!(f, "{:#x}", extra_bits)?;
                 }
                 if first {
                     f.write_str("(empty)")?;
