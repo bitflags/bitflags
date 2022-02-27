@@ -578,7 +578,7 @@ macro_rules! __impl_bitflags {
             ///
             /// # Safety
             ///
-            /// The caller of the `bitflags!` macro can chose to allow or
+            /// The caller of the `bitflags!` macro can choose to allow or
             /// disallow extra bits for their bitflags type.
             ///
             /// The caller of `from_bits_unchecked()` has to ensure that
