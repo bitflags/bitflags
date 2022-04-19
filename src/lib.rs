@@ -730,6 +730,50 @@ macro_rules! __impl_bitflags {
                 Self::from_bits_truncate(!self.bits)
             }
 
+            /// Returns an iterator over all the flags in this set.
+            pub fn iter(mut self) -> impl Iterator<Item = Self> {
+                let mut options = [
+                    $(
+                        #[allow(unused_doc_comments, unused_attributes)]
+                        $(#[$attr $($args)*])*
+                        Self::$Flag,
+                    )*
+                ];
+                const NUM_FLAGS: usize = {
+                    #[allow(unused_mut)]
+                    let mut num_flags = 0;
+
+                    $(
+                        #[allow(unused_doc_comments, unused_attributes)]
+                        $(#[$attr $($args)*])*
+                        {
+                            num_flags += 1;
+                        }
+                    )*
+
+                    num_flags
+                };
+                let mut len = NUM_FLAGS;
+
+                $crate::_core::iter::from_fn(move || {
+                    if self.is_empty() || NUM_FLAGS == 0 || len == 0 {
+                        None
+                    }else{
+                        for pos in 0..len {
+                            let flag = options[pos];
+                            len -= 1;
+                            options.swap(pos, len);
+                            if self.contains(flag) {
+                                self.remove(flag);
+                                return Some(flag)
+                            }
+                        }
+
+                        None
+                    }
+                })
+            }
+
         }
 
         impl $crate::_core::ops::BitOr for $BitFlags {
