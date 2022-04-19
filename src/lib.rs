@@ -1789,7 +1789,7 @@ mod tests {
     }
 
     bitflags! {
-        #[derive(serde::Serialize, serde::Deserialize)]
+        #[derive(serde_derive::Serialize, serde_derive::Deserialize)]
         struct SerdeFlags: u32 {
             const A = 1;
             const B = 2;
