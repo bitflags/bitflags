@@ -1820,8 +1820,6 @@ mod tests {
             const D = 8;
         }
     }
-}
-
 
     #[test]
     fn test_from_bits_edge_cases() {
