@@ -1,7 +1,6 @@
 #![no_std]
 
-#[macro_use]
-extern crate bitflags;
+use bitflags::bitflags;
 
 bitflags! {
     /// baz
@@ -16,6 +15,6 @@ bitflags! {
 }
 
 #[test]
-fn smoke() {
+fn basic() {
     assert_eq!(Flags::ABC, Flags::A | Flags::B | Flags::C);
 }
