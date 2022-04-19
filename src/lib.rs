@@ -559,18 +559,41 @@ macro_rules! __impl_bitflags {
             /// representation contains bits that do not correspond to a flag.
             #[inline]
             pub const fn from_bits(bits: $T) -> $crate::_core::option::Option<Self> {
-                if (bits & !Self::all().bits()) == 0 {
-                    $crate::_core::option::Option::Some(Self { bits })
-                } else {
-                    $crate::_core::option::Option::None
+                if bits == 0 {
+                    return Some(Self{ bits })
                 }
+
+                $(
+                    #[allow(unused_doc_comments, unused_attributes)]
+                    $(#[$attr $($args)*])*
+                    if bits & Self::$Flag.bits == Self::$Flag.bits {
+                        return Some(Self{ bits })
+                    }
+                )*
+
+                None
             }
 
             /// Convert from underlying bit representation, dropping any bits
             /// that do not correspond to flags.
             #[inline]
             pub const fn from_bits_truncate(bits: $T) -> Self {
-                Self { bits: bits & Self::all().bits }
+                if bits == 0 {
+                    return Self{ bits }
+                }
+
+                #[allow(unused_mut)]
+                let mut truncated = 0;
+
+                $(
+                    #[allow(unused_doc_comments, unused_attributes)]
+                    $(#[$attr $($args)*])*
+                    if bits & Self::$Flag.bits == Self::$Flag.bits {
+                        truncated |= Self::$Flag.bits
+                    }
+                )*
+
+                Self { bits: truncated }
             }
 
             /// Convert from underlying bit representation, preserving all
@@ -1796,5 +1819,35 @@ mod tests {
             const C = 4;
             const D = 8;
         }
+    }
+}
+
+
+    #[test]
+    fn test_from_bits_edge_cases() {
+        bitflags! {
+            struct Flags: u8 {
+                const A = 0b00000001;
+                const BC = 0b00000110;
+            }
+        }
+
+
+        let flags = Flags::from_bits(0b00000100);
+        assert!(flags.is_none());
+    }
+
+    #[test]
+    fn test_from_bits_truncate_edge_cases() {
+        bitflags! {
+            struct Flags: u8 {
+                const A = 0b00000001;
+                const BC = 0b00000110;
+            }
+        }
+
+
+        let flags = Flags::from_bits_truncate(0b00000100);
+        assert!(flags.is_empty());
     }
 }
