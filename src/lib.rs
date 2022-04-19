@@ -753,6 +753,17 @@ macro_rules! __impl_bitflags {
                 Self::from_bits_truncate(!self.bits)
             }
 
+
+            /// Returns an iterator over all the flags in this set.
+            pub const fn iter(self) -> $crate::Iter<Self, { <Self as $crate::BitFlags>::NUM_FLAGS }> {
+                $crate::Iter::new(self, [
+                    $(
+                        #[allow(unused_doc_comments, unused_attributes)]
+                        $(#[$attr $($args)*])*
+                        Self::$Flag,
+                    )*
+                ])
+            }
         }
 
         impl $crate::_core::ops::BitOr for $BitFlags {
@@ -855,6 +866,20 @@ macro_rules! __impl_bitflags {
 
         impl $crate::BitFlags for $BitFlags {
             type Bits = $T;
+            const NUM_FLAGS: usize = {
+                #[allow(unused_mut)]
+                let mut num_flags = 0;
+
+                $(
+                    #[allow(unused_doc_comments, unused_attributes)]
+                    $(#[$attr $($args)*])*
+                    {
+                        num_flags += 1;
+                    }
+                )*
+
+                num_flags
+            };
 
             fn empty() -> Self {
                 $BitFlags::empty()
@@ -1023,6 +1048,39 @@ macro_rules! __impl_bitflags {
         $(#[$filtered])*
         const $($item)*
     };
+}
+
+pub struct Iter<T, const LEN: usize> {
+    bitflags: T,
+    possible: [T;LEN],
+    len: usize,
+}
+
+impl<T, const LEN: usize> Iter<T, LEN> {
+    pub const fn new(bitflags: T, possible: [T;LEN]) -> Iter<T,LEN> {
+        Iter{ bitflags, possible, len: LEN }
+    }
+}
+
+impl<T: BitFlags + Copy, const LEN: usize> Iterator for Iter<T, LEN>  {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        if self.bitflags.is_empty() || LEN == 0 || self.len == 0 {
+            None
+        }else{
+            for (pos, flag) in self.possible.iter().copied().take(self.len).enumerate() {
+                if self.bitflags.contains(flag) {
+                    self.bitflags.remove(flag);
+                    self.len -= 1;
+                    self.possible.swap(pos, self.len);
+                    return Some(flag)
+                }
+            }
+
+            None
+        }
+    }
 }
 
 #[cfg(feature = "example_generated")]
@@ -1820,8 +1878,53 @@ mod tests {
             const D = 8;
         }
     }
-}
 
+    #[test]
+    fn test_iter() {
+        bitflags! {
+            struct Flags: u32 {
+                const ONE  = 0b001;
+                const TWO  = 0b010;
+                const THREE = 0b100;
+            }
+        }
+
+        let flags = Flags::all();
+        assert_eq!(flags.iter().count(), 3);
+        let mut iter = flags.iter();
+        assert_eq!(iter.next().unwrap(), Flags::ONE);
+        assert_eq!(iter.next().unwrap(), Flags::THREE);
+        assert_eq!(iter.next().unwrap(), Flags::TWO);
+        assert_eq!(iter.next(), None);
+
+        let flags = Flags::empty();
+        assert_eq!(flags.iter().count(), 0);
+
+        let flags = Flags::ONE | Flags::THREE;
+        assert_eq!(flags.iter().count(), 2);
+        let mut iter = flags.iter();
+        assert_eq!(iter.next().unwrap(), Flags::ONE);
+        assert_eq!(iter.next().unwrap(), Flags::THREE);
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn test_iter_edge_cases() {
+        bitflags! {
+            struct Flags: u8 {
+                const A = 0b00000001;
+                const BC = 0b00000110;
+            }
+        }
+
+
+        let flags = Flags::all();
+        assert_eq!(flags.iter().count(), 2);
+        let mut iter = flags.iter();
+        assert_eq!(iter.next().unwrap(), Flags::A);
+        assert_eq!(iter.next().unwrap(), Flags::BC);
+        assert_eq!(iter.next(), None);
+    }
 
     #[test]
     fn test_from_bits_edge_cases() {

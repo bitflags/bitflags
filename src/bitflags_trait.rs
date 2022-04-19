@@ -6,6 +6,8 @@ pub trait ImplementedByBitFlagsMacro {}
 /// It should not be implemented manually.
 pub trait BitFlags: ImplementedByBitFlagsMacro {
     type Bits;
+    const NUM_FLAGS: usize;
+
     /// Returns an empty set of flags.
     fn empty() -> Self;
     /// Returns the set containing all flags.
