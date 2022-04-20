@@ -753,16 +753,15 @@ macro_rules! __impl_bitflags {
 
                     num_flags
                 };
-                let mut len = NUM_FLAGS;
+                let mut start = 0;
 
                 $crate::_core::iter::from_fn(move || {
-                    if self.is_empty() || NUM_FLAGS == 0 || len == 0 {
+                    if self.is_empty() || NUM_FLAGS == 0 || start == NUM_FLAGS {
                         None
                     }else{
-                        for pos in 0..len {
+                        for pos in start..NUM_FLAGS {
                             let flag = options[pos];
-                            len -= 1;
-                            options.swap(pos, len);
+                            start += 1;
                             if self.contains(flag) {
                                 self.remove(flag);
                                 return Some(flag)
@@ -1856,8 +1855,8 @@ mod tests {
         assert_eq!(flags.iter().count(), 3);
         let mut iter = flags.iter();
         assert_eq!(iter.next().unwrap(), Flags::ONE);
-        assert_eq!(iter.next().unwrap(), Flags::THREE);
         assert_eq!(iter.next().unwrap(), Flags::TWO);
+        assert_eq!(iter.next().unwrap(), Flags::THREE);
         assert_eq!(iter.next(), None);
 
         let flags = Flags::empty();
