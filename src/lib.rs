@@ -1841,4 +1841,51 @@ mod tests {
             const D = 8;
         }
     }
+
+    #[test]
+    fn test_iter() {
+        bitflags! {
+            struct Flags: u32 {
+                const ONE  = 0b001;
+                const TWO  = 0b010;
+                const THREE = 0b100;
+            }
+        }
+
+        let flags = Flags::all();
+        assert_eq!(flags.iter().count(), 3);
+        let mut iter = flags.iter();
+        assert_eq!(iter.next().unwrap(), Flags::ONE);
+        assert_eq!(iter.next().unwrap(), Flags::THREE);
+        assert_eq!(iter.next().unwrap(), Flags::TWO);
+        assert_eq!(iter.next(), None);
+
+        let flags = Flags::empty();
+        assert_eq!(flags.iter().count(), 0);
+
+        let flags = Flags::ONE | Flags::THREE;
+        assert_eq!(flags.iter().count(), 2);
+        let mut iter = flags.iter();
+        assert_eq!(iter.next().unwrap(), Flags::ONE);
+        assert_eq!(iter.next().unwrap(), Flags::THREE);
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn test_iter_edge_cases() {
+        bitflags! {
+            struct Flags: u8 {
+                const A = 0b00000001;
+                const BC = 0b00000110;
+            }
+        }
+
+
+        let flags = Flags::all();
+        assert_eq!(flags.iter().count(), 2);
+        let mut iter = flags.iter();
+        assert_eq!(iter.next().unwrap(), Flags::A);
+        assert_eq!(iter.next().unwrap(), Flags::BC);
+        assert_eq!(iter.next(), None);
+    }
 }
