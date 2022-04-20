@@ -759,8 +759,7 @@ macro_rules! __impl_bitflags {
                     if self.is_empty() || NUM_FLAGS == 0 {
                         None
                     }else{
-                        for pos in start..NUM_FLAGS {
-                            let flag = OPTIONS[pos];
+                        for flag in OPTIONS[start..NUM_FLAGS].iter().copied() {
                             start += 1;
                             if self.contains(flag) {
                                 self.remove(flag);
