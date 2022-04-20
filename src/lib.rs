@@ -732,7 +732,7 @@ macro_rules! __impl_bitflags {
 
             /// Returns an iterator over all the flags in this set.
             pub fn iter(mut self) -> impl Iterator<Item = Self> {
-                let mut options = [
+                let options = [
                     $(
                         #[allow(unused_doc_comments, unused_attributes)]
                         $(#[$attr $($args)*])*
