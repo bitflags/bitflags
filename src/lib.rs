@@ -756,7 +756,7 @@ macro_rules! __impl_bitflags {
                 let mut start = 0;
 
                 $crate::_core::iter::from_fn(move || {
-                    if self.is_empty() || NUM_FLAGS == 0 || start == NUM_FLAGS {
+                    if self.is_empty() || NUM_FLAGS == 0 {
                         None
                     }else{
                         for pos in start..NUM_FLAGS {
