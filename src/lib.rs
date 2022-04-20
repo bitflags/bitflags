@@ -732,13 +732,6 @@ macro_rules! __impl_bitflags {
 
             /// Returns an iterator over all the flags in this set.
             pub fn iter(mut self) -> impl Iterator<Item = Self> {
-                let options = [
-                    $(
-                        #[allow(unused_doc_comments, unused_attributes)]
-                        $(#[$attr $($args)*])*
-                        Self::$Flag,
-                    )*
-                ];
                 const NUM_FLAGS: usize = {
                     #[allow(unused_mut)]
                     let mut num_flags = 0;
@@ -753,6 +746,13 @@ macro_rules! __impl_bitflags {
 
                     num_flags
                 };
+                const OPTIONS: [$BitFlags; NUM_FLAGS] = [
+                    $(
+                        #[allow(unused_doc_comments, unused_attributes)]
+                        $(#[$attr $($args)*])*
+                        $BitFlags::$Flag,
+                    )*
+                ];
                 let mut start = 0;
 
                 $crate::_core::iter::from_fn(move || {
@@ -760,7 +760,7 @@ macro_rules! __impl_bitflags {
                         None
                     }else{
                         for pos in start..NUM_FLAGS {
-                            let flag = options[pos];
+                            let flag = OPTIONS[pos];
                             start += 1;
                             if self.contains(flag) {
                                 self.remove(flag);
