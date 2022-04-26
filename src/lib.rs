@@ -559,19 +559,12 @@ macro_rules! __impl_bitflags {
             /// representation contains bits that do not correspond to a flag.
             #[inline]
             pub const fn from_bits(bits: $T) -> $crate::_core::option::Option<Self> {
-                if bits == 0 {
-                    return Some(Self{ bits })
+                let truncated = Self::from_bits_truncate(bits).bits;
+                if truncated == bits {
+                    Some(Self{ bits })
+                } else {
+                    None
                 }
-
-                $(
-                    #[allow(unused_doc_comments, unused_attributes)]
-                    $(#[$attr $($args)*])*
-                    if bits & Self::$Flag.bits == Self::$Flag.bits {
-                        return Some(Self{ bits })
-                    }
-                )*
-
-                None
             }
 
             /// Convert from underlying bit representation, dropping any bits
@@ -1832,7 +1825,9 @@ mod tests {
 
 
         let flags = Flags::from_bits(0b00000100);
-        assert!(flags.is_none());
+        assert_eq!(flags, None);
+        let flags = Flags::from_bits(0b00000101);
+        assert_eq!(flags, None);
     }
 
     #[test]
@@ -1846,6 +1841,8 @@ mod tests {
 
 
         let flags = Flags::from_bits_truncate(0b00000100);
-        assert!(flags.is_empty());
+        assert_eq!(flags, Flags::empty());
+        let flags = Flags::from_bits_truncate(0b00000101);
+        assert_eq!(flags, Flags::A);
     }
 }
