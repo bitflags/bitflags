@@ -746,6 +746,99 @@ macro_rules! __impl_bitflags {
                 Self::from_bits_truncate(!self.bits)
             }
 
+            /// Returns an iterator over all the flags in this set.
+            pub fn iter(mut self) -> impl Iterator<Item = Self> {
+                const NUM_FLAGS: usize = {
+                    #[allow(unused_mut)]
+                    let mut num_flags = 0;
+
+                    $(
+                        #[allow(unused_doc_comments, unused_attributes)]
+                        $(#[$attr $($args)*])*
+                        {
+                            num_flags += 1;
+                        }
+                    )*
+
+                    num_flags
+                };
+                const OPTIONS: [$BitFlags; NUM_FLAGS] = [
+                    $(
+                        #[allow(unused_doc_comments, unused_attributes)]
+                        $(#[$attr $($args)*])*
+                        $BitFlags::$Flag,
+                    )*
+                ];
+                let mut start = 0;
+
+                $crate::_core::iter::from_fn(move || {
+                    if self.is_empty() || NUM_FLAGS == 0 {
+                        None
+                    }else{
+                        for flag in OPTIONS[start..NUM_FLAGS].iter().copied() {
+                            start += 1;
+                            if self.contains(flag) {
+                                self.remove(flag);
+                                return Some(flag)
+                            }
+                        }
+
+                        None
+                    }
+                })
+            }
+
+            /// Returns an iterator over all the flags names as &'static str in this set.
+            pub fn iter_names(mut self) -> impl Iterator<Item = &'static str> {
+                const NUM_FLAGS: usize = {
+                    #[allow(unused_mut)]
+                    let mut num_flags = 0;
+
+                    $(
+                        #[allow(unused_doc_comments, unused_attributes)]
+                        $(#[$attr $($args)*])*
+                        {
+                            num_flags += 1;
+                        }
+                    )*
+
+                    num_flags
+                };
+                const OPTIONS: [$BitFlags; NUM_FLAGS] = [
+                    $(
+                        #[allow(unused_doc_comments, unused_attributes)]
+                        $(#[$attr $($args)*])*
+                        $BitFlags::$Flag,
+                    )*
+                ];
+                #[allow(unused_doc_comments, unused_attributes)]
+                const OPTIONS_NAMES: [&'static str; NUM_FLAGS] = [
+                    $(
+                        $(#[$attr $($args)*])*
+                        $crate::_core::stringify!($Flag),
+                    )*
+                ];
+                let mut start = 0;
+
+                $crate::_core::iter::from_fn(move || {
+                    if self.is_empty() || NUM_FLAGS == 0 {
+                        None
+                    }else{
+                        for (flag, flag_name) in OPTIONS[start..NUM_FLAGS].iter().copied()
+                            .zip(OPTIONS_NAMES[start..NUM_FLAGS].iter().copied())
+                        {
+                            start += 1;
+                            if self.contains(flag) {
+                                self.remove(flag);
+                                return Some(flag_name)
+                            }
+                        }
+
+                        None
+                    }
+                })
+            }
+
         }
 
         impl $crate::_core::ops::BitOr for $BitFlags {
@@ -1839,10 +1932,43 @@ mod tests {
             }
         }
 
-
         let flags = Flags::from_bits_truncate(0b00000100);
         assert_eq!(flags, Flags::empty());
         let flags = Flags::from_bits_truncate(0b00000101);
         assert_eq!(flags, Flags::A);
+    }
+  
+    #[test]
+    fn test_iter() {
+        bitflags! {
+            struct Flags: u32 {
+                const ONE  = 0b001;
+                const TWO  = 0b010;
+                const THREE = 0b100;
+                #[cfg(windows)]
+                const FOUR_WIN = 0b1000;
+                #[cfg(unix)]
+                const FOUR_UNIX = 0b10000;
+            }
+        }
+
+        let flags = Flags::all();
+        assert_eq!(flags.iter().count(), 4);
+        let mut iter = flags.iter();
+        assert_eq!(iter.next().unwrap(), Flags::ONE);
+        assert_eq!(iter.next().unwrap(), Flags::TWO);
+        assert_eq!(iter.next().unwrap(), Flags::THREE);
+        assert_eq!(iter.next().unwrap(), Flags::FOUR_UNIX);
+        assert_eq!(iter.next(), None);
+
+        let flags = Flags::empty();
+        assert_eq!(flags.iter().count(), 0);
+
+        let flags = Flags::ONE | Flags::THREE;
+        assert_eq!(flags.iter().count(), 2);
+        let mut iter = flags.iter();
+        assert_eq!(iter.next().unwrap(), Flags::ONE);
+        assert_eq!(iter.next().unwrap(), Flags::THREE);
+        assert_eq!(iter.next(), None);
     }
 }
