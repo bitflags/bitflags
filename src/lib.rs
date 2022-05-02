@@ -405,6 +405,7 @@ macro_rules! __impl_all_bitflags {
         #[allow(non_snake_case)]
         trait __BitFlags {
             $(
+                #[allow(deprecated)]
                 const $Flag: $T = 0;
             )+
         }
@@ -1950,13 +1951,34 @@ mod tests {
             }
         }
 
+        let count = {
+            #[cfg(any(unix, windows))]
+            {
+                4
+            }
+
+            #[cfg(not(any(unix, windows)))]
+            {
+                3
+            }
+        };
+
         let flags = Flags::all();
-        assert_eq!(flags.iter().count(), 4);
+        assert_eq!(flags.iter().count(), count);
         let mut iter = flags.iter();
         assert_eq!(iter.next().unwrap(), Flags::ONE);
         assert_eq!(iter.next().unwrap(), Flags::TWO);
         assert_eq!(iter.next().unwrap(), Flags::THREE);
-        assert_eq!(iter.next().unwrap(), Flags::FOUR_UNIX);
+
+        #[cfg(unix)]
+        {
+            assert_eq!(iter.next().unwrap(), Flags::FOUR_UNIX);
+        }
+        #[cfg(windows)]
+        {
+            assert_eq!(iter.next().unwrap(), Flags::FOUR_WIN);
+        }
+
         assert_eq!(iter.next(), None);
 
         let flags = Flags::empty();
