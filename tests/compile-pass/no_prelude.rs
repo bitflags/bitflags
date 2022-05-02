@@ -1,4 +1,3 @@
-#![no_std]
 #![no_implicit_prelude]
 
 bitflags::bitflags! {
