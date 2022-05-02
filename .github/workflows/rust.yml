@@ -7,32 +7,47 @@ env:
 
 jobs:
   check:
-    name: Test
-    runs-on: ubuntu-latest
+    name: "Tests / OS: ${{ matrix.os }} - ${{ matrix.channel }}-${{ matrix.rust_target }}"
+    runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: true
       matrix:
-        rust:
-          - stable
-          - beta
-          - nightly
-          - 1.46.0
+        exclude:
+        - os: macos-10.15
+          rust_target: x86_64-gnu
+        - os: macos-10.15
+          rust_target: x86_64-msvc
+        - os: windows-2019
+          rust_target: x86_64-apple-darwin
+        - os: ubuntu-20.04
+          rust_target: x86_64-msvc
+        - os: ubuntu-20.04
+          rust_target: x86_64-apple-darwin
+        channel:
+        - stable
+        - beta
+        - nightly
+        os:
+        - macos-10.15
+        - windows-2019
+        - ubuntu-20.04
+        rust_target:
+        - x86_64-gnu
+        - x86_64-msvc
+        - x86_64-apple-darwin
+
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          override: true
+    - name: Install Rust Toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        override: true
+        profile: minimal
+        toolchain: ${{ matrix.channel }}-${{ matrix.rust_target }}
 
-      - name: Default features
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --features example_generated
+    - name: Tests
+      run: cargo test --all-features
 
   embedded:
     name: Build (embedded)
