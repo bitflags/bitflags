@@ -1,5 +1,7 @@
 #![no_implicit_prelude]
 
+extern crate bitflags;
+
 bitflags::bitflags! {
     pub struct Flags: u32 {
         const A = 0b00000001;
