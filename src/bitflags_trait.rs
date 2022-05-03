@@ -1,6 +1,4 @@
-use core::ops::{
-    BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not,
-};
+use core::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not};
 
 // Not re-exported
 #[doc(hidden)]
@@ -21,7 +19,8 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     /// Convert from underlying bit representation, unless that
     /// representation contains bits that do not correspond to a flag.
     fn from_bits(bits: Self::Bits) -> Option<Self>
-    where Self: Sized;
+    where
+        Self: Sized;
     /// Convert from underlying bit representation, dropping any bits
     /// that do not correspond to flags.
     fn from_bits_truncate(bits: Self::Bits) -> Self;
@@ -58,7 +57,19 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
 pub trait Sealed {}
 
 #[doc(hidden)]
-pub trait Bits: Clone + Copy + BitAnd + BitAndAssign + BitOr + BitOrAssign + BitXor + BitXorAssign + Not + Sized + Sealed {
+pub trait Bits:
+    Clone
+    + Copy
+    + BitAnd
+    + BitAndAssign
+    + BitOr
+    + BitOrAssign
+    + BitXor
+    + BitXorAssign
+    + Not
+    + Sized
+    + Sealed
+{
     /// The value of `Self` where no bits are set.
     const EMPTY: Self;
 

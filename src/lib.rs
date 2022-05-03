@@ -285,11 +285,8 @@ mod bitflags_trait;
 
 #[doc(hidden)]
 pub mod __private {
+    pub use crate::bitflags_trait::{Bits, ImplementedByBitFlagsMacro};
     pub use core;
-    pub use crate::bitflags_trait::{
-        ImplementedByBitFlagsMacro,
-        Bits,
-    };
 }
 
 /// The macro used to generate the flag structure.
@@ -1312,7 +1309,10 @@ mod tests {
         assert_eq!(UNION, Flags::A | Flags::C);
         assert_eq!(DIFFERENCE, Flags::all() - Flags::A);
         assert_eq!(COMPLEMENT, !Flags::C);
-        assert_eq!(SYM_DIFFERENCE, (Flags::A | Flags::C) ^ (Flags::all() - Flags::A));
+        assert_eq!(
+            SYM_DIFFERENCE,
+            (Flags::A | Flags::C) ^ (Flags::all() - Flags::A)
+        );
     }
 
     #[test]
@@ -1572,10 +1572,7 @@ mod tests {
         assert_eq!(format!("{:?}", extra), "0xb8");
         assert_eq!(format!("{:?}", Flags::A | extra), "A | 0xb8");
 
-        assert_eq!(
-            format!("{:?}", Flags::ABC | extra),
-            "A | B | C | 0xb8"
-        );
+        assert_eq!(format!("{:?}", Flags::ABC | extra), "A | B | C | 0xb8");
 
         assert_eq!(format!("{:?}", EmptyFlags::empty()), "(empty)");
     }
@@ -1789,7 +1786,8 @@ mod tests {
     fn test_serde_bitflags_roundtrip() {
         let flags = SerdeFlags::A | SerdeFlags::B;
 
-        let deserialized: SerdeFlags = serde_json::from_str(&serde_json::to_string(&flags).unwrap()).unwrap();
+        let deserialized: SerdeFlags =
+            serde_json::from_str(&serde_json::to_string(&flags).unwrap()).unwrap();
 
         assert_eq!(deserialized.bits, flags.bits);
     }
@@ -1813,7 +1811,6 @@ mod tests {
             }
         }
 
-
         let flags = Flags::from_bits(0b00000100);
         assert_eq!(flags, None);
         let flags = Flags::from_bits(0b00000101);
@@ -1834,7 +1831,7 @@ mod tests {
         let flags = Flags::from_bits_truncate(0b00000101);
         assert_eq!(flags, Flags::A);
     }
-  
+
     #[test]
     fn test_iter() {
         bitflags! {
