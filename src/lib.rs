@@ -1579,11 +1579,16 @@ mod tests {
         assert_eq!(format!("{:?}", Flags::A | Flags::B), "A | B");
         assert_eq!(format!("{:?}", Flags::empty()), "(empty)");
         assert_eq!(format!("{:?}", Flags::ABC), "A | B | C");
+
         let extra = unsafe { Flags::from_bits_unchecked(0xb8) };
+
         assert_eq!(format!("{:?}", extra), "0xb8");
         assert_eq!(format!("{:?}", Flags::A | extra), "A | 0xb8");
 
-        assert_eq!(format!("{:?}", Flags::ABC | extra), "A | B | C | 0xb8");
+        assert_eq!(
+            format!("{:?}", Flags::ABC | extra),
+            "A | B | C | ABC | 0xb8"
+        );
 
         assert_eq!(format!("{:?}", EmptyFlags::empty()), "(empty)");
     }
