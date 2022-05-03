@@ -419,7 +419,7 @@ macro_rules! __impl_bitflags {
                 // Append any extra bits that correspond to flags to the end of the format
                 let extra_bits = self.bits & !Self::all().bits();
 
-                if extra_bits != 0 {
+                if extra_bits != <$T as $crate::__private::Bits>::EMPTY {
                     if !first {
                         f.write_str(" | ")?;
                     }
@@ -501,12 +501,12 @@ macro_rules! __impl_bitflags {
             /// that do not correspond to flags.
             #[inline]
             pub const fn from_bits_truncate(bits: $T) -> Self {
-                if bits == 0 {
+                if bits == <$T as $crate::__private::Bits>::EMPTY {
                     return Self { bits }
                 }
 
                 #[allow(unused_mut)]
-                let mut truncated = 0;
+                let mut truncated = <$T as $crate::__private::Bits>::EMPTY;
 
                 $(
                     #[allow(unused_doc_comments, unused_attributes)]

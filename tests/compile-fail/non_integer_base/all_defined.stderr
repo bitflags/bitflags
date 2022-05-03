@@ -1,4 +1,16 @@
-error[E0308]: mismatched types
+error[E0277]: the trait bound `MyInt: Bits` is not satisfied
+   --> tests/compile-fail/non_integer_base/all_defined.rs:116:22
+    |
+116 |     struct Flags128: MyInt {
+    |                      ^^^^^ the trait `Bits` is not implemented for `MyInt`
+    |
+note: required by a bound in `bitflags::BitFlags::Bits`
+   --> src/bitflags_trait.rs
+    |
+    |     type Bits: Bits;
+    |                ^^^^ required by this bound in `bitflags::BitFlags::Bits`
+
+error[E0277]: the trait bound `MyInt: Bits` is not satisfied
    --> tests/compile-fail/non_integer_base/all_defined.rs:115:1
     |
 115 | / bitflags! {
@@ -8,15 +20,11 @@ error[E0308]: mismatched types
 119 | |         const C = MyInt(0b0000_0100u8);
 120 | |     }
 121 | | }
-    | |_^ expected struct `MyInt`, found integer
+    | |_^ the trait `Bits` is not implemented for `MyInt`
     |
     = note: this error originates in the macro `__impl_bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: try wrapping the expression in `MyInt`
-    |
-458 |                 if extra_bits != MyInt(0) {
-    |                                  ++++++ +
 
-error[E0308]: mismatched types
+error[E0277]: the trait bound `MyInt: Bits` is not satisfied
    --> tests/compile-fail/non_integer_base/all_defined.rs:115:1
     |
 115 | / bitflags! {
@@ -26,15 +34,11 @@ error[E0308]: mismatched types
 119 | |         const C = MyInt(0b0000_0100u8);
 120 | |     }
 121 | | }
-    | |_^ expected struct `MyInt`, found integer
+    | |_^ the trait `Bits` is not implemented for `MyInt`
     |
     = note: this error originates in the macro `__impl_bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: try wrapping the expression in `MyInt`
-    |
-508 |                 Self { bits: MyInt(0) }
-    |                              ++++++ +
 
-error[E0308]: mismatched types
+error[E0277]: the trait bound `MyInt: Bits` is not satisfied
    --> tests/compile-fail/non_integer_base/all_defined.rs:115:1
     |
 115 | / bitflags! {
@@ -44,15 +48,11 @@ error[E0308]: mismatched types
 119 | |         const C = MyInt(0b0000_0100u8);
 120 | |     }
 121 | | }
-    | |_^ expected struct `MyInt`, found integer
+    | |_^ the trait `Bits` is not implemented for `MyInt`
     |
     = note: this error originates in the macro `__impl_bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: try wrapping the expression in `MyInt`
-    |
-546 |                 if bits == MyInt(0) {
-    |                            ++++++ +
 
-error[E0277]: no implementation for `{integer} |= MyInt`
+error[E0277]: the trait bound `MyInt: Bits` is not satisfied
    --> tests/compile-fail/non_integer_base/all_defined.rs:115:1
     |
 115 | / bitflags! {
@@ -62,43 +62,6 @@ error[E0277]: no implementation for `{integer} |= MyInt`
 119 | |         const C = MyInt(0b0000_0100u8);
 120 | |     }
 121 | | }
-    | |_^ no implementation for `{integer} |= MyInt`
-    |
-    = help: the trait `BitOrAssign<MyInt>` is not implemented for `{integer}`
-    = note: this error originates in the macro `__impl_bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0308]: mismatched types
-   --> tests/compile-fail/non_integer_base/all_defined.rs:115:1
-    |
-115 | / bitflags! {
-116 | |     struct Flags128: MyInt {
-117 | |         const A = MyInt(0b0000_0001u8);
-118 | |         const B = MyInt(0b0000_0010u8);
-119 | |         const C = MyInt(0b0000_0100u8);
-120 | |     }
-121 | | }
-    | |_^ expected struct `MyInt`, found integer
+    | |_^ the trait `Bits` is not implemented for `MyInt`
     |
     = note: this error originates in the macro `__impl_bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: try wrapping the expression in `MyInt`
-    |
-561 |                 Self { bits: MyInt(truncated) }
-    |                              ++++++         +
-
-error[E0308]: mismatched types
-   --> tests/compile-fail/non_integer_base/all_defined.rs:115:1
-    |
-115 | / bitflags! {
-116 | |     struct Flags128: MyInt {
-117 | |         const A = MyInt(0b0000_0001u8);
-118 | |         const B = MyInt(0b0000_0010u8);
-119 | |         const C = MyInt(0b0000_0100u8);
-120 | |     }
-121 | | }
-    | |_^ expected struct `MyInt`, found integer
-    |
-    = note: this error originates in the macro `__impl_all_bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: try wrapping the expression in `MyInt`
-    |
-409 |                 const $Flag: $T = MyInt(0);
-    |                                   ++++++ +
