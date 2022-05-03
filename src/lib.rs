@@ -720,6 +720,8 @@ macro_rules! __impl_bitflags {
 
             /// Returns an iterator over set flags and their names.
             pub fn iter(mut self) -> impl $crate::__private::core::iter::Iterator<Item = (&'static str, Self)> {
+                use $crate::__private::core::iter::Iterator as _;
+
                 const NUM_FLAGS: usize = {
                     #[allow(unused_mut)]
                     let mut num_flags = 0;
@@ -867,6 +869,8 @@ macro_rules! __impl_bitflags {
 
         impl $crate::__private::core::iter::FromIterator<$BitFlags> for $BitFlags {
             fn from_iter<T: $crate::__private::core::iter::IntoIterator<Item=Self>>(iterator: T) -> Self {
+                use $crate::__private::core::iter::Extend;
+
                 let mut result = Self::empty();
                 result.extend(iterator);
                 result
