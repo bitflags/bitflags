@@ -674,7 +674,7 @@ macro_rules! __impl_bitflags {
             }
 
             /// Returns an iterator over set flags and their names.
-            pub fn iter(mut self) -> impl $crate::__private::core::iter::Iterator<Item = (&'static str, Self)> {
+            pub fn iter(self) -> impl $crate::__private::core::iter::Iterator<Item = (&'static str, Self)> {
                 use $crate::__private::core::iter::Iterator as _;
 
                 const NUM_FLAGS: usize = {
@@ -709,9 +709,10 @@ macro_rules! __impl_bitflags {
                 ];
 
                 let mut start = 0;
+                let mut state = self;
 
                 $crate::__private::core::iter::from_fn(move || {
-                    if self.is_empty() || NUM_FLAGS == 0 {
+                    if state.is_empty() || NUM_FLAGS == 0 {
                         $crate::__private::core::option::Option::None
                     } else {
                         for (flag, flag_name) in OPTIONS[start..NUM_FLAGS].iter().copied()
@@ -719,8 +720,18 @@ macro_rules! __impl_bitflags {
                         {
                             start += 1;
 
+                            // NOTE: We check whether the flag exists in self, but remove it from
+                            // a different value. This ensure that overlapping flags are handled
+                            // properly. Take the following example:
+                            //
+                            // const A: 0b00000001;
+                            // const B: 0b00000101;
+                            //
+                            // Given the bits 0b00000101, both A and B are set. But if we removed A
+                            // as we encountered it we'd be left with 0b00000100, which doesn't
+                            // correspond to a valid flag on its own.
                             if self.contains(flag) {
-                                self.remove(flag);
+                                state.remove(flag);
 
                                 return $crate::__private::core::option::Option::Some((flag_name, flag))
                             }
@@ -1843,24 +1854,31 @@ mod tests {
                 const FOUR_WIN = 0b1000;
                 #[cfg(unix)]
                 const FOUR_UNIX = 0b10000;
+                const FIVE = 0b01000100;
             }
         }
 
         let count = {
             #[cfg(any(unix, windows))]
             {
-                4
+                5
             }
 
             #[cfg(not(any(unix, windows)))]
             {
-                3
+                4
             }
         };
 
         let flags = Flags::all();
         assert_eq!(flags.iter().count(), count);
+
+        for (_, flag) in flags.iter() {
+            assert!(flags.contains(flag));
+        }
+
         let mut iter = flags.iter();
+
         assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE));
         assert_eq!(iter.next().unwrap(), ("TWO", Flags::TWO));
         assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE));
@@ -1874,6 +1892,8 @@ mod tests {
             assert_eq!(iter.next().unwrap(), ("FOUR_WIN", Flags::FOUR_WIN));
         }
 
+        assert_eq!(iter.next().unwrap(), ("FIVE", Flags::FIVE));
+
         assert_eq!(iter.next(), None);
 
         let flags = Flags::empty();
@@ -1881,7 +1901,9 @@ mod tests {
 
         let flags = Flags::ONE | Flags::THREE;
         assert_eq!(flags.iter().count(), 2);
+
         let mut iter = flags.iter();
+
         assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE));
         assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE));
         assert_eq!(iter.next(), None);
