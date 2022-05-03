@@ -56,6 +56,10 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
 // Not re-exported
 pub trait Sealed {}
 
+/// A private trait that encodes the requirements of underlying bits types that can hold flags.
+///
+/// This trait may be made public at some future point, but it presents a compatibility hazard
+/// so is left internal for now.
 #[doc(hidden)]
 pub trait Bits:
     Clone
@@ -74,7 +78,7 @@ pub trait Bits:
     const EMPTY: Self;
 
     /// The value of `Self` where all bits are set.
-    const SATURATED: Self;
+    const ALL: Self;
 }
 
 macro_rules! impl_bits {
@@ -82,12 +86,12 @@ macro_rules! impl_bits {
         $(
             impl Bits for $u {
                 const EMPTY: $u = 0;
-                const SATURATED: $u = <$u>::MAX;
+                const ALL: $u = <$u>::MAX;
             }
 
             impl Bits for $i {
                 const EMPTY: $i = 0;
-                const SATURATED: $i = <$u>::MAX as $i;
+                const ALL: $i = <$u>::MAX as $i;
             }
 
             impl Sealed for $u {}

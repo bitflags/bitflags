@@ -472,7 +472,7 @@ macro_rules! __impl_bitflags {
             /// Returns the set containing all flags.
             #[inline]
             pub const fn all() -> Self {
-                Self::from_bits_truncate(<$T as $crate::__private::Bits>::SATURATED)
+                Self::from_bits_truncate(<$T as $crate::__private::Bits>::ALL)
             }
 
             /// Returns the raw value of the flags currently stored.
