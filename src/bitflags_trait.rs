@@ -1,3 +1,7 @@
+use core::ops::{
+    BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not,
+};
+
 #[doc(hidden)]
 pub trait ImplementedByBitFlagsMacro {}
 
@@ -6,6 +10,7 @@ pub trait ImplementedByBitFlagsMacro {}
 /// It should not be implemented manually.
 pub trait BitFlags: ImplementedByBitFlagsMacro {
     type Bits;
+
     /// Returns an empty set of flags.
     fn empty() -> Self;
     /// Returns the set containing all flags.
@@ -47,4 +52,37 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     fn toggle(&mut self, other: Self);
     /// Inserts or removes the specified flags depending on the passed value.
     fn set(&mut self, other: Self, value: bool);
+}
+
+#[doc(hidden)]
+pub trait Bits: BitAnd + BitAndAssign + BitOr + BitOrAssign + BitXor + BitXorAssign + Not + Sized {
+    /// The value of `Self` where no bits are set.
+    const EMPTY: Self;
+
+    /// The value of `Self` where all bits are set.
+    const SATURATED: Self;
+}
+
+macro_rules! impl_bits {
+    ($($u:ty, $i:ty,)*) => {
+        $(
+            impl Bits for $u {
+                const EMPTY: $u = 0;
+                const SATURATED: $u = <$u>::MAX;
+            }
+
+            impl Bits for $i {
+                const EMPTY: $i = 0;
+                const SATURATED: $i = <$u>::MAX as $i;
+            }
+        )*
+    }
+}
+
+impl_bits! {
+    u8, i8,
+    u16, i16,
+    u32, i32,
+    u64, i64,
+    u128, i128,
 }

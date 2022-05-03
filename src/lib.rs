@@ -286,7 +286,10 @@ mod bitflags_trait;
 #[doc(hidden)]
 pub mod __private {
     pub use core;
-    pub use crate::bitflags_trait::ImplementedByBitFlagsMacro;
+    pub use crate::bitflags_trait::{
+        ImplementedByBitFlagsMacro,
+        Bits,
+    };
 }
 
 /// The macro used to generate the flag structure.
@@ -389,45 +392,6 @@ macro_rules! bitflags {
     () => {};
 }
 
-// A helper macro to implement the `all` function.
-#[macro_export(local_inner_macros)]
-#[doc(hidden)]
-macro_rules! __impl_all_bitflags {
-    (
-        $BitFlags:ident: $T:ty {
-            $(
-                $(#[$attr:ident $($args:tt)*])*
-                $Flag:ident = $value:expr;
-            )+
-        }
-    ) => {
-        // See `Debug::fmt` for why this approach is taken.
-        #[allow(non_snake_case)]
-        trait __BitFlags {
-            $(
-                #[allow(deprecated)]
-                const $Flag: $T = 0;
-            )+
-        }
-        #[allow(non_snake_case)]
-        impl __BitFlags for $BitFlags {
-            $(
-                __impl_bitflags! {
-                    #[allow(deprecated)]
-                    $(? #[$attr $($args)*])*
-                    const $Flag: $T = Self::$Flag.bits;
-                }
-            )+
-        }
-        Self { bits: $(<Self as __BitFlags>::$Flag)|+ }
-    };
-    (
-        $BitFlags:ident: $T:ty { }
-    ) => {
-        Self { bits: 0 }
-    };
-}
-
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
 macro_rules! __impl_bitflags {
@@ -505,20 +469,13 @@ macro_rules! __impl_bitflags {
             /// Returns an empty set of flags.
             #[inline]
             pub const fn empty() -> Self {
-                Self { bits: 0 }
+                Self { bits: <$T as $crate::__private::Bits>::EMPTY }
             }
 
             /// Returns the set containing all flags.
             #[inline]
             pub const fn all() -> Self {
-                __impl_all_bitflags! {
-                    $BitFlags: $T {
-                        $(
-                            $(#[$attr $($args)*])*
-                            $Flag = $value;
-                        )*
-                    }
-                }
+                Self::from_bits_truncate(<$T as $crate::__private::Bits>::SATURATED)
             }
 
             /// Returns the raw value of the flags currently stored.
@@ -532,8 +489,9 @@ macro_rules! __impl_bitflags {
             #[inline]
             pub const fn from_bits(bits: $T) -> $crate::__private::core::option::Option<Self> {
                 let truncated = Self::from_bits_truncate(bits).bits;
+
                 if truncated == bits {
-                    $crate::__private::core::option::Option::Some(Self{ bits })
+                    $crate::__private::core::option::Option::Some(Self { bits })
                 } else {
                     $crate::__private::core::option::Option::None
                 }
@@ -763,6 +721,7 @@ macro_rules! __impl_bitflags {
                             .zip(OPTIONS_NAMES[start..NUM_FLAGS].iter().copied())
                         {
                             start += 1;
+
                             if self.contains(flag) {
                                 self.remove(flag);
 
