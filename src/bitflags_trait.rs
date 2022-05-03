@@ -1,6 +1,5 @@
 use core::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not};
 
-// Not re-exported
 #[doc(hidden)]
 pub trait ImplementedByBitFlagsMacro {}
 
@@ -54,6 +53,7 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     fn set(&mut self, other: Self, value: bool);
 }
 
+// Not re-exported
 pub trait Sealed {}
 
 #[doc(hidden)]
