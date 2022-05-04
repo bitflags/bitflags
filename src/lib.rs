@@ -456,7 +456,14 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        #[allow(dead_code)]
+        #[allow(
+            dead_code,
+            deprecated,
+            unused_doc_comments,
+            unused_attributes,
+            unused_mut,
+            non_upper_case_globals
+        )]
         impl $BitFlags {
             $(
                 $(#[$attr $($args)*])*
@@ -502,11 +509,9 @@ macro_rules! __impl_bitflags {
                     return Self { bits }
                 }
 
-                #[allow(unused_mut)]
                 let mut truncated = <$T as $crate::__private::Bits>::EMPTY;
 
                 $(
-                    #[allow(unused_doc_comments, unused_attributes)]
                     $(#[$attr $($args)*])*
                     if bits & Self::$Flag.bits == Self::$Flag.bits {
                         truncated |= Self::$Flag.bits
@@ -678,11 +683,9 @@ macro_rules! __impl_bitflags {
                 use $crate::__private::core::iter::Iterator as _;
 
                 const NUM_FLAGS: usize = {
-                    #[allow(unused_mut)]
                     let mut num_flags = 0;
 
                     $(
-                        #[allow(unused_doc_comments, unused_attributes)]
                         $(#[$attr $($args)*])*
                         {
                             num_flags += 1;
@@ -694,13 +697,11 @@ macro_rules! __impl_bitflags {
 
                 const OPTIONS: [$BitFlags; NUM_FLAGS] = [
                     $(
-                        #[allow(unused_doc_comments, unused_attributes)]
                         $(#[$attr $($args)*])*
                         $BitFlags::$Flag,
                     )*
                 ];
 
-                #[allow(unused_doc_comments, unused_attributes)]
                 const OPTIONS_NAMES: [&'static str; NUM_FLAGS] = [
                     $(
                         $(#[$attr $($args)*])*
