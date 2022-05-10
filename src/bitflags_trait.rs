@@ -1,3 +1,5 @@
+use core::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not};
+
 #[doc(hidden)]
 pub trait ImplementedByBitFlagsMacro {}
 
@@ -5,7 +7,8 @@ pub trait ImplementedByBitFlagsMacro {}
 ///
 /// It should not be implemented manually.
 pub trait BitFlags: ImplementedByBitFlagsMacro {
-    type Bits;
+    type Bits: Bits;
+
     /// Returns an empty set of flags.
     fn empty() -> Self;
     /// Returns the set containing all flags.
@@ -15,7 +18,8 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     /// Convert from underlying bit representation, unless that
     /// representation contains bits that do not correspond to a flag.
     fn from_bits(bits: Self::Bits) -> Option<Self>
-    where Self: Sized;
+    where
+        Self: Sized;
     /// Convert from underlying bit representation, dropping any bits
     /// that do not correspond to flags.
     fn from_bits_truncate(bits: Self::Bits) -> Self;
@@ -47,4 +51,59 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     fn toggle(&mut self, other: Self);
     /// Inserts or removes the specified flags depending on the passed value.
     fn set(&mut self, other: Self, value: bool);
+}
+
+// Not re-exported
+pub trait Sealed {}
+
+/// A private trait that encodes the requirements of underlying bits types that can hold flags.
+///
+/// This trait may be made public at some future point, but it presents a compatibility hazard
+/// so is left internal for now.
+#[doc(hidden)]
+pub trait Bits:
+    Clone
+    + Copy
+    + BitAnd
+    + BitAndAssign
+    + BitOr
+    + BitOrAssign
+    + BitXor
+    + BitXorAssign
+    + Not
+    + Sized
+    + Sealed
+{
+    /// The value of `Self` where no bits are set.
+    const EMPTY: Self;
+
+    /// The value of `Self` where all bits are set.
+    const ALL: Self;
+}
+
+macro_rules! impl_bits {
+    ($($u:ty, $i:ty,)*) => {
+        $(
+            impl Bits for $u {
+                const EMPTY: $u = 0;
+                const ALL: $u = <$u>::MAX;
+            }
+
+            impl Bits for $i {
+                const EMPTY: $i = 0;
+                const ALL: $i = <$u>::MAX as $i;
+            }
+
+            impl Sealed for $u {}
+            impl Sealed for $i {}
+        )*
+    }
+}
+
+impl_bits! {
+    u8, i8,
+    u16, i16,
+    u32, i32,
+    u64, i64,
+    u128, i128,
 }

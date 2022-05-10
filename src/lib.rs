@@ -285,8 +285,8 @@ mod bitflags_trait;
 
 #[doc(hidden)]
 pub mod __private {
+    pub use crate::bitflags_trait::{Bits, ImplementedByBitFlagsMacro};
     pub use core;
-    pub use crate::bitflags_trait::ImplementedByBitFlagsMacro;
 }
 
 /// The macro used to generate the flag structure.
@@ -389,45 +389,6 @@ macro_rules! bitflags {
     () => {};
 }
 
-// A helper macro to implement the `all` function.
-#[macro_export(local_inner_macros)]
-#[doc(hidden)]
-macro_rules! __impl_all_bitflags {
-    (
-        $BitFlags:ident: $T:ty {
-            $(
-                $(#[$attr:ident $($args:tt)*])*
-                $Flag:ident = $value:expr;
-            )+
-        }
-    ) => {
-        // See `Debug::fmt` for why this approach is taken.
-        #[allow(non_snake_case)]
-        trait __BitFlags {
-            $(
-                #[allow(deprecated)]
-                const $Flag: $T = 0;
-            )+
-        }
-        #[allow(non_snake_case)]
-        impl __BitFlags for $BitFlags {
-            $(
-                __impl_bitflags! {
-                    #[allow(deprecated)]
-                    $(? #[$attr $($args)*])*
-                    const $Flag: $T = Self::$Flag.bits;
-                }
-            )+
-        }
-        Self { bits: $(<Self as __BitFlags>::$Flag)|+ }
-    };
-    (
-        $BitFlags:ident: $T:ty { }
-    ) => {
-        Self { bits: 0 }
-    };
-}
-
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
 macro_rules! __impl_bitflags {
@@ -455,7 +416,7 @@ macro_rules! __impl_bitflags {
                 // Append any extra bits that correspond to flags to the end of the format
                 let extra_bits = self.bits & !Self::all().bits();
 
-                if extra_bits != 0 {
+                if extra_bits != <$T as $crate::__private::Bits>::EMPTY {
                     if !first {
                         f.write_str(" | ")?;
                     }
@@ -495,7 +456,14 @@ macro_rules! __impl_bitflags {
             }
         }
 
-        #[allow(dead_code)]
+        #[allow(
+            dead_code,
+            deprecated,
+            unused_doc_comments,
+            unused_attributes,
+            unused_mut,
+            non_upper_case_globals
+        )]
         impl $BitFlags {
             $(
                 $(#[$attr $($args)*])*
@@ -505,20 +473,13 @@ macro_rules! __impl_bitflags {
             /// Returns an empty set of flags.
             #[inline]
             pub const fn empty() -> Self {
-                Self { bits: 0 }
+                Self { bits: <$T as $crate::__private::Bits>::EMPTY }
             }
 
             /// Returns the set containing all flags.
             #[inline]
             pub const fn all() -> Self {
-                __impl_all_bitflags! {
-                    $BitFlags: $T {
-                        $(
-                            $(#[$attr $($args)*])*
-                            $Flag = $value;
-                        )*
-                    }
-                }
+                Self::from_bits_truncate(<$T as $crate::__private::Bits>::ALL)
             }
 
             /// Returns the raw value of the flags currently stored.
@@ -532,8 +493,9 @@ macro_rules! __impl_bitflags {
             #[inline]
             pub const fn from_bits(bits: $T) -> $crate::__private::core::option::Option<Self> {
                 let truncated = Self::from_bits_truncate(bits).bits;
+
                 if truncated == bits {
-                    $crate::__private::core::option::Option::Some(Self{ bits })
+                    $crate::__private::core::option::Option::Some(Self { bits })
                 } else {
                     $crate::__private::core::option::Option::None
                 }
@@ -543,15 +505,13 @@ macro_rules! __impl_bitflags {
             /// that do not correspond to flags.
             #[inline]
             pub const fn from_bits_truncate(bits: $T) -> Self {
-                if bits == 0 {
+                if bits == <$T as $crate::__private::Bits>::EMPTY {
                     return Self { bits }
                 }
 
-                #[allow(unused_mut)]
-                let mut truncated = 0;
+                let mut truncated = <$T as $crate::__private::Bits>::EMPTY;
 
                 $(
-                    #[allow(unused_doc_comments, unused_attributes)]
                     $(#[$attr $($args)*])*
                     if bits & Self::$Flag.bits == Self::$Flag.bits {
                         truncated |= Self::$Flag.bits
@@ -719,15 +679,13 @@ macro_rules! __impl_bitflags {
             }
 
             /// Returns an iterator over set flags and their names.
-            pub fn iter(mut self) -> impl $crate::__private::core::iter::Iterator<Item = (&'static str, Self)> {
+            pub fn iter(self) -> impl $crate::__private::core::iter::Iterator<Item = (&'static str, Self)> {
                 use $crate::__private::core::iter::Iterator as _;
 
                 const NUM_FLAGS: usize = {
-                    #[allow(unused_mut)]
                     let mut num_flags = 0;
 
                     $(
-                        #[allow(unused_doc_comments, unused_attributes)]
                         $(#[$attr $($args)*])*
                         {
                             num_flags += 1;
@@ -739,13 +697,11 @@ macro_rules! __impl_bitflags {
 
                 const OPTIONS: [$BitFlags; NUM_FLAGS] = [
                     $(
-                        #[allow(unused_doc_comments, unused_attributes)]
                         $(#[$attr $($args)*])*
                         $BitFlags::$Flag,
                     )*
                 ];
 
-                #[allow(unused_doc_comments, unused_attributes)]
                 const OPTIONS_NAMES: [&'static str; NUM_FLAGS] = [
                     $(
                         $(#[$attr $($args)*])*
@@ -754,17 +710,29 @@ macro_rules! __impl_bitflags {
                 ];
 
                 let mut start = 0;
+                let mut state = self;
 
                 $crate::__private::core::iter::from_fn(move || {
-                    if self.is_empty() || NUM_FLAGS == 0 {
+                    if state.is_empty() || NUM_FLAGS == 0 {
                         $crate::__private::core::option::Option::None
                     } else {
                         for (flag, flag_name) in OPTIONS[start..NUM_FLAGS].iter().copied()
                             .zip(OPTIONS_NAMES[start..NUM_FLAGS].iter().copied())
                         {
                             start += 1;
+
+                            // NOTE: We check whether the flag exists in self, but remove it from
+                            // a different value. This ensure that overlapping flags are handled
+                            // properly. Take the following example:
+                            //
+                            // const A: 0b00000001;
+                            // const B: 0b00000101;
+                            //
+                            // Given the bits 0b00000101, both A and B are set. But if we removed A
+                            // as we encountered it we'd be left with 0b00000100, which doesn't
+                            // correspond to a valid flag on its own.
                             if self.contains(flag) {
-                                self.remove(flag);
+                                state.remove(flag);
 
                                 return $crate::__private::core::option::Option::Some((flag_name, flag))
                             }
@@ -1353,7 +1321,10 @@ mod tests {
         assert_eq!(UNION, Flags::A | Flags::C);
         assert_eq!(DIFFERENCE, Flags::all() - Flags::A);
         assert_eq!(COMPLEMENT, !Flags::C);
-        assert_eq!(SYM_DIFFERENCE, (Flags::A | Flags::C) ^ (Flags::all() - Flags::A));
+        assert_eq!(
+            SYM_DIFFERENCE,
+            (Flags::A | Flags::C) ^ (Flags::all() - Flags::A)
+        );
     }
 
     #[test]
@@ -1609,13 +1580,15 @@ mod tests {
         assert_eq!(format!("{:?}", Flags::A | Flags::B), "A | B");
         assert_eq!(format!("{:?}", Flags::empty()), "(empty)");
         assert_eq!(format!("{:?}", Flags::ABC), "A | B | C");
+
         let extra = unsafe { Flags::from_bits_unchecked(0xb8) };
+
         assert_eq!(format!("{:?}", extra), "0xb8");
         assert_eq!(format!("{:?}", Flags::A | extra), "A | 0xb8");
 
         assert_eq!(
             format!("{:?}", Flags::ABC | extra),
-            "A | B | C | 0xb8"
+            "A | B | C | ABC | 0xb8"
         );
 
         assert_eq!(format!("{:?}", EmptyFlags::empty()), "(empty)");
@@ -1830,7 +1803,8 @@ mod tests {
     fn test_serde_bitflags_roundtrip() {
         let flags = SerdeFlags::A | SerdeFlags::B;
 
-        let deserialized: SerdeFlags = serde_json::from_str(&serde_json::to_string(&flags).unwrap()).unwrap();
+        let deserialized: SerdeFlags =
+            serde_json::from_str(&serde_json::to_string(&flags).unwrap()).unwrap();
 
         assert_eq!(deserialized.bits, flags.bits);
     }
@@ -1854,7 +1828,6 @@ mod tests {
             }
         }
 
-
         let flags = Flags::from_bits(0b00000100);
         assert_eq!(flags, None);
         let flags = Flags::from_bits(0b00000101);
@@ -1875,7 +1848,7 @@ mod tests {
         let flags = Flags::from_bits_truncate(0b00000101);
         assert_eq!(flags, Flags::A);
     }
-  
+
     #[test]
     fn test_iter() {
         bitflags! {
@@ -1887,24 +1860,31 @@ mod tests {
                 const FOUR_WIN = 0b1000;
                 #[cfg(unix)]
                 const FOUR_UNIX = 0b10000;
+                const FIVE = 0b01000100;
             }
         }
 
         let count = {
             #[cfg(any(unix, windows))]
             {
-                4
+                5
             }
 
             #[cfg(not(any(unix, windows)))]
             {
-                3
+                4
             }
         };
 
         let flags = Flags::all();
         assert_eq!(flags.iter().count(), count);
+
+        for (_, flag) in flags.iter() {
+            assert!(flags.contains(flag));
+        }
+
         let mut iter = flags.iter();
+
         assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE));
         assert_eq!(iter.next().unwrap(), ("TWO", Flags::TWO));
         assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE));
@@ -1918,6 +1898,8 @@ mod tests {
             assert_eq!(iter.next().unwrap(), ("FOUR_WIN", Flags::FOUR_WIN));
         }
 
+        assert_eq!(iter.next().unwrap(), ("FIVE", Flags::FIVE));
+
         assert_eq!(iter.next(), None);
 
         let flags = Flags::empty();
@@ -1925,7 +1907,9 @@ mod tests {
 
         let flags = Flags::ONE | Flags::THREE;
         assert_eq!(flags.iter().count(), 2);
+
         let mut iter = flags.iter();
+
         assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE));
         assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE));
         assert_eq!(iter.next(), None);
