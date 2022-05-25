@@ -25,16 +25,7 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     fn from_bits_truncate(bits: Self::Bits) -> Self;
     /// Convert from underlying bit representation, preserving all
     /// bits (even those not corresponding to a defined flag).
-    ///
-    /// # Safety
-    ///
-    /// The caller of the `bitflags!` macro can chose to allow or
-    /// disallow extra bits for their bitflags type.
-    ///
-    /// The caller of `from_bits_unchecked()` has to ensure that
-    /// all bits correspond to a defined flag or that extra bits
-    /// are valid for this bitflags type.
-    unsafe fn from_bits_unchecked(bits: Self::Bits) -> Self;
+    fn from_bits_retain(bits: Self::Bits) -> Self;
     /// Returns `true` if no flags are currently stored.
     fn is_empty(&self) -> bool;
     /// Returns `true` if all flags are currently set.
@@ -106,4 +97,12 @@ impl_bits! {
     u32, i32,
     u64, i64,
     u128, i128,
+}
+
+pub trait PublicFlags {
+    type InternalFlags;
+}
+
+pub trait InternalFlags {
+    type PublicFlags;
 }

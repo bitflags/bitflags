@@ -48,6 +48,7 @@ jobs:
 
     - name: Tests
       run: cargo test --features example_generated
+      run: cargo run --manifest-path tests/smoke-test/Cargo.toml
 
   embedded:
     name: Build (embedded)
