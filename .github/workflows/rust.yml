@@ -47,8 +47,7 @@ jobs:
         toolchain: ${{ matrix.channel }}-${{ matrix.rust_target }}
 
     - name: Tests
-      run: cargo test --features example_generated
-      run: cargo run --manifest-path tests/smoke-test/Cargo.toml
+      run: cargo test --features example_generated; cargo run --manifest-path tests/smoke-test/Cargo.toml
 
   embedded:
     name: Build (embedded)
