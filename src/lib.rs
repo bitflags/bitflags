@@ -25,7 +25,7 @@
 //!         const A = 0b00000001;
 //!         const B = 0b00000010;
 //!         const C = 0b00000100;
-//!         const ABC = Self::A.bits | Self::B.bits | Self::C.bits;
+//!         const ABC = Self::A.bits() | Self::B.bits() | Self::C.bits();
 //!     }
 //! }
 //!
@@ -167,7 +167,7 @@
 //!                defined flag
 //! - `from_bits_truncate`: convert from underlying bit representation, dropping
 //!                         any bits that do not correspond to defined flags
-//! - `from_bits_unchecked`: convert from underlying bit representation, keeping
+//! - `from_bits_retain`: convert from underlying bit representation, keeping
 //!                          all bits (even those not corresponding to defined
 //!                          flags)
 //! - `is_empty`: `true` if no flags are currently stored
@@ -352,7 +352,7 @@ the `__impl_bitflags_internal!` macro.
 ///         const A = 0b00000001;
 ///         const B = 0b00000010;
 ///         const C = 0b00000100;
-///         const ABC = Self::A.bits | Self::B.bits | Self::C.bits;
+///         const ABC = Self::A.bits() | Self::B.bits() | Self::C.bits();
 ///     }
 /// }
 ///
@@ -432,7 +432,7 @@ macro_rules! bitflags {
         const _: () = {
             #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
             #[repr(transparent)]
-            pub struct InternalFlags {
+            $vis struct InternalFlags {
                 bits: $T,
             }
 
@@ -888,6 +888,13 @@ macro_rules! __impl_internal_bitflags {
             )*
         }
     ) => {
+        impl $crate::__private::core::default::Default for $InternalBitFlags {
+            #[inline]
+            fn default() -> Self {
+                $InternalBitFlags::empty()
+            }
+        }
+
         impl $crate::__private::core::fmt::Debug for $InternalBitFlags {
             fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
                 // Iterate over the valid flags
@@ -913,7 +920,7 @@ macro_rules! __impl_internal_bitflags {
                 }
 
                 if first {
-                    f.write_str("(empty)")?;
+                    f.write_str("empty")?;
                 }
 
                 $crate::__private::core::fmt::Result::Ok(())
@@ -1143,6 +1150,57 @@ macro_rules! __impl_internal_bitflags {
     };
 }
 
+// Optional features
+//
+// These macros implement additional library traits for the internal bitflags type so that
+// the end-user can either implement or derive those same traits based on the implementation
+// we provide in `bitflags`.
+//
+// These macros all follow a  similar pattern. If an optional feature of `bitflags` is enabled
+// they'll expand to some impl blocks based on a re-export of the library. If the optional feature
+// is not enabled then they expand to a no-op.
+
+/// Implement `Serialize` and `Deserialize` for the internal bitflags type.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+#[cfg(feature = "serde")]
+macro_rules! __impl_internal_bitflags_serde {
+    (
+        $InternalBitFlags:ident: $T:ty {
+            $(
+                $(#[$attr:ident $($args:tt)*])*
+                $Flag:ident;
+            )*
+        }
+    ) => {
+        impl $crate::__private::serde::Serialize for $InternalBitflags {
+            fn serialize<S: $crate::__private::serde::Serializer>(&self, serializer: S) -> $crate::__private::Result<S::Ok, S::Error> {
+                todo!()
+            }
+        }
+
+        impl<'de> $crate::__private::serde::Deserialize<'de> for $InternalBitFlags {
+            fn deserialize<D: $crate::__private::serde::Deserializer<'de>>(&self, deserializer: D) -> $crate::__private::Result<Self, D::Error> {
+                todo!()
+            }
+        }
+    }
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+#[cfg(not(feature = "serde"))]
+macro_rules! __impl_internal_bitflags_serde {
+    (
+        $InternalBitFlags:ident: $T:ty {
+            $(
+                $(#[$attr:ident $($args:tt)*])*
+                $Flag:ident;
+            )*
+        }
+    ) => { }
+}
+
 #[cfg(feature = "example_generated")]
 pub mod example_generated;
 
@@ -1156,7 +1214,7 @@ mod tests {
         #[doc = "> you are the easiest person to fool."]
         #[doc = "> "]
         #[doc = "> - Richard Feynman"]
-        #[derive(Default)]
+        #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct Flags: u32 {
             const A = 0b00000001;
             #[doc = "<pcwalton> macros are way better at generating code than trans is"]
@@ -1165,28 +1223,32 @@ mod tests {
             #[doc = "* cmr bed"]
             #[doc = "* strcat table"]
             #[doc = "<strcat> wait what?"]
-            const ABC = Self::A.bits | Self::B.bits | Self::C.bits;
+            const ABC = Self::A.bits() | Self::B.bits() | Self::C.bits();
         }
 
+        #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct _CfgFlags: u32 {
             #[cfg(unix)]
             const _CFG_A = 0b01;
             #[cfg(windows)]
             const _CFG_B = 0b01;
             #[cfg(unix)]
-            const _CFG_C = Self::_CFG_A.bits | 0b10;
+            const _CFG_C = Self::_CFG_A.bits() | 0b10;
         }
 
+        #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct AnotherSetOfFlags: i8 {
             const ANOTHER_FLAG = -1_i8;
         }
 
+        #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct LongFlags: u32 {
             const LONG_A = 0b1111111111111111;
         }
     }
 
     bitflags! {
+        #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct EmptyFlags: u32 {
         }
     }
@@ -1239,28 +1301,28 @@ mod tests {
     }
 
     #[test]
-    fn test_from_bits_unchecked() {
-        let extra = unsafe { Flags::from_bits_unchecked(0b1000) };
-        assert_eq!(unsafe { Flags::from_bits_unchecked(0) }, Flags::empty());
-        assert_eq!(unsafe { Flags::from_bits_unchecked(0b1) }, Flags::A);
-        assert_eq!(unsafe { Flags::from_bits_unchecked(0b10) }, Flags::B);
+    fn test_from_bits_retain() {
+        let extra = Flags::from_bits_retain(0b1000);
+        assert_eq!(Flags::from_bits_retain(0), Flags::empty());
+        assert_eq!(Flags::from_bits_retain(0b1), Flags::A);
+        assert_eq!(Flags::from_bits_retain(0b10), Flags::B);
 
         assert_eq!(
-            unsafe { Flags::from_bits_unchecked(0b11) },
+            Flags::from_bits_retain(0b11),
             (Flags::A | Flags::B)
         );
         assert_eq!(
-            unsafe { Flags::from_bits_unchecked(0b1000) },
+            Flags::from_bits_retain(0b1000),
             (extra | Flags::empty())
         );
         assert_eq!(
-            unsafe { Flags::from_bits_unchecked(0b1001) },
+            Flags::from_bits_retain(0b1001),
             (extra | Flags::A)
         );
 
-        let extra = unsafe { EmptyFlags::from_bits_unchecked(0b1000) };
+        let extra = EmptyFlags::from_bits_retain(0b1000);
         assert_eq!(
-            unsafe { EmptyFlags::from_bits_unchecked(0b1000) },
+            EmptyFlags::from_bits_retain(0b1000),
             (extra | EmptyFlags::empty())
         );
     }
@@ -1283,7 +1345,7 @@ mod tests {
         assert!(!Flags::A.is_all());
         assert!(Flags::ABC.is_all());
 
-        let extra = unsafe { Flags::from_bits_unchecked(0b1000) };
+        let extra = Flags::from_bits_retain(0b1000);
         assert!(!extra.is_all());
         assert!(!(Flags::A | extra).is_all());
         assert!((Flags::ABC | extra).is_all());
@@ -1381,7 +1443,7 @@ mod tests {
 
     #[test]
     fn test_operators_unchecked() {
-        let extra = unsafe { Flags::from_bits_unchecked(0b1000) };
+        let extra = Flags::from_bits_retain(0b1000);
         let e1 = Flags::A | Flags::C | extra;
         let e2 = Flags::B | Flags::C;
         assert_eq!((e1 | e2), (Flags::ABC | extra)); // union
@@ -1400,9 +1462,9 @@ mod tests {
         let ab = Flags::A.union(Flags::B);
         let ac = Flags::A.union(Flags::C);
         let bc = Flags::B.union(Flags::C);
-        assert_eq!(ab.bits, 0b011);
-        assert_eq!(bc.bits, 0b110);
-        assert_eq!(ac.bits, 0b101);
+        assert_eq!(ab.bits(), 0b011);
+        assert_eq!(bc.bits(), 0b110);
+        assert_eq!(ac.bits(), 0b101);
 
         assert_eq!(ab, Flags::B.union(Flags::A));
         assert_eq!(ac, Flags::C.union(Flags::A));
@@ -1455,10 +1517,10 @@ mod tests {
 
     #[test]
     fn test_set_ops_unchecked() {
-        let extra = unsafe { Flags::from_bits_unchecked(0b1000) };
+        let extra = Flags::from_bits_retain(0b1000);
         let e1 = Flags::A.union(Flags::C).union(extra);
         let e2 = Flags::B.union(Flags::C);
-        assert_eq!(e1.bits, 0b1101);
+        assert_eq!(e1.bits(), 0b1101);
         assert_eq!(e1.union(e2), (Flags::ABC | extra));
         assert_eq!(e1.intersection(e2), Flags::C);
         assert_eq!(e1.difference(e2), Flags::A | extra);
@@ -1472,11 +1534,12 @@ mod tests {
     fn test_set_ops_exhaustive() {
         // Define a flag that contains gaps to help exercise edge-cases,
         // especially around "unknown" flags (e.g. ones outside of `all()`
-        // `from_bits_unchecked`).
+        // `from_bits_retain`).
         // - when lhs and rhs both have different sets of unknown flags.
         // - unknown flags at both ends, and in the middle
         // - cases with "gaps".
         bitflags! {
+            #[derive(Debug, PartialEq, Eq)]
             struct Test: u16 {
                 // Intentionally no `A`
                 const B = 0b000000010;
@@ -1490,12 +1553,12 @@ mod tests {
             }
         }
         let iter_test_flags =
-            || (0..=0b111_1111_1111).map(|bits| unsafe { Test::from_bits_unchecked(bits) });
+            || (0..=0b111_1111_1111).map(|bits| Test::from_bits_retain(bits));
 
         for a in iter_test_flags() {
             assert_eq!(
                 a.complement(),
-                Test::from_bits_truncate(!a.bits),
+                Test::from_bits_truncate(!a.bits()),
                 "wrong result: !({:?})",
                 a,
             );
@@ -1504,37 +1567,37 @@ mod tests {
                 // Check that the named operations produce the expected bitwise
                 // values.
                 assert_eq!(
-                    a.union(b).bits,
-                    a.bits | b.bits,
+                    a.union(b).bits(),
+                    a.bits() | b.bits(),
                     "wrong result: `{:?}` | `{:?}`",
                     a,
                     b,
                 );
                 assert_eq!(
-                    a.intersection(b).bits,
-                    a.bits & b.bits,
+                    a.intersection(b).bits(),
+                    a.bits() & b.bits(),
                     "wrong result: `{:?}` & `{:?}`",
                     a,
                     b,
                 );
                 assert_eq!(
-                    a.symmetric_difference(b).bits,
-                    a.bits ^ b.bits,
+                    a.symmetric_difference(b).bits(),
+                    a.bits() ^ b.bits(),
                     "wrong result: `{:?}` ^ `{:?}`",
                     a,
                     b,
                 );
                 assert_eq!(
-                    a.difference(b).bits,
-                    a.bits & !b.bits,
+                    a.difference(b).bits(),
+                    a.bits() & !b.bits(),
                     "wrong result: `{:?}` - `{:?}`",
                     a,
                     b,
                 );
                 // Note: Difference is checked as both `a - b` and `b - a`
                 assert_eq!(
-                    b.difference(a).bits,
-                    b.bits & !a.bits,
+                    b.difference(a).bits(),
+                    b.bits() & !a.bits(),
                     "wrong result: `{:?}` - `{:?}`",
                     b,
                     a,
@@ -1703,28 +1766,28 @@ mod tests {
 
     #[test]
     fn test_debug() {
-        assert_eq!(format!("{:?}", Flags::A | Flags::B), "A | B");
-        assert_eq!(format!("{:?}", Flags::empty()), "(empty)");
-        assert_eq!(format!("{:?}", Flags::ABC), "A | B | C");
+        assert_eq!(format!("{:?}", Flags::A | Flags::B), "Flags(A | B)");
+        assert_eq!(format!("{:?}", Flags::empty()), "Flags(empty)");
+        assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C)");
 
-        let extra = unsafe { Flags::from_bits_unchecked(0xb8) };
+        let extra = Flags::from_bits_retain(0xb8);
 
-        assert_eq!(format!("{:?}", extra), "0xb8");
-        assert_eq!(format!("{:?}", Flags::A | extra), "A | 0xb8");
+        assert_eq!(format!("{:?}", extra), "Flags(0xb8)");
+        assert_eq!(format!("{:?}", Flags::A | extra), "Flags(A | 0xb8)");
 
         assert_eq!(
             format!("{:?}", Flags::ABC | extra),
-            "A | B | C | ABC | 0xb8"
+            "Flags(A | B | C | ABC | 0xb8)"
         );
 
-        assert_eq!(format!("{:?}", EmptyFlags::empty()), "(empty)");
+        assert_eq!(format!("{:?}", EmptyFlags::empty()), "EmptyFlags(empty)");
     }
 
     #[test]
     fn test_binary() {
         assert_eq!(format!("{:b}", Flags::ABC), "111");
         assert_eq!(format!("{:#b}", Flags::ABC), "0b111");
-        let extra = unsafe { Flags::from_bits_unchecked(0b1010000) };
+        let extra = Flags::from_bits_retain(0b1010000);
         assert_eq!(format!("{:b}", Flags::ABC | extra), "1010111");
         assert_eq!(format!("{:#b}", Flags::ABC | extra), "0b1010111");
     }
@@ -1733,7 +1796,7 @@ mod tests {
     fn test_octal() {
         assert_eq!(format!("{:o}", LongFlags::LONG_A), "177777");
         assert_eq!(format!("{:#o}", LongFlags::LONG_A), "0o177777");
-        let extra = unsafe { LongFlags::from_bits_unchecked(0o5000000) };
+        let extra = LongFlags::from_bits_retain(0o5000000);
         assert_eq!(format!("{:o}", LongFlags::LONG_A | extra), "5177777");
         assert_eq!(format!("{:#o}", LongFlags::LONG_A | extra), "0o5177777");
     }
@@ -1742,7 +1805,7 @@ mod tests {
     fn test_lowerhex() {
         assert_eq!(format!("{:x}", LongFlags::LONG_A), "ffff");
         assert_eq!(format!("{:#x}", LongFlags::LONG_A), "0xffff");
-        let extra = unsafe { LongFlags::from_bits_unchecked(0xe00000) };
+        let extra = LongFlags::from_bits_retain(0xe00000);
         assert_eq!(format!("{:x}", LongFlags::LONG_A | extra), "e0ffff");
         assert_eq!(format!("{:#x}", LongFlags::LONG_A | extra), "0xe0ffff");
     }
@@ -1751,7 +1814,7 @@ mod tests {
     fn test_upperhex() {
         assert_eq!(format!("{:X}", LongFlags::LONG_A), "FFFF");
         assert_eq!(format!("{:#X}", LongFlags::LONG_A), "0xFFFF");
-        let extra = unsafe { LongFlags::from_bits_unchecked(0xe00000) };
+        let extra = LongFlags::from_bits_retain(0xe00000);
         assert_eq!(format!("{:X}", LongFlags::LONG_A | extra), "E0FFFF");
         assert_eq!(format!("{:#X}", LongFlags::LONG_A | extra), "0xE0FFFF");
     }
@@ -1798,14 +1861,15 @@ mod tests {
     #[test]
     fn test_in_function() {
         bitflags! {
-           struct Flags: u8 {
+            #[derive(Debug, PartialEq, Eq)]
+            struct Flags: u8 {
                 const A = 1;
                 #[cfg(any())] // false
                 const B = 2;
             }
         }
         assert_eq!(Flags::all(), Flags::A);
-        assert_eq!(format!("{:?}", Flags::A), "A");
+        assert_eq!(format!("{:?}", Flags::A), "Flags(A)");
     }
 
     #[test]
@@ -1863,6 +1927,7 @@ mod tests {
     #[test]
     fn test_zero_value_flags() {
         bitflags! {
+            #[derive(Debug, PartialEq, Eq)]
             struct Flags: u32 {
                 const NONE = 0b0;
                 const SOME = 0b1;
@@ -1873,8 +1938,8 @@ mod tests {
         assert!(Flags::SOME.contains(Flags::NONE));
         assert!(Flags::NONE.is_empty());
 
-        assert_eq!(format!("{:?}", Flags::empty()), "(empty)");
-        assert_eq!(format!("{:?}", Flags::SOME), "NONE | SOME");
+        assert_eq!(format!("{:?}", Flags::empty()), "Flags(empty)");
+        assert_eq!(format!("{:?}", Flags::SOME), "Flags(NONE | SOME)");
     }
 
     #[test]
@@ -1885,69 +1950,33 @@ mod tests {
     #[test]
     fn test_u128_bitflags() {
         bitflags! {
-            struct Flags128: u128 {
+            #[derive(Debug, PartialEq, Eq)]
+            struct Flags: u128 {
                 const A = 0x0000_0000_0000_0000_0000_0000_0000_0001;
                 const B = 0x0000_0000_0000_1000_0000_0000_0000_0000;
                 const C = 0x8000_0000_0000_0000_0000_0000_0000_0000;
-                const ABC = Self::A.bits | Self::B.bits | Self::C.bits;
+                const ABC = Self::A.bits() | Self::B.bits() | Self::C.bits();
             }
         }
 
-        assert_eq!(Flags128::ABC, Flags128::A | Flags128::B | Flags128::C);
-        assert_eq!(Flags128::A.bits, 0x0000_0000_0000_0000_0000_0000_0000_0001);
-        assert_eq!(Flags128::B.bits, 0x0000_0000_0000_1000_0000_0000_0000_0000);
-        assert_eq!(Flags128::C.bits, 0x8000_0000_0000_0000_0000_0000_0000_0000);
+        assert_eq!(Flags::ABC, Flags::A | Flags::B | Flags::C);
+        assert_eq!(Flags::A.bits(), 0x0000_0000_0000_0000_0000_0000_0000_0001);
+        assert_eq!(Flags::B.bits(), 0x0000_0000_0000_1000_0000_0000_0000_0000);
+        assert_eq!(Flags::C.bits(), 0x8000_0000_0000_0000_0000_0000_0000_0000);
         assert_eq!(
-            Flags128::ABC.bits,
+            Flags::ABC.bits(),
             0x8000_0000_0000_1000_0000_0000_0000_0001
         );
-        assert_eq!(format!("{:?}", Flags128::A), "A");
-        assert_eq!(format!("{:?}", Flags128::B), "B");
-        assert_eq!(format!("{:?}", Flags128::C), "C");
-        assert_eq!(format!("{:?}", Flags128::ABC), "A | B | C");
-    }
-
-    #[test]
-    fn test_serde_bitflags_serialize() {
-        let flags = SerdeFlags::A | SerdeFlags::B;
-
-        let serialized = serde_json::to_string(&flags).unwrap();
-
-        assert_eq!(serialized, r#"{"bits":3}"#);
-    }
-
-    #[test]
-    fn test_serde_bitflags_deserialize() {
-        let deserialized: SerdeFlags = serde_json::from_str(r#"{"bits":12}"#).unwrap();
-
-        let expected = SerdeFlags::C | SerdeFlags::D;
-
-        assert_eq!(deserialized.bits, expected.bits);
-    }
-
-    #[test]
-    fn test_serde_bitflags_roundtrip() {
-        let flags = SerdeFlags::A | SerdeFlags::B;
-
-        let deserialized: SerdeFlags =
-            serde_json::from_str(&serde_json::to_string(&flags).unwrap()).unwrap();
-
-        assert_eq!(deserialized.bits, flags.bits);
-    }
-
-    bitflags! {
-        #[derive(serde_derive::Serialize, serde_derive::Deserialize)]
-        struct SerdeFlags: u32 {
-            const A = 1;
-            const B = 2;
-            const C = 4;
-            const D = 8;
-        }
+        assert_eq!(format!("{:?}", Flags::A), "Flags(A)");
+        assert_eq!(format!("{:?}", Flags::B), "Flags(B)");
+        assert_eq!(format!("{:?}", Flags::C), "Flags(C)");
+        assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C)");
     }
 
     #[test]
     fn test_from_bits_edge_cases() {
         bitflags! {
+            #[derive(Debug, PartialEq, Eq)]
             struct Flags: u8 {
                 const A = 0b00000001;
                 const BC = 0b00000110;
@@ -1963,6 +1992,7 @@ mod tests {
     #[test]
     fn test_from_bits_truncate_edge_cases() {
         bitflags! {
+            #[derive(Debug, PartialEq, Eq)]
             struct Flags: u8 {
                 const A = 0b00000001;
                 const BC = 0b00000110;
@@ -1978,6 +2008,7 @@ mod tests {
     #[test]
     fn test_iter() {
         bitflags! {
+            #[derive(Debug, PartialEq, Eq)]
             struct Flags: u32 {
                 const ONE  = 0b001;
                 const TWO  = 0b010;
@@ -2039,5 +2070,48 @@ mod tests {
         assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE));
         assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE));
         assert_eq!(iter.next(), None);
+    }
+
+    #[cfg(feature = "serde")]
+    mod serde_support {
+        use super::*;
+
+        bitflags! {
+            #[derive(serde_derive::Serialize, serde_derive::Deserialize)]
+            struct SerdeFlags: u32 {
+                const A = 1;
+                const B = 2;
+                const C = 4;
+                const D = 8;
+            }
+        }
+
+        #[test]
+        fn test_serde_bitflags_serialize() {
+            let flags = SerdeFlags::A | SerdeFlags::B;
+
+            let serialized = serde_json::to_string(&flags).unwrap();
+
+            assert_eq!(serialized, r#"{"bits":3}"#);
+        }
+
+        #[test]
+        fn test_serde_bitflags_deserialize() {
+            let deserialized: SerdeFlags = serde_json::from_str(r#"{"bits":12}"#).unwrap();
+
+            let expected = SerdeFlags::C | SerdeFlags::D;
+
+            assert_eq!(deserialized.bits(), expected.bits());
+        }
+
+        #[test]
+        fn test_serde_bitflags_roundtrip() {
+            let flags = SerdeFlags::A | SerdeFlags::B;
+
+            let deserialized: SerdeFlags =
+                serde_json::from_str(&serde_json::to_string(&flags).unwrap()).unwrap();
+
+            assert_eq!(deserialized.bits(), flags.bits());
+        }
     }
 }
