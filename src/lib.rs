@@ -287,6 +287,9 @@ mod bitflags_trait;
 pub mod __private {
     pub use crate::bitflags_trait::{Bits, ImplementedByBitFlagsMacro, InternalFlags, PublicFlags};
     pub use core;
+
+    #[cfg(feature = "serde")]
+    pub use serde;
 }
 
 /*
@@ -437,6 +440,15 @@ macro_rules! bitflags {
             }
 
             __impl_internal_bitflags! {
+                InternalFlags: $T {
+                    $(
+                        $(#[$inner $($args)*])*
+                        $Flag;
+                    )*
+                }
+            }
+
+            __impl_internal_bitflags_serde! {
                 InternalFlags: $T {
                     $(
                         $(#[$inner $($args)*])*
@@ -1173,15 +1185,17 @@ macro_rules! __impl_internal_bitflags_serde {
             )*
         }
     ) => {
-        impl $crate::__private::serde::Serialize for $InternalBitflags {
-            fn serialize<S: $crate::__private::serde::Serializer>(&self, serializer: S) -> $crate::__private::Result<S::Ok, S::Error> {
-                todo!()
+        impl $crate::__private::serde::Serialize for $InternalBitFlags {
+            fn serialize<S: $crate::__private::serde::Serializer>(&self, serializer: S) -> $crate::__private::core::result::Result<S::Ok, S::Error> {
+                $crate::serde_support::serialize_bits_default($crate::__private::core::stringify!($InternalBitFlags), &self.bits, serializer)
             }
         }
 
         impl<'de> $crate::__private::serde::Deserialize<'de> for $InternalBitFlags {
-            fn deserialize<D: $crate::__private::serde::Deserializer<'de>>(&self, deserializer: D) -> $crate::__private::Result<Self, D::Error> {
-                todo!()
+            fn deserialize<D: $crate::__private::serde::Deserializer<'de>>(deserializer: D) -> $crate::__private::core::result::Result<Self, D::Error> {
+                let bits = $crate::serde_support::deserialize_bits_default($crate::__private::core::stringify!($InternalBitFlags), deserializer)?;
+
+                $crate::__private::result::Result::Ok($InternalBitFlags::from_bits_retain(bits))
             }
         }
     }
@@ -1203,6 +1217,9 @@ macro_rules! __impl_internal_bitflags_serde {
 
 #[cfg(feature = "example_generated")]
 pub mod example_generated;
+
+#[cfg(feature = "serde")]
+pub mod serde_support;
 
 #[cfg(test)]
 mod tests {
@@ -2070,48 +2087,5 @@ mod tests {
         assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE));
         assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE));
         assert_eq!(iter.next(), None);
-    }
-
-    #[cfg(feature = "serde")]
-    mod serde_support {
-        use super::*;
-
-        bitflags! {
-            #[derive(serde_derive::Serialize, serde_derive::Deserialize)]
-            struct SerdeFlags: u32 {
-                const A = 1;
-                const B = 2;
-                const C = 4;
-                const D = 8;
-            }
-        }
-
-        #[test]
-        fn test_serde_bitflags_serialize() {
-            let flags = SerdeFlags::A | SerdeFlags::B;
-
-            let serialized = serde_json::to_string(&flags).unwrap();
-
-            assert_eq!(serialized, r#"{"bits":3}"#);
-        }
-
-        #[test]
-        fn test_serde_bitflags_deserialize() {
-            let deserialized: SerdeFlags = serde_json::from_str(r#"{"bits":12}"#).unwrap();
-
-            let expected = SerdeFlags::C | SerdeFlags::D;
-
-            assert_eq!(deserialized.bits(), expected.bits());
-        }
-
-        #[test]
-        fn test_serde_bitflags_roundtrip() {
-            let flags = SerdeFlags::A | SerdeFlags::B;
-
-            let deserialized: SerdeFlags =
-                serde_json::from_str(&serde_json::to_string(&flags).unwrap()).unwrap();
-
-            assert_eq!(deserialized.bits(), flags.bits());
-        }
     }
 }
