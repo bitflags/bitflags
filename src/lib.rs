@@ -317,7 +317,7 @@ What they'd end up with looks something like this:
 ```rust
 pub struct MyFlags(<MyFlags as PublicFlags>::InternalFlags);
 
-const _: () {
+const _: () = {
     #[repr(transparent)]
     #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct MyInternalFlags {
