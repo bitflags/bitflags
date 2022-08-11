@@ -1190,7 +1190,7 @@ macro_rules! __impl_internal_bitflags_serde {
             fn deserialize<D: $crate::__private::serde::Deserializer<'de>>(deserializer: D) -> $crate::__private::core::result::Result<Self, D::Error> {
                 let bits = $crate::serde_support::deserialize_bits_default($crate::__private::core::stringify!($InternalBitFlags), deserializer)?;
 
-                $crate::__private::result::Result::Ok($InternalBitFlags::from_bits_retain(bits))
+                $crate::__private::core::result::Result::Ok($InternalBitFlags::from_bits_retain(bits))
             }
         }
     }
