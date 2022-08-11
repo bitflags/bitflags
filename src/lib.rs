@@ -21,7 +21,7 @@
 //! use bitflags::bitflags;
 //!
 //! bitflags! {
-//!     #[derive(Debug, PartialEq, Eq, Hash)]
+//!     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 //!     struct Flags: u32 {
 //!         const A = 0b00000001;
 //!         const B = 0b00000010;
@@ -52,7 +52,7 @@
 //! use bitflags::bitflags;
 //!
 //! bitflags! {
-//!     #[derive(Debug, PartialEq, Eq, Hash)]
+//!     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 //!     struct Flags: u32 {
 //!         const A = 0b00000001;
 //!         const B = 0b00000010;
@@ -61,7 +61,7 @@
 //!
 //! impl Flags {
 //!     pub fn clear(&mut self) {
-//!         *self = Self::from_bits_retain(0);
+//!         *self.0.bits_mut() = 0;
 //!     }
 //! }
 //!
@@ -85,12 +85,12 @@
 //!     use bitflags::bitflags;
 //!
 //!     bitflags! {
-//!         #[derive(Debug, PartialEq, Eq, Hash)]
+//!         #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 //!         pub struct Flags1: u32 {
 //!             const A = 0b00000001;
 //!         }
 //!
-//!         #[derive(Debug, PartialEq, Eq, Hash)]
+//!         #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 //! #       pub
 //!         struct Flags2: u32 {
 //!             const B = 0b00000010;
@@ -119,7 +119,7 @@
 //!
 //! bitflags! {
 //!     #[repr(transparent)]
-//!     #[derive(Debug, PartialEq, Eq, Hash)]
+//!     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 //!     struct Flags: u32 {
 //!         const A = 0b00000001;
 //!         const B = 0b00000010;
@@ -130,12 +130,8 @@
 //!
 //! # Trait implementations
 //!
-//! The `Copy` and `Clone` traits are automatically derived for the `struct`s using the `derive` attribute.
-//! Additional traits can be derived by providing an explicit `derive`
-//! attribute on `struct`.
-//!
-//! The `Extend` and `FromIterator` traits are implemented for the `struct`s,
-//! too: `Extend` adds the union of the instances of the `struct` iterated over,
+//! The `Extend` and `FromIterator` traits are implemented for the `struct`s.
+//! `Extend` adds the union of the instances of the `struct` iterated over,
 //! while `FromIterator` calculates the union.
 //!
 //! The `Binary`, `Debug`, `LowerHex`, `Octal` and `UpperHex` traits are also
@@ -200,7 +196,7 @@
 //!
 //! bitflags! {
 //!     // Results in default value with bits: 0
-//!     #[derive(Default, Debug, PartialEq, Eq, Hash)]
+//!     #[derive(Default, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 //!     struct Flags: u32 {
 //!         const A = 0b00000001;
 //!         const B = 0b00000010;
@@ -220,7 +216,7 @@
 //! use bitflags::bitflags;
 //!
 //! bitflags! {
-//!     #[derive(Debug, PartialEq, Eq, Hash)]
+//!     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 //!     struct Flags: u32 {
 //!         const A = 0b00000001;
 //!         const B = 0b00000010;
@@ -249,7 +245,7 @@
 //! use bitflags::bitflags;
 //!
 //! bitflags! {
-//!     #[derive(Debug, PartialEq, Eq, Hash)]
+//!     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 //!     struct Flags: u32 {
 //!         const NONE = 0b00000000;
 //!         const SOME = 0b00000001;
@@ -349,7 +345,7 @@ the `__impl_bitflags_internal!` macro.
 /// use bitflags::bitflags;
 ///
 /// bitflags! {
-///     #[derive(Debug, PartialEq, Eq, Hash)]
+///     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 ///     struct Flags: u32 {
 ///         const A = 0b00000001;
 ///         const B = 0b00000010;
@@ -377,7 +373,7 @@ the `__impl_bitflags_internal!` macro.
 /// use bitflags::bitflags;
 ///
 /// bitflags! {
-///     #[derive(Debug, PartialEq, Eq, Hash)]
+///     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 ///     struct Flags: u32 {
 ///         const A = 0b00000001;
 ///         const B = 0b00000010;
@@ -386,7 +382,7 @@ the `__impl_bitflags_internal!` macro.
 ///
 /// impl Flags {
 ///     pub fn clear(&mut self) {
-///         *self = Self::from_bits_retain(0);
+///         *self.0.bits_mut() = 0;
 ///     }
 /// }
 ///
@@ -412,7 +408,6 @@ macro_rules! bitflags {
         $($t:tt)*
     ) => {
         $(#[$outer])*
-        #[derive(Clone, Copy)]
         $vis struct $BitFlags(<$BitFlags as $crate::__private::PublicFlags>::InternalFlags);
 
         __impl_public_bitflags! {
@@ -432,15 +427,6 @@ macro_rules! bitflags {
             }
 
             __impl_internal_bitflags! {
-                InternalFlags: $T {
-                    $(
-                        $(#[$inner $($args)*])*
-                        $Flag;
-                    )*
-                }
-            }
-
-            __impl_internal_bitflags_serde! {
                 InternalFlags: $T {
                     $(
                         $(#[$inner $($args)*])*
@@ -894,6 +880,16 @@ macro_rules! __impl_internal_bitflags {
             )*
         }
     ) => {
+        // Any new library traits impls should be added here
+        __impl_internal_bitflags_serde! {
+            $InternalBitFlags: $T {
+                $(
+                    $(#[$attr $($args)*])*
+                    $Flag;
+                )*
+            }
+        }
+
         impl $crate::__private::core::default::Default for $InternalBitFlags {
             #[inline]
             fn default() -> Self {
@@ -979,6 +975,11 @@ macro_rules! __impl_internal_bitflags {
             #[inline]
             pub const fn bits(&self) -> $T {
                 self.bits
+            }
+
+            #[inline]
+            pub fn bits_mut(&mut self) -> &mut $T {
+                &mut self.bits
             }
 
             #[inline]
@@ -1225,7 +1226,7 @@ mod tests {
         #[doc = "> you are the easiest person to fool."]
         #[doc = "> "]
         #[doc = "> - Richard Feynman"]
-        #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct Flags: u32 {
             const A = 0b00000001;
             #[doc = "<pcwalton> macros are way better at generating code than trans is"]
@@ -1237,7 +1238,7 @@ mod tests {
             const ABC = Self::A.bits() | Self::B.bits() | Self::C.bits();
         }
 
-        #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct _CfgFlags: u32 {
             #[cfg(unix)]
             const _CFG_A = 0b01;
@@ -1247,19 +1248,19 @@ mod tests {
             const _CFG_C = Self::_CFG_A.bits() | 0b10;
         }
 
-        #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct AnotherSetOfFlags: i8 {
             const ANOTHER_FLAG = -1_i8;
         }
 
-        #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct LongFlags: u32 {
             const LONG_A = 0b1111111111111111;
         }
     }
 
     bitflags! {
-        #[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct EmptyFlags: u32 {
         }
     }
@@ -1550,7 +1551,7 @@ mod tests {
         // - unknown flags at both ends, and in the middle
         // - cases with "gaps".
         bitflags! {
-            #[derive(Debug, PartialEq, Eq)]
+            #[derive(Clone, Copy, Debug, PartialEq, Eq)]
             struct Test: u16 {
                 // Intentionally no `A`
                 const B = 0b000000010;
@@ -1832,10 +1833,12 @@ mod tests {
 
     mod submodule {
         bitflags! {
+            #[derive(Clone, Copy)]
             pub struct PublicFlags: i8 {
                 const X = 0;
             }
 
+            #[derive(Clone, Copy)]
             struct PrivateFlags: i8 {
                 const Y = 0;
             }
@@ -1859,6 +1862,7 @@ mod tests {
 
         bitflags! {
             /// baz
+            #[derive(Clone, Copy)]
             struct Flags: foo::Bar {
                 const A = 0b00000001;
                 #[cfg(foo)]
@@ -1872,7 +1876,7 @@ mod tests {
     #[test]
     fn test_in_function() {
         bitflags! {
-            #[derive(Debug, PartialEq, Eq)]
+            #[derive(Clone, Copy, Debug, PartialEq, Eq)]
             struct Flags: u8 {
                 const A = 1;
                 #[cfg(any())] // false
@@ -1886,6 +1890,7 @@ mod tests {
     #[test]
     fn test_deprecated() {
         bitflags! {
+            #[derive(Clone, Copy)]
             pub struct TestFlags: u32 {
                 #[deprecated(note = "Use something else.")]
                 const ONE = 1;
@@ -1897,6 +1902,7 @@ mod tests {
     fn test_pub_crate() {
         mod module {
             bitflags! {
+                #[derive(Clone, Copy)]
                 pub (crate) struct Test: u8 {
                     const FOO = 1;
                 }
@@ -1913,6 +1919,7 @@ mod tests {
                 bitflags! {
                     // `pub (in super)` means only the module `module` will
                     // be able to access this.
+                    #[derive(Clone, Copy)]
                     pub (in super) struct Test: u8 {
                         const FOO = 1;
                     }
@@ -1938,7 +1945,7 @@ mod tests {
     #[test]
     fn test_zero_value_flags() {
         bitflags! {
-            #[derive(Debug, PartialEq, Eq)]
+            #[derive(Clone, Copy, Debug, PartialEq, Eq)]
             struct Flags: u32 {
                 const NONE = 0b0;
                 const SOME = 0b1;
@@ -1961,7 +1968,7 @@ mod tests {
     #[test]
     fn test_u128_bitflags() {
         bitflags! {
-            #[derive(Debug, PartialEq, Eq)]
+            #[derive(Clone, Copy, Debug, PartialEq, Eq)]
             struct Flags: u128 {
                 const A = 0x0000_0000_0000_0000_0000_0000_0000_0001;
                 const B = 0x0000_0000_0000_1000_0000_0000_0000_0000;
@@ -1987,7 +1994,7 @@ mod tests {
     #[test]
     fn test_from_bits_edge_cases() {
         bitflags! {
-            #[derive(Debug, PartialEq, Eq)]
+            #[derive(Clone, Copy, Debug, PartialEq, Eq)]
             struct Flags: u8 {
                 const A = 0b00000001;
                 const BC = 0b00000110;
@@ -2003,7 +2010,7 @@ mod tests {
     #[test]
     fn test_from_bits_truncate_edge_cases() {
         bitflags! {
-            #[derive(Debug, PartialEq, Eq)]
+            #[derive(Clone, Copy, Debug, PartialEq, Eq)]
             struct Flags: u8 {
                 const A = 0b00000001;
                 const BC = 0b00000110;
@@ -2019,7 +2026,7 @@ mod tests {
     #[test]
     fn test_iter() {
         bitflags! {
-            #[derive(Debug, PartialEq, Eq)]
+            #[derive(Clone, Copy, Debug, PartialEq, Eq)]
             struct Flags: u32 {
                 const ONE  = 0b001;
                 const TWO  = 0b010;
