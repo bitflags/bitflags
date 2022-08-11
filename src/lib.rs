@@ -21,6 +21,7 @@
 //! use bitflags::bitflags;
 //!
 //! bitflags! {
+//!     #[derive(Debug, PartialEq, Eq, Hash)]
 //!     struct Flags: u32 {
 //!         const A = 0b00000001;
 //!         const B = 0b00000010;
@@ -51,6 +52,7 @@
 //! use bitflags::bitflags;
 //!
 //! bitflags! {
+//!     #[derive(Debug, PartialEq, Eq, Hash)]
 //!     struct Flags: u32 {
 //!         const A = 0b00000001;
 //!         const B = 0b00000010;
@@ -59,14 +61,7 @@
 //!
 //! impl Flags {
 //!     pub fn clear(&mut self) {
-//!         self.bits = 0;  // The `bits` field can be accessed from within the
-//!                         // same module where the `bitflags!` macro was invoked.
-//!     }
-//! }
-//!
-//! impl fmt::Display for Flags {
-//!     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//!         write!(f, "hi!")
+//!         *self = Self::from_bits_retain(0);
 //!     }
 //! }
 //!
@@ -74,9 +69,8 @@
 //!     let mut flags = Flags::A | Flags::B;
 //!     flags.clear();
 //!     assert!(flags.is_empty());
-//!     assert_eq!(format!("{}", flags), "hi!");
-//!     assert_eq!(format!("{:?}", Flags::A | Flags::B), "A | B");
-//!     assert_eq!(format!("{:?}", Flags::B), "B");
+//!     assert_eq!(format!("{:?}", Flags::A | Flags::B), "Flags(A | B)");
+//!     assert_eq!(format!("{:?}", Flags::B), "Flags(B)");
 //! }
 //! ```
 //!
@@ -91,10 +85,12 @@
 //!     use bitflags::bitflags;
 //!
 //!     bitflags! {
+//!         #[derive(Debug, PartialEq, Eq, Hash)]
 //!         pub struct Flags1: u32 {
 //!             const A = 0b00000001;
 //!         }
 //!
+//!         #[derive(Debug, PartialEq, Eq, Hash)]
 //! #       pub
 //!         struct Flags2: u32 {
 //!             const B = 0b00000010;
@@ -123,6 +119,7 @@
 //!
 //! bitflags! {
 //!     #[repr(transparent)]
+//!     #[derive(Debug, PartialEq, Eq, Hash)]
 //!     struct Flags: u32 {
 //!         const A = 0b00000001;
 //!         const B = 0b00000010;
@@ -133,8 +130,7 @@
 //!
 //! # Trait implementations
 //!
-//! The `Copy`, `Clone`, `PartialEq`, `Eq`, `PartialOrd`, `Ord` and `Hash`
-//! traits are automatically derived for the `struct`s using the `derive` attribute.
+//! The `Copy` and `Clone` traits are automatically derived for the `struct`s using the `derive` attribute.
 //! Additional traits can be derived by providing an explicit `derive`
 //! attribute on `struct`.
 //!
@@ -204,7 +200,7 @@
 //!
 //! bitflags! {
 //!     // Results in default value with bits: 0
-//!     #[derive(Default)]
+//!     #[derive(Default, Debug, PartialEq, Eq, Hash)]
 //!     struct Flags: u32 {
 //!         const A = 0b00000001;
 //!         const B = 0b00000010;
@@ -224,6 +220,7 @@
 //! use bitflags::bitflags;
 //!
 //! bitflags! {
+//!     #[derive(Debug, PartialEq, Eq, Hash)]
 //!     struct Flags: u32 {
 //!         const A = 0b00000001;
 //!         const B = 0b00000010;
@@ -252,6 +249,7 @@
 //! use bitflags::bitflags;
 //!
 //! bitflags! {
+//!     #[derive(Debug, PartialEq, Eq, Hash)]
 //!     struct Flags: u32 {
 //!         const NONE = 0b00000000;
 //!         const SOME = 0b00000001;
@@ -351,6 +349,7 @@ the `__impl_bitflags_internal!` macro.
 /// use bitflags::bitflags;
 ///
 /// bitflags! {
+///     #[derive(Debug, PartialEq, Eq, Hash)]
 ///     struct Flags: u32 {
 ///         const A = 0b00000001;
 ///         const B = 0b00000010;
@@ -378,6 +377,7 @@ the `__impl_bitflags_internal!` macro.
 /// use bitflags::bitflags;
 ///
 /// bitflags! {
+///     #[derive(Debug, PartialEq, Eq, Hash)]
 ///     struct Flags: u32 {
 ///         const A = 0b00000001;
 ///         const B = 0b00000010;
@@ -386,14 +386,7 @@ the `__impl_bitflags_internal!` macro.
 ///
 /// impl Flags {
 ///     pub fn clear(&mut self) {
-///         self.bits = 0;  // The `bits` field can be accessed from within the
-///                         // same module where the `bitflags!` macro was invoked.
-///     }
-/// }
-///
-/// impl fmt::Display for Flags {
-///     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-///         write!(f, "hi!")
+///         *self = Self::from_bits_retain(0);
 ///     }
 /// }
 ///
@@ -401,9 +394,8 @@ the `__impl_bitflags_internal!` macro.
 ///     let mut flags = Flags::A | Flags::B;
 ///     flags.clear();
 ///     assert!(flags.is_empty());
-///     assert_eq!(format!("{}", flags), "hi!");
-///     assert_eq!(format!("{:?}", Flags::A | Flags::B), "A | B");
-///     assert_eq!(format!("{:?}", Flags::B), "B");
+///     assert_eq!(format!("{:?}", Flags::A | Flags::B), "Flags(A | B)");
+///     assert_eq!(format!("{:?}", Flags::B), "Flags(B)");
 /// }
 /// ```
 #[macro_export(local_inner_macros)]
