@@ -9,5 +9,5 @@ mod example {
 }
 
 fn main() {
-    let flag1 = example::Flags1::FLAG_A.bits;
+    let _ = example::Flags1::FLAG_A.bits;
 }

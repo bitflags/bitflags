@@ -549,8 +549,8 @@ macro_rules! __impl_public_bitflags {
             #[inline]
             pub const fn from_bits(bits: $T) -> $crate::__private::core::option::Option<Self> {
                 match <$PublicBitFlags as $crate::__private::PublicFlags>::InternalFlags::from_bits(bits) {
-                    Some(bits) => Some(Self(bits)),
-                    None => None,
+                    $crate::__private::core::option::Option::Some(bits) => $crate::__private::core::option::Option::Some(Self(bits)),
+                    $crate::__private::core::option::Option::None => $crate::__private::core::option::Option::None,
                 }
             }
 
@@ -716,6 +716,8 @@ macro_rules! __impl_public_bitflags {
 
             /// Returns an iterator over set flags and their names.
             pub fn iter(self) -> impl $crate::__private::core::iter::Iterator<Item = (&'static str, Self)> {
+                use $crate::__private::core::iter::Iterator as _;
+
                 self.0.iter().map(|(name, bits)| (name, Self::from_bits_retain(bits)))
             }
 
