@@ -1,0 +1,11 @@
+error: no rules expected the token `{`
+ --> tests/compile-fail/syntax/missing_type.rs:5:23
+  |
+5 |     pub struct Flags1 {
+  |                       ^ no rules expected this token in macro call
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/compile-fail/syntax/missing_type.rs:8:2
+  |
+8 | }
+  |  ^ consider adding a `main` function to `$DIR/tests/compile-fail/syntax/missing_type.rs`

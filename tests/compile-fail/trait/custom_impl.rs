@@ -25,7 +25,7 @@ impl BitFlags for BootlegFlags {
         unimplemented!()
     }
 
-    unsafe fn from_bits_unchecked(_: u32) -> BootlegFlags {
+    fn from_bits_retain(_: u32) -> BootlegFlags {
         unimplemented!()
     }
 

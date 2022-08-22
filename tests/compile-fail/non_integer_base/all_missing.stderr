@@ -1,5 +1,5 @@
 error[E0204]: the trait `Copy` may not be implemented for this type
-  --> $DIR/all_missing.rs:5:1
+  --> tests/compile-fail/non_integer_base/all_missing.rs:5:1
    |
 5  | / bitflags! {
 6  | |     struct Flags128: MyInt {
@@ -10,4 +10,4 @@ error[E0204]: the trait `Copy` may not be implemented for this type
 11 | | }
    | |_^ this field does not implement `Copy`
    |
-   = note: this error originates in the derive macro `Copy` (in Nightly builds, run with -Z macro-backtrace for more info)
+   = note: this error originates in the derive macro `Copy` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)

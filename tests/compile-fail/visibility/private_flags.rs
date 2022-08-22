@@ -13,6 +13,6 @@ mod example {
 }
 
 fn main() {
-    let flag1 = example::Flags1::FLAG_A;
-    let flag2 = example::Flags2::FLAG_B;
+    let _ = example::Flags1::FLAG_A;
+    let _ = example::Flags2::FLAG_B;
 }

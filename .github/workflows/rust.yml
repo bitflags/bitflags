@@ -46,8 +46,17 @@ jobs:
         profile: minimal
         toolchain: ${{ matrix.channel }}-${{ matrix.rust_target }}
 
-    - name: Tests
-      run: cargo test --features example_generated
+    - name: Install cargo-hack
+      run: cargo install cargo-hack
+
+    - name: Powerset
+      run: cargo hack test --feature-powerset --lib --optional-deps "serde" --depth 3 --skip rustc-dep-of-std
+
+    - name: Docs
+      run: cargo doc --features example_generated
+
+    - name: Smoke test
+      run: cargo run --manifest-path tests/smoke-test/Cargo.toml
 
   embedded:
     name: Build (embedded)

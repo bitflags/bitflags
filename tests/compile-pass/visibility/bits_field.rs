@@ -7,5 +7,5 @@ bitflags! {
 }
 
 fn main() {
-    assert_eq!(0b00000001, Flags1::FLAG_A.bits);
+    assert_eq!(0b00000001, Flags1::FLAG_A.bits());
 }

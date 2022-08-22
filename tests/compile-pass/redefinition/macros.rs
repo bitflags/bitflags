@@ -13,6 +13,7 @@ macro_rules! write {
 }
 
 bitflags! {
+    #[derive(Debug)]
     struct Test: u8 {
         const A = 1;
     }
@@ -20,5 +21,5 @@ bitflags! {
 
 fn main() {
     // Just make sure we don't call the redefined `stringify` or `write` macro
-    assert_eq!(format!("{:?}", unsafe { Test::from_bits_unchecked(0b11) }), "A | 0x2");
+    assert_eq!(format!("{:?}", Test::from_bits_retain(0b11)), "Test(A | 0x2)");
 }

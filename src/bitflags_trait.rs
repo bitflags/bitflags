@@ -1,8 +1,5 @@
 use core::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not};
 
-#[doc(hidden)]
-pub trait ImplementedByBitFlagsMacro {}
-
 /// A trait that is automatically implemented for all bitflags.
 ///
 /// It should not be implemented manually.
@@ -25,16 +22,7 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     fn from_bits_truncate(bits: Self::Bits) -> Self;
     /// Convert from underlying bit representation, preserving all
     /// bits (even those not corresponding to a defined flag).
-    ///
-    /// # Safety
-    ///
-    /// The caller of the `bitflags!` macro can chose to allow or
-    /// disallow extra bits for their bitflags type.
-    ///
-    /// The caller of `from_bits_unchecked()` has to ensure that
-    /// all bits correspond to a defined flag or that extra bits
-    /// are valid for this bitflags type.
-    unsafe fn from_bits_unchecked(bits: Self::Bits) -> Self;
+    fn from_bits_retain(bits: Self::Bits) -> Self;
     /// Returns `true` if no flags are currently stored.
     fn is_empty(&self) -> bool;
     /// Returns `true` if all flags are currently set.
@@ -53,8 +41,21 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     fn set(&mut self, other: Self, value: bool);
 }
 
+/// A marker trait that signals that an implementation of `BitFlags` came from the `bitflags!` macro.
+///
+/// There's nothing stopping an end-user from implementing this trait, but we don't guarantee their
+/// manual implementations won't break between non-breaking releases.
+#[doc(hidden)]
+pub trait ImplementedByBitFlagsMacro {}
+
 // Not re-exported
 pub trait Sealed {}
+
+// Private implementation details
+//
+// The `Bits`, `PublicFlags`, and `InternalFlags` traits are implementation details of the `bitflags!`
+// macro that we're free to change here. They work with the `bitflags!` macro to separate the generated
+// code that belongs to end-users, and the generated code that belongs to this library.
 
 /// A private trait that encodes the requirements of underlying bits types that can hold flags.
 ///
@@ -106,4 +107,12 @@ impl_bits! {
     u32, i32,
     u64, i64,
     u128, i128,
+}
+
+pub trait PublicFlags {
+    type InternalFlags;
+}
+
+pub trait InternalFlags {
+    type PublicFlags;
 }
