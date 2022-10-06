@@ -1,15 +1,26 @@
 use core::fmt;
-use serde::{Serializer, Deserializer, Serialize, Deserialize, ser::SerializeStruct, de::{Error, MapAccess, Visitor}};
+use serde::{
+    de::{Error, MapAccess, Visitor},
+    ser::SerializeStruct,
+    Deserialize, Deserializer, Serialize, Serializer,
+};
 
 // These methods are compatible with the result of `#[derive(Serialize, Deserialize)]` on bitflags `1.0` types
 
-pub fn serialize_bits_default<B: Serialize, S: Serializer>(name: &'static str, bits: &B, serializer: S) -> Result<S::Ok, S::Error> {
+pub fn serialize_bits_default<B: Serialize, S: Serializer>(
+    name: &'static str,
+    bits: &B,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
     let mut serialize_struct = serializer.serialize_struct(name, 1)?;
     serialize_struct.serialize_field("bits", bits)?;
     serialize_struct.end()
 }
 
-pub fn deserialize_bits_default<'de, B: Deserialize<'de>, D: Deserializer<'de>>(name: &'static str, deserializer: D) -> Result<B, D::Error> {
+pub fn deserialize_bits_default<'de, B: Deserialize<'de>, D: Deserializer<'de>>(
+    name: &'static str,
+    deserializer: D,
+) -> Result<B, D::Error> {
     struct BitsVisitor<T>(core::marker::PhantomData<T>);
 
     impl<'de, T: Deserialize<'de>> Visitor<'de> for BitsVisitor<T> {
@@ -31,7 +42,7 @@ pub fn deserialize_bits_default<'de, B: Deserialize<'de>, D: Deserializer<'de>>(
 
                         bits = Some(map.next_value()?);
                     }
-                    v => return Err(Error::unknown_field(v, &["bits"]))
+                    v => return Err(Error::unknown_field(v, &["bits"])),
                 }
             }
 
