@@ -280,8 +280,9 @@ mod bitflags_trait;
 #[doc(hidden)]
 pub mod __private {
     pub use crate::bitflags_trait::{
-        Bits, ImplementedByBitFlagsMacro, InternalFlags, InternalIter, PublicFlags,
+        Bits, ImplementedByBitFlagsMacro, PublicFlags,
     };
+
     pub use core;
 
     #[cfg(feature = "serde")]
@@ -321,11 +322,7 @@ const _: () = {
     }
 
     impl PublicFlags for MyFlags {
-        type InternalFlags = InternalFlags;
-    }
-
-    impl InternalFlags for MyInternalFlags {
-        type PublicFlags = MyFlags;
+        type Internal = InternalFlags;
     }
 };
 ```
@@ -333,8 +330,8 @@ const _: () = {
 If we want to expose something like a new trait impl for generated flags types, we add it to our generated `MyInternalFlags`,
 and let `#[derive]` on `MyFlags` pick up that implementation, if an end-user chooses to add one.
 
-The public API is generated in the `__impl_bitflags_public!` macro, and the internal API is generated in
-the `__impl_bitflags_internal!` macro.
+The public API is generated in the `__impl_public_flags!` macro, and the internal API is generated in
+the `__impl_internal_flags!` macro.
 */
 
 /// The macro used to generate the flag structure.
@@ -409,8 +406,10 @@ macro_rules! bitflags {
 
         $($t:tt)*
     ) => {
-        $(#[$outer])*
-        $vis struct $BitFlags(<$BitFlags as $crate::__private::PublicFlags>::InternalFlags);
+        __declare_public_bitflags! {
+            $(#[$outer])*
+            $vis struct $BitFlags;
+        }
 
         #[allow(
             dead_code,
@@ -422,47 +421,15 @@ macro_rules! bitflags {
             non_upper_case_globals
         )]
         const _: () = {
-            __impl_public_bitflags! {
-                $BitFlags: $T {
-                    $(
-                        $(#[$inner $($args)*])*
-                        $Flag = $value;
-                    )*
-                }
+            __declare_internal_bitflags! {
+                $vis struct InternalFlags: $T;
+                $vis struct Iter;
+                $vis struct IterRaw;
             }
 
-            #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-            #[repr(transparent)]
-            $vis struct InternalFlags {
-                bits: $T,
-            }
-
-            $vis struct Iter(IterRaw);
-
-            $vis struct IterRaw {
-                idx: usize,
-                source: InternalFlags,
-                state: InternalFlags,
-            }
-
-            impl Iter {
-                const fn new(flags: &InternalFlags) -> Self {
-                    Iter(flags.iter_raw())
-                }
-            }
-
-            impl IterRaw {
-                const fn new(flags: &InternalFlags) -> Self {
-                    IterRaw {
-                        idx: 0,
-                        source: *flags,
-                        state: *flags,
-                    }
-                }
-            }
-
+            // This macro definition is where `derives` for other libraries can be added
             __impl_internal_bitflags! {
-                InternalFlags: $T, Iter, IterRaw {
+                InternalFlags: $T, $BitFlags, Iter, IterRaw {
                     $(
                         $(#[$inner $($args)*])*
                         $Flag;
@@ -470,17 +437,13 @@ macro_rules! bitflags {
                 }
             }
 
-            impl $crate::__private::InternalFlags for InternalFlags {
-                type PublicFlags = $BitFlags;
-            }
-
-            impl $crate::__private::InternalIter for InternalFlags {
-                type Iter = Iter;
-                type IterRaw = IterRaw;
-            }
-
-            impl $crate::__private::PublicFlags for $BitFlags {
-                type InternalFlags = InternalFlags;
+            __impl_public_bitflags! {
+                $BitFlags: $T, InternalFlags, Iter, IterRaw {
+                    $(
+                        $(#[$inner $($args)*])*
+                        $Flag = $value;
+                    )*
+                }
             }
         };
 
@@ -491,6 +454,48 @@ macro_rules! bitflags {
     () => {};
 }
 
+/// Declare the user-facing bitflags struct.
+///
+/// This type is guaranteed to be a newtype with a `bitflags`-facing type as its single field.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! __declare_public_bitflags {
+    (
+        $(#[$outer:meta])*
+        $vis:vis struct $BitFlags:ident;
+    ) => {
+        $(#[$outer])*
+        $vis struct $BitFlags(<Self as $crate::__private::PublicFlags>::Internal);
+    };
+}
+
+/// Declare the `bitflags`-facing bitflags struct.
+///
+/// This type is part of the `bitflags` crate's public API, but not part of the user's.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! __declare_internal_bitflags {
+    (
+        $vis:vis struct $InternalBitFlags:ident: $T:ty;
+        $iter_vis:vis struct $Iter:ident;
+        $iter_raw_vis:vis struct $IterRaw:ident;
+    ) => {
+        #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        #[repr(transparent)]
+        $vis struct $InternalBitFlags {
+            bits: $T,
+        }
+
+        $iter_vis struct $Iter($IterRaw);
+
+        $iter_raw_vis struct $IterRaw {
+            idx: usize,
+            source: $InternalBitFlags,
+            state: $InternalBitFlags,
+        }
+    };
+}
+
 /// Implement functions on the public (user-facing) bitflags type.
 ///
 /// We need to be careful about adding new methods and trait implementations here because they
@@ -499,7 +504,7 @@ macro_rules! bitflags {
 #[doc(hidden)]
 macro_rules! __impl_public_bitflags {
     (
-        $PublicBitFlags:ident: $T:ty {
+        $PublicBitFlags:ident: $T:ty, $InternalBitFlags:ident, $Iter:ident, $IterRaw:ident {
             $(
                 $(#[$attr:ident $($args:tt)*])*
                 $Flag:ident = $value:expr;
@@ -539,13 +544,13 @@ macro_rules! __impl_public_bitflags {
             /// Returns an empty set of flags.
             #[inline]
             pub const fn empty() -> Self {
-                Self(<Self as $crate::__private::PublicFlags>::InternalFlags::empty())
+                Self($InternalBitFlags::empty())
             }
 
             /// Returns the set containing all flags.
             #[inline]
             pub const fn all() -> Self {
-                Self(<Self as $crate::__private::PublicFlags>::InternalFlags::all())
+                Self($InternalBitFlags::all())
             }
 
             /// Returns the raw value of the flags currently stored.
@@ -558,7 +563,7 @@ macro_rules! __impl_public_bitflags {
             /// representation contains bits that do not correspond to a flag.
             #[inline]
             pub const fn from_bits(bits: $T) -> $crate::__private::core::option::Option<Self> {
-                match <Self as $crate::__private::PublicFlags>::InternalFlags::from_bits(bits) {
+                match $InternalBitFlags::from_bits(bits) {
                     $crate::__private::core::option::Option::Some(bits) => $crate::__private::core::option::Option::Some(Self(bits)),
                     $crate::__private::core::option::Option::None => $crate::__private::core::option::Option::None,
                 }
@@ -568,7 +573,7 @@ macro_rules! __impl_public_bitflags {
             /// that do not correspond to flags.
             #[inline]
             pub const fn from_bits_truncate(bits: $T) -> Self {
-                Self(<Self as $crate::__private::PublicFlags>::InternalFlags::from_bits_truncate(bits))
+                Self($InternalBitFlags::from_bits_truncate(bits))
             }
 
             /// Convert from underlying bit representation, preserving all
@@ -584,18 +589,18 @@ macro_rules! __impl_public_bitflags {
             /// are valid for this bitflags type.
             #[inline]
             pub const fn from_bits_retain(bits: $T) -> Self {
-                Self(<Self as $crate::__private::PublicFlags>::InternalFlags::from_bits_retain(bits))
+                Self($InternalBitFlags::from_bits_retain(bits))
             }
 
             /// Iterate over enabled flag values.
             #[inline]
-            pub const fn iter(&self) -> <<Self as $crate::__private::PublicFlags>::InternalFlags as $crate::__private::InternalIter>::Iter {
+            pub const fn iter(&self) -> $Iter {
                 self.0.iter()
             }
 
             /// Iterate over the raw names and bits for enabled flag values.
             #[inline]
-            pub const fn iter_raw(&self) -> <<Self as $crate::__private::PublicFlags>::InternalFlags as $crate::__private::InternalIter>::IterRaw {
+            pub const fn iter_raw(&self) -> $IterRaw {
                 self.0.iter_raw()
             }
 
@@ -839,7 +844,7 @@ macro_rules! __impl_public_bitflags {
 
         impl $crate::__private::core::iter::IntoIterator for $PublicBitFlags {
             type Item = Self;
-            type IntoIter = <<Self as $crate::__private::PublicFlags>::InternalFlags as $crate::__private::InternalIter>::Iter;
+            type IntoIter = $Iter;
 
             fn into_iter(self) -> Self::IntoIter {
                 self.0.iter()
@@ -849,8 +854,8 @@ macro_rules! __impl_public_bitflags {
         impl $crate::BitFlags for $PublicBitFlags {
             type Bits = $T;
 
-            type Iter = <<Self as $crate::__private::PublicFlags>::InternalFlags as $crate::__private::InternalIter>::Iter;
-            type IterRaw = <<Self as $crate::__private::PublicFlags>::InternalFlags as $crate::__private::InternalIter>::IterRaw;
+            type Iter = $Iter;
+            type IterRaw = $IterRaw;
 
             fn empty() -> Self {
                 $PublicBitFlags::empty()
@@ -929,7 +934,7 @@ macro_rules! __impl_public_bitflags {
 #[doc(hidden)]
 macro_rules! __impl_internal_bitflags {
     (
-        $InternalBitFlags:ident: $T:ty, $Iter:ty, $IterRaw:ty {
+        $InternalBitFlags:ident: $T:ty, $BitFlags:ident, $Iter:ident, $IterRaw:ident {
             $(
                 $(#[$attr:ident $($args:tt)*])*
                 $Flag:ident;
@@ -937,6 +942,8 @@ macro_rules! __impl_internal_bitflags {
         }
     ) => {
         // Any new library traits impls should be added here
+        // Use `serde` as an example: generate code when the feature is available,
+        // and a no-op when it isn't
         __impl_internal_bitflags_serde! {
             $InternalBitFlags: $T {
                 $(
@@ -944,6 +951,10 @@ macro_rules! __impl_internal_bitflags {
                     $Flag;
                 )*
             }
+        }
+
+        impl $crate::__private::PublicFlags for $BitFlags {
+            type Internal = $InternalBitFlags;
         }
 
         impl $crate::__private::core::default::Default for $InternalBitFlags {
@@ -1051,8 +1062,8 @@ macro_rules! __impl_internal_bitflags {
 
                 $(
                     $(#[$attr $($args)*])*
-                    if bits & <$InternalBitFlags as $crate::__private::InternalFlags>::PublicFlags::$Flag.bits() == <$InternalBitFlags as $crate::__private::InternalFlags>::PublicFlags::$Flag.bits() {
-                        truncated |= <$InternalBitFlags as $crate::__private::InternalFlags>::PublicFlags::$Flag.bits()
+                    if bits & $BitFlags::$Flag.bits() == $BitFlags::$Flag.bits() {
+                        truncated |= $BitFlags::$Flag.bits()
                     }
                 )*
 
@@ -1066,12 +1077,16 @@ macro_rules! __impl_internal_bitflags {
 
             #[inline]
             pub const fn iter(&self) -> $Iter {
-                <$Iter>::new(self)
+                $Iter(self.iter_raw())
             }
 
             #[inline]
             pub const fn iter_raw(&self) -> $IterRaw {
-                <$IterRaw>::new(self)
+                $IterRaw {
+                    idx: 0,
+                    source: *self,
+                    state: *self,
+                }
             }
 
             #[inline]
@@ -1150,10 +1165,10 @@ macro_rules! __impl_internal_bitflags {
         }
 
         impl $crate::__private::core::iter::Iterator for $Iter {
-            type Item = <$InternalBitFlags as $crate::__private::InternalFlags>::PublicFlags;
+            type Item = $BitFlags;
 
             fn next(&mut self) -> $crate::__private::core::option::Option<Self::Item> {
-                self.0.next().map(|(_, value)| <$InternalBitFlags as $crate::__private::InternalFlags>::PublicFlags::from_bits_retain(value))
+                self.0.next().map(|(_, value)| $BitFlags::from_bits_retain(value))
             }
         }
 
@@ -1177,7 +1192,7 @@ macro_rules! __impl_internal_bitflags {
                 const OPTIONS: [$T; NUM_FLAGS] = [
                     $(
                         $(#[$attr $($args)*])*
-                        <$InternalBitFlags as $crate::__private::InternalFlags>::PublicFlags::$Flag.bits(),
+                        $BitFlags::$Flag.bits(),
                     )*
                 ];
 

@@ -116,20 +116,8 @@ impl_bits! {
     u128, i128,
 }
 
-/// A marker trait for referencing the `bitflags`-owned internal type
+/// A trait for referencing the `bitflags`-owned internal type
 /// without exposing it publicly.
 pub trait PublicFlags {
-    type InternalFlags;
-}
-
-/// A marker trait for referencing the end-user-owned type generically.
-pub trait InternalFlags: InternalIter {
-    type PublicFlags;
-}
-
-/// A marker trait for referencing the `bitflags`-owned internal iterator
-/// types without exposing them publicly.
-pub trait InternalIter {
-    type Iter;
-    type IterRaw;
+    type Internal;
 }
