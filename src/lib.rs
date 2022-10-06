@@ -307,6 +307,36 @@
 //! ```
 //!
 //! Users should generally avoid defining a flag with a value of zero.
+//!
+//! # The `BitFlags` trait
+//!
+//! This library defines a `BitFlags` trait that's implemented by all generated flags types.
+//! The trait makes it possible to work with flags types generically:
+//!
+//! ```
+//! fn count_unset_flags<F: bitflags::BitFlags>(flags: &F) -> usize {
+//!     // Find out how many flags there are in total
+//!     let total = F::all().iter().count();
+//!
+//!     // Find out how many flags are set
+//!     let set = flags.iter().count();
+//!
+//!     total - set
+//! }
+//!
+//! use bitflags::bitflags;
+//!
+//! bitflags! {
+//!     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+//!     struct Flags: u32 {
+//!         const A = 0b00000001;
+//!         const B = 0b00000010;
+//!         const C = 0b00000100;
+//!     }
+//! }
+//!
+//! assert_eq!(2, count_unset_flags(&Flags::B));
+//! ```
 
 #![cfg_attr(not(test), no_std)]
 #![doc(html_root_url = "https://docs.rs/bitflags/1.3.2")]
@@ -352,22 +382,22 @@ bitflags! {
 What they'd end up with looks something like this:
 
 ```rust
-pub struct MyFlags(<MyFlags as PublicFlags>::InternalFlags);
+pub struct MyFlags(<MyFlags as PublicFlags>::InternalBitFlags);
 
 const _: () = {
     #[repr(transparent)]
     #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-    pub struct MyInternalFlags {
+    pub struct MyInternalBitFlags {
         bits: u32,
     }
 
     impl PublicFlags for MyFlags {
-        type Internal = InternalFlags;
+        type Internal = InternalBitFlags;
     }
 };
 ```
 
-If we want to expose something like a new trait impl for generated flags types, we add it to our generated `MyInternalFlags`,
+If we want to expose something like a new trait impl for generated flags types, we add it to our generated `MyInternalBitFlags`,
 and let `#[derive]` on `MyFlags` pick up that implementation, if an end-user chooses to add one.
 
 The public API is generated in the `__impl_public_flags!` macro, and the internal API is generated in
@@ -379,13 +409,6 @@ The macros are split into 3 modules:
 - `internal`: where the `bitflags`-facing flags types are generated.
 - `external`: where external library traits are implemented conditionally.
 */
-
-#[macro_use]
-mod public;
-#[macro_use]
-mod internal;
-#[macro_use]
-mod external;
 
 /// The macro used to generate the flag structure.
 ///
@@ -481,13 +504,13 @@ macro_rules! bitflags {
             // Declared in a "hidden" scope that can't be reached directly
             // These types don't appear in the end-user's API
             __declare_internal_bitflags! {
-                $vis struct InternalFlags: $T;
+                $vis struct InternalBitFlags: $T;
                 $vis struct Iter;
                 $vis struct IterRaw;
             }
 
             __impl_internal_bitflags! {
-                InternalFlags: $T, $BitFlags, Iter, IterRaw {
+                InternalBitFlags: $T, $BitFlags, Iter, IterRaw {
                     $(
                         $(#[$inner $($args)*])*
                         $Flag;
@@ -506,7 +529,7 @@ macro_rules! bitflags {
             }
 
             __impl_public_bitflags! {
-                $BitFlags: $T, InternalFlags, Iter, IterRaw {
+                $BitFlags: $T, InternalBitFlags, Iter, IterRaw {
                     $(
                         $(#[$inner $($args)*])*
                         $Flag = $value;
@@ -522,15 +545,12 @@ macro_rules! bitflags {
     () => {};
 }
 
-// Optional features
-//
-// These macros implement additional library traits for the internal bitflags type so that
-// the end-user can either implement or derive those same traits based on the implementation
-// we provide in `bitflags`.
-//
-// These macros all follow a  similar pattern. If an optional feature of `bitflags` is enabled
-// they'll expand to some impl blocks based on a re-export of the library. If the optional feature
-// is not enabled then they expand to a no-op.
+#[macro_use]
+mod public;
+#[macro_use]
+mod internal;
+#[macro_use]
+mod external;
 
 #[cfg(feature = "example_generated")]
 pub mod example_generated;
