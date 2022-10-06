@@ -6,44 +6,63 @@ use core::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, 
 pub trait BitFlags: ImplementedByBitFlagsMacro {
     /// The underlying integer type.
     type Bits: Bits;
+    
     /// An iterator over enabled flags in an instance of the type.
     type Iter: Iterator<Item = Self>;
+
     /// An iterator over the raw names and bits for enabled flags in an instance of the type.
     type IterRaw: Iterator<Item = (&'static str, Self::Bits)>;
 
     /// Returns an empty set of flags.
     fn empty() -> Self;
+
     /// Returns the set containing all flags.
     fn all() -> Self;
+
     /// Returns the raw value of the flags currently stored.
     fn bits(&self) -> Self::Bits;
+
     /// Convert from underlying bit representation, unless that
     /// representation contains bits that do not correspond to a flag.
     fn from_bits(bits: Self::Bits) -> Option<Self>
     where
         Self: Sized;
+
     /// Convert from underlying bit representation, dropping any bits
     /// that do not correspond to flags.
     fn from_bits_truncate(bits: Self::Bits) -> Self;
+
     /// Convert from underlying bit representation, preserving all
     /// bits (even those not corresponding to a defined flag).
     fn from_bits_retain(bits: Self::Bits) -> Self;
+
+    /// Iterate over enabled flag values.
     fn iter(&self) -> Self::Iter;
+
+    /// Iterate over the raw names and bits for enabled flag values.
     fn iter_raw(&self) -> Self::IterRaw;
+
     /// Returns `true` if no flags are currently stored.
     fn is_empty(&self) -> bool;
+
     /// Returns `true` if all flags are currently set.
     fn is_all(&self) -> bool;
+
     /// Returns `true` if there are flags common to both `self` and `other`.
     fn intersects(&self, other: Self) -> bool;
+
     /// Returns `true` all of the flags in `other` are contained within `self`.
     fn contains(&self, other: Self) -> bool;
+
     /// Inserts the specified flags in-place.
     fn insert(&mut self, other: Self);
+
     /// Removes the specified flags in-place.
     fn remove(&mut self, other: Self);
+
     /// Toggles the specified flags in-place.
     fn toggle(&mut self, other: Self);
+
     /// Inserts or removes the specified flags depending on the passed value.
     fn set(&mut self, other: Self, value: bool);
 }
@@ -119,5 +138,6 @@ impl_bits! {
 /// A trait for referencing the `bitflags`-owned internal type
 /// without exposing it publicly.
 pub trait PublicFlags {
+    /// The type of the internal field on the generated flags type.
     type Internal;
 }
