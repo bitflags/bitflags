@@ -279,7 +279,9 @@ mod bitflags_trait;
 
 #[doc(hidden)]
 pub mod __private {
-    pub use crate::bitflags_trait::{Bits, ImplementedByBitFlagsMacro, InternalFlags, PublicFlags};
+    pub use crate::bitflags_trait::{
+        Bits, ImplementedByBitFlagsMacro, InternalFlags, InternalIter, PublicFlags,
+    };
     pub use core;
 
     #[cfg(feature = "serde")]
@@ -410,20 +412,37 @@ macro_rules! bitflags {
         $(#[$outer])*
         $vis struct $BitFlags(<$BitFlags as $crate::__private::PublicFlags>::InternalFlags);
 
-        __impl_public_bitflags! {
-            $BitFlags: $T {
-                $(
-                    $(#[$inner $($args)*])*
-                    $Flag = $value;
-                )*
-            }
-        }
-
+        #[allow(
+            dead_code,
+            deprecated,
+            unused_doc_comments,
+            unused_attributes,
+            unused_mut,
+            unused_imports,
+            non_upper_case_globals
+        )]
         const _: () = {
+            __impl_public_bitflags! {
+                $BitFlags: $T {
+                    $(
+                        $(#[$inner $($args)*])*
+                        $Flag = $value;
+                    )*
+                }
+            }
+
             #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
             #[repr(transparent)]
             $vis struct InternalFlags {
                 bits: $T,
+            }
+
+            $vis struct Iter(IterRaw);
+
+            $vis struct IterRaw {
+                idx: usize,
+                source: InternalFlags,
+                state: InternalFlags,
             }
 
             __impl_internal_bitflags! {
@@ -437,6 +456,11 @@ macro_rules! bitflags {
 
             impl $crate::__private::InternalFlags for InternalFlags {
                 type PublicFlags = $BitFlags;
+            }
+
+            impl $crate::__private::InternalIter for InternalFlags {
+                type Iter = Iter;
+                type IterRaw = IterRaw;
             }
 
             impl $crate::__private::PublicFlags for $BitFlags {
@@ -490,14 +514,6 @@ macro_rules! __impl_public_bitflags {
             }
         }
 
-        #[allow(
-            dead_code,
-            deprecated,
-            unused_doc_comments,
-            unused_attributes,
-            unused_mut,
-            non_upper_case_globals
-        )]
         impl $PublicBitFlags {
             $(
                 $(#[$attr $($args)*])*
@@ -507,13 +523,13 @@ macro_rules! __impl_public_bitflags {
             /// Returns an empty set of flags.
             #[inline]
             pub const fn empty() -> Self {
-                Self(<$PublicBitFlags as $crate::__private::PublicFlags>::InternalFlags::empty())
+                Self(<Self as $crate::__private::PublicFlags>::InternalFlags::empty())
             }
 
             /// Returns the set containing all flags.
             #[inline]
             pub const fn all() -> Self {
-                Self(<$PublicBitFlags as $crate::__private::PublicFlags>::InternalFlags::all())
+                Self(<Self as $crate::__private::PublicFlags>::InternalFlags::all())
             }
 
             /// Returns the raw value of the flags currently stored.
@@ -526,7 +542,7 @@ macro_rules! __impl_public_bitflags {
             /// representation contains bits that do not correspond to a flag.
             #[inline]
             pub const fn from_bits(bits: $T) -> $crate::__private::core::option::Option<Self> {
-                match <$PublicBitFlags as $crate::__private::PublicFlags>::InternalFlags::from_bits(bits) {
+                match <Self as $crate::__private::PublicFlags>::InternalFlags::from_bits(bits) {
                     $crate::__private::core::option::Option::Some(bits) => $crate::__private::core::option::Option::Some(Self(bits)),
                     $crate::__private::core::option::Option::None => $crate::__private::core::option::Option::None,
                 }
@@ -536,7 +552,7 @@ macro_rules! __impl_public_bitflags {
             /// that do not correspond to flags.
             #[inline]
             pub const fn from_bits_truncate(bits: $T) -> Self {
-                Self(<$PublicBitFlags as $crate::__private::PublicFlags>::InternalFlags::from_bits_truncate(bits))
+                Self(<Self as $crate::__private::PublicFlags>::InternalFlags::from_bits_truncate(bits))
             }
 
             /// Convert from underlying bit representation, preserving all
@@ -552,7 +568,19 @@ macro_rules! __impl_public_bitflags {
             /// are valid for this bitflags type.
             #[inline]
             pub const fn from_bits_retain(bits: $T) -> Self {
-                Self(<$PublicBitFlags as $crate::__private::PublicFlags>::InternalFlags::from_bits_retain(bits))
+                Self(<Self as $crate::__private::PublicFlags>::InternalFlags::from_bits_retain(bits))
+            }
+
+            /// Iterate over enabled flag values.
+            #[inline]
+            pub const fn iter(&self) -> <<Self as $crate::__private::PublicFlags>::InternalFlags as $crate::__private::InternalIter>::Iter {
+                self.0.iter()
+            }
+
+            /// Iterate over the raw names and bits for enabled flag values.
+            #[inline]
+            pub const fn iter_raw(&self) -> <<Self as $crate::__private::PublicFlags>::InternalFlags as $crate::__private::InternalIter>::IterRaw {
+                self.0.iter_raw()
             }
 
             /// Returns `true` if no flags are currently stored.
@@ -691,14 +719,6 @@ macro_rules! __impl_public_bitflags {
             pub const fn complement(self) -> Self {
                 Self(self.0.complement())
             }
-
-            /// Returns an iterator over set flags and their names.
-            pub fn iter(self) -> impl $crate::__private::core::iter::Iterator<Item = (&'static str, Self)> {
-                use $crate::__private::core::iter::Iterator as _;
-
-                self.0.iter().map(|(name, bits)| (name, Self::from_bits_retain(bits)))
-            }
-
         }
 
         impl $crate::__private::core::ops::BitOr for $PublicBitFlags {
@@ -801,8 +821,20 @@ macro_rules! __impl_public_bitflags {
             }
         }
 
+        impl $crate::__private::core::iter::IntoIterator for $PublicBitFlags {
+            type Item = Self;
+            type IntoIter = <<Self as $crate::__private::PublicFlags>::InternalFlags as $crate::__private::InternalIter>::Iter;
+
+            fn into_iter(self) -> Self::IntoIter {
+                self.0.iter()
+            }
+        }
+
         impl $crate::BitFlags for $PublicBitFlags {
             type Bits = $T;
+
+            type Iter = <<Self as $crate::__private::PublicFlags>::InternalFlags as $crate::__private::InternalIter>::Iter;
+            type IterRaw = <<Self as $crate::__private::PublicFlags>::InternalFlags as $crate::__private::InternalIter>::IterRaw;
 
             fn empty() -> Self {
                 $PublicBitFlags::empty()
@@ -826,6 +858,14 @@ macro_rules! __impl_public_bitflags {
 
             fn from_bits_retain(bits: $T) -> $PublicBitFlags {
                 $PublicBitFlags::from_bits_retain(bits)
+            }
+
+            fn iter(&self) -> Self::Iter {
+                $PublicBitFlags::iter(self)
+            }
+
+            fn iter_raw(&self) -> Self::IterRaw {
+                $PublicBitFlags::iter_raw(self)
             }
 
             fn is_empty(&self) -> bool {
@@ -901,7 +941,7 @@ macro_rules! __impl_internal_bitflags {
             fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
                 // Iterate over the valid flags
                 let mut first = true;
-                for (name, _) in self.iter() {
+                for (name, _) in self.iter_raw() {
                     if !first {
                         f.write_str(" | ")?;
                     }
@@ -953,14 +993,6 @@ macro_rules! __impl_internal_bitflags {
             }
         }
 
-        #[allow(
-            dead_code,
-            deprecated,
-            unused_doc_comments,
-            unused_attributes,
-            unused_mut,
-            non_upper_case_globals
-        )]
         impl $InternalBitFlags {
             #[inline]
             pub const fn empty() -> Self {
@@ -1014,6 +1046,20 @@ macro_rules! __impl_internal_bitflags {
             #[inline]
             pub const fn from_bits_retain(bits: $T) -> Self {
                 Self { bits }
+            }
+
+            #[inline]
+            pub const fn iter(&self) -> Iter {
+                Iter(self.iter_raw())
+            }
+
+            #[inline]
+            pub const fn iter_raw(&self) -> IterRaw {
+                IterRaw {
+                    idx: 0,
+                    source: *self,
+                    state: *self,
+                }
             }
 
             #[inline]
@@ -1089,8 +1135,20 @@ macro_rules! __impl_internal_bitflags {
             pub const fn complement(self) -> Self {
                 Self::from_bits_truncate(!self.bits)
             }
+        }
 
-            pub fn iter(self) -> impl $crate::__private::core::iter::Iterator<Item = (&'static str, $T)> {
+        impl $crate::__private::core::iter::Iterator for Iter {
+            type Item = <$InternalBitFlags as $crate::__private::InternalFlags>::PublicFlags;
+
+            fn next(&mut self) -> $crate::__private::core::option::Option<Self::Item> {
+                self.0.next().map(|(_, value)| <$InternalBitFlags as $crate::__private::InternalFlags>::PublicFlags::from_bits_retain(value))
+            }
+        }
+
+        impl $crate::__private::core::iter::Iterator for IterRaw {
+            type Item = (&'static str, $T);
+
+            fn next(&mut self) -> $crate::__private::core::option::Option<Self::Item> {
                 use $crate::__private::core::iter::Iterator as _;
 
                 const NUM_FLAGS: usize = {
@@ -1120,38 +1178,33 @@ macro_rules! __impl_internal_bitflags {
                     )*
                 ];
 
-                let mut start = 0;
-                let mut state = self;
+                if self.state.is_empty() || NUM_FLAGS == 0 {
+                    $crate::__private::core::option::Option::None
+                } else {
+                    for (flag, flag_name) in OPTIONS[self.idx..NUM_FLAGS].iter().copied()
+                        .zip(OPTIONS_NAMES[self.idx..NUM_FLAGS].iter().copied())
+                    {
+                        self.idx += 1;
 
-                $crate::__private::core::iter::from_fn(move || {
-                    if state.is_empty() || NUM_FLAGS == 0 {
-                        $crate::__private::core::option::Option::None
-                    } else {
-                        for (flag, flag_name) in OPTIONS[start..NUM_FLAGS].iter().copied()
-                            .zip(OPTIONS_NAMES[start..NUM_FLAGS].iter().copied())
-                        {
-                            start += 1;
+                        // NOTE: We check whether the flag exists in self, but remove it from
+                        // a different value. This ensure that overlapping flags are handled
+                        // properly. Take the following example:
+                        //
+                        // const A: 0b00000001;
+                        // const B: 0b00000101;
+                        //
+                        // Given the bits 0b00000101, both A and B are set. But if we removed A
+                        // as we encountered it we'd be left with 0b00000100, which doesn't
+                        // correspond to a valid flag on its own.
+                        if self.source.contains($InternalBitFlags { bits: flag }) {
+                            self.state.remove($InternalBitFlags { bits: flag });
 
-                            // NOTE: We check whether the flag exists in self, but remove it from
-                            // a different value. This ensure that overlapping flags are handled
-                            // properly. Take the following example:
-                            //
-                            // const A: 0b00000001;
-                            // const B: 0b00000101;
-                            //
-                            // Given the bits 0b00000101, both A and B are set. But if we removed A
-                            // as we encountered it we'd be left with 0b00000100, which doesn't
-                            // correspond to a valid flag on its own.
-                            if self.contains(Self { bits: flag }) {
-                                state.remove(Self { bits: flag });
-
-                                return $crate::__private::core::option::Option::Some((flag_name, flag))
-                            }
+                            return $crate::__private::core::option::Option::Some((flag_name, flag))
                         }
-
-                        $crate::__private::core::option::Option::None
                     }
-                })
+
+                    $crate::__private::core::option::Option::None
+                }
             }
         }
     };
@@ -1181,19 +1234,33 @@ macro_rules! __impl_internal_bitflags_serde {
         }
     ) => {
         impl $crate::__private::serde::Serialize for $InternalBitFlags {
-            fn serialize<S: $crate::__private::serde::Serializer>(&self, serializer: S) -> $crate::__private::core::result::Result<S::Ok, S::Error> {
-                $crate::serde_support::serialize_bits_default($crate::__private::core::stringify!($InternalBitFlags), &self.bits, serializer)
+            fn serialize<S: $crate::__private::serde::Serializer>(
+                &self,
+                serializer: S,
+            ) -> $crate::__private::core::result::Result<S::Ok, S::Error> {
+                $crate::serde_support::serialize_bits_default(
+                    $crate::__private::core::stringify!($InternalBitFlags),
+                    &self.bits,
+                    serializer,
+                )
             }
         }
 
         impl<'de> $crate::__private::serde::Deserialize<'de> for $InternalBitFlags {
-            fn deserialize<D: $crate::__private::serde::Deserializer<'de>>(deserializer: D) -> $crate::__private::core::result::Result<Self, D::Error> {
-                let bits = $crate::serde_support::deserialize_bits_default($crate::__private::core::stringify!($InternalBitFlags), deserializer)?;
+            fn deserialize<D: $crate::__private::serde::Deserializer<'de>>(
+                deserializer: D,
+            ) -> $crate::__private::core::result::Result<Self, D::Error> {
+                let bits = $crate::serde_support::deserialize_bits_default(
+                    $crate::__private::core::stringify!($InternalBitFlags),
+                    deserializer,
+                )?;
 
-                $crate::__private::core::result::Result::Ok($InternalBitFlags::from_bits_retain(bits))
+                $crate::__private::core::result::Result::Ok($InternalBitFlags::from_bits_retain(
+                    bits,
+                ))
             }
         }
-    }
+    };
 }
 
 #[macro_export(local_inner_macros)]
@@ -1207,7 +1274,7 @@ macro_rules! __impl_internal_bitflags_serde {
                 $Flag:ident;
             )*
         }
-    ) => { }
+    ) => {};
 }
 
 #[cfg(feature = "example_generated")]
@@ -1319,18 +1386,9 @@ mod tests {
         assert_eq!(Flags::from_bits_retain(0b1), Flags::A);
         assert_eq!(Flags::from_bits_retain(0b10), Flags::B);
 
-        assert_eq!(
-            Flags::from_bits_retain(0b11),
-            (Flags::A | Flags::B)
-        );
-        assert_eq!(
-            Flags::from_bits_retain(0b1000),
-            (extra | Flags::empty())
-        );
-        assert_eq!(
-            Flags::from_bits_retain(0b1001),
-            (extra | Flags::A)
-        );
+        assert_eq!(Flags::from_bits_retain(0b11), (Flags::A | Flags::B));
+        assert_eq!(Flags::from_bits_retain(0b1000), (extra | Flags::empty()));
+        assert_eq!(Flags::from_bits_retain(0b1001), (extra | Flags::A));
 
         let extra = EmptyFlags::from_bits_retain(0b1000);
         assert_eq!(
@@ -1564,8 +1622,7 @@ mod tests {
                 const I = 0b100000000;
             }
         }
-        let iter_test_flags =
-            || (0..=0b111_1111_1111).map(|bits| Test::from_bits_retain(bits));
+        let iter_test_flags = || (0..=0b111_1111_1111).map(|bits| Test::from_bits_retain(bits));
 
         for a in iter_test_flags() {
             assert_eq!(
@@ -1981,10 +2038,7 @@ mod tests {
         assert_eq!(Flags::A.bits(), 0x0000_0000_0000_0000_0000_0000_0000_0001);
         assert_eq!(Flags::B.bits(), 0x0000_0000_0000_1000_0000_0000_0000_0000);
         assert_eq!(Flags::C.bits(), 0x8000_0000_0000_0000_0000_0000_0000_0000);
-        assert_eq!(
-            Flags::ABC.bits(),
-            0x8000_0000_0000_1000_0000_0000_0000_0001
-        );
+        assert_eq!(Flags::ABC.bits(), 0x8000_0000_0000_1000_0000_0000_0000_0001);
         assert_eq!(format!("{:?}", Flags::A), "Flags(A)");
         assert_eq!(format!("{:?}", Flags::B), "Flags(B)");
         assert_eq!(format!("{:?}", Flags::C), "Flags(C)");
@@ -2052,41 +2106,41 @@ mod tests {
         };
 
         let flags = Flags::all();
-        assert_eq!(flags.iter().count(), count);
+        assert_eq!(flags.into_iter().count(), count);
 
-        for (_, flag) in flags.iter() {
+        for flag in flags.into_iter() {
             assert!(flags.contains(flag));
         }
 
-        let mut iter = flags.iter();
+        let mut iter = flags.iter_raw();
 
-        assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE));
-        assert_eq!(iter.next().unwrap(), ("TWO", Flags::TWO));
-        assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE));
+        assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE.bits()));
+        assert_eq!(iter.next().unwrap(), ("TWO", Flags::TWO.bits()));
+        assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE.bits()));
 
         #[cfg(unix)]
         {
-            assert_eq!(iter.next().unwrap(), ("FOUR_UNIX", Flags::FOUR_UNIX));
+            assert_eq!(iter.next().unwrap(), ("FOUR_UNIX", Flags::FOUR_UNIX.bits()));
         }
         #[cfg(windows)]
         {
-            assert_eq!(iter.next().unwrap(), ("FOUR_WIN", Flags::FOUR_WIN));
+            assert_eq!(iter.next().unwrap(), ("FOUR_WIN", Flags::FOUR_WIN.bits()));
         }
 
-        assert_eq!(iter.next().unwrap(), ("FIVE", Flags::FIVE));
+        assert_eq!(iter.next().unwrap(), ("FIVE", Flags::FIVE.bits()));
 
         assert_eq!(iter.next(), None);
 
         let flags = Flags::empty();
-        assert_eq!(flags.iter().count(), 0);
+        assert_eq!(flags.into_iter().count(), 0);
 
         let flags = Flags::ONE | Flags::THREE;
-        assert_eq!(flags.iter().count(), 2);
+        assert_eq!(flags.into_iter().count(), 2);
 
-        let mut iter = flags.iter();
+        let mut iter = flags.iter_raw();
 
-        assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE));
-        assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE));
+        assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE.bits()));
+        assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE.bits()));
         assert_eq!(iter.next(), None);
     }
 }

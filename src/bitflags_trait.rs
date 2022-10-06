@@ -4,7 +4,12 @@ use core::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, 
 ///
 /// It should not be implemented manually.
 pub trait BitFlags: ImplementedByBitFlagsMacro {
+    /// The underlying integer type.
     type Bits: Bits;
+    /// An iterator over enabled flags in an instance of the type.
+    type Iter: Iterator<Item = Self>;
+    /// An iterator over the raw names and bits for enabled flags in an instance of the type.
+    type IterRaw: Iterator<Item = (&'static str, Self::Bits)>;
 
     /// Returns an empty set of flags.
     fn empty() -> Self;
@@ -23,6 +28,8 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     /// Convert from underlying bit representation, preserving all
     /// bits (even those not corresponding to a defined flag).
     fn from_bits_retain(bits: Self::Bits) -> Self;
+    fn iter(&self) -> Self::Iter;
+    fn iter_raw(&self) -> Self::IterRaw;
     /// Returns `true` if no flags are currently stored.
     fn is_empty(&self) -> bool;
     /// Returns `true` if all flags are currently set.
@@ -109,10 +116,20 @@ impl_bits! {
     u128, i128,
 }
 
+/// A marker trait for referencing the `bitflags`-owned internal type
+/// without exposing it publicly.
 pub trait PublicFlags {
     type InternalFlags;
 }
 
-pub trait InternalFlags {
+/// A marker trait for referencing the end-user-owned type generically.
+pub trait InternalFlags: InternalIter {
     type PublicFlags;
+}
+
+/// A marker trait for referencing the `bitflags`-owned internal iterator
+/// types without exposing them publicly.
+pub trait InternalIter {
+    type Iter;
+    type IterRaw;
 }
