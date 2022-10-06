@@ -348,10 +348,7 @@ mod traits;
 
 #[doc(hidden)]
 pub mod __private {
-    pub use crate::{
-        traits::*,
-        external::*,
-    };
+    pub use crate::{external::*, traits::*};
 
     pub use core;
 

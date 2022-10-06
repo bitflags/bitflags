@@ -6,7 +6,7 @@ use core::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, 
 pub trait BitFlags: ImplementedByBitFlagsMacro {
     /// The underlying integer type.
     type Bits: Bits;
-    
+
     /// An iterator over enabled flags in an instance of the type.
     type Iter: Iterator<Item = Self>;
 
