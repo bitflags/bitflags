@@ -445,8 +445,24 @@ macro_rules! bitflags {
                 state: InternalFlags,
             }
 
+            impl Iter {
+                const fn new(flags: &InternalFlags) -> Self {
+                    Iter(flags.iter_raw())
+                }
+            }
+
+            impl IterRaw {
+                const fn new(flags: &InternalFlags) -> Self {
+                    IterRaw {
+                        idx: 0,
+                        source: *flags,
+                        state: *flags,
+                    }
+                }
+            }
+
             __impl_internal_bitflags! {
-                InternalFlags: $T {
+                InternalFlags: $T, Iter, IterRaw {
                     $(
                         $(#[$inner $($args)*])*
                         $Flag;
@@ -913,7 +929,7 @@ macro_rules! __impl_public_bitflags {
 #[doc(hidden)]
 macro_rules! __impl_internal_bitflags {
     (
-        $InternalBitFlags:ident: $T:ty {
+        $InternalBitFlags:ident: $T:ty, $Iter:ty, $IterRaw:ty {
             $(
                 $(#[$attr:ident $($args:tt)*])*
                 $Flag:ident;
@@ -1049,17 +1065,13 @@ macro_rules! __impl_internal_bitflags {
             }
 
             #[inline]
-            pub const fn iter(&self) -> Iter {
-                Iter(self.iter_raw())
+            pub const fn iter(&self) -> $Iter {
+                <$Iter>::new(self)
             }
 
             #[inline]
-            pub const fn iter_raw(&self) -> IterRaw {
-                IterRaw {
-                    idx: 0,
-                    source: *self,
-                    state: *self,
-                }
+            pub const fn iter_raw(&self) -> $IterRaw {
+                <$IterRaw>::new(self)
             }
 
             #[inline]
@@ -1137,7 +1149,7 @@ macro_rules! __impl_internal_bitflags {
             }
         }
 
-        impl $crate::__private::core::iter::Iterator for Iter {
+        impl $crate::__private::core::iter::Iterator for $Iter {
             type Item = <$InternalBitFlags as $crate::__private::InternalFlags>::PublicFlags;
 
             fn next(&mut self) -> $crate::__private::core::option::Option<Self::Item> {
@@ -1145,12 +1157,10 @@ macro_rules! __impl_internal_bitflags {
             }
         }
 
-        impl $crate::__private::core::iter::Iterator for IterRaw {
+        impl $crate::__private::core::iter::Iterator for $IterRaw {
             type Item = (&'static str, $T);
 
             fn next(&mut self) -> $crate::__private::core::option::Option<Self::Item> {
-                use $crate::__private::core::iter::Iterator as _;
-
                 const NUM_FLAGS: usize = {
                     let mut num_flags = 0;
 

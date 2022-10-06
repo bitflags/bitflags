@@ -29,8 +29,32 @@ pub struct FlagsField {
     bits: u32,
 }
 
+pub struct FlagsIter(FlagsIterRaw);
+
+impl FlagsIter {
+    const fn new(flags: &FlagsField) -> Self {
+        FlagsIter(flags.iter_raw())
+    }
+}
+
+pub struct FlagsIterRaw {
+    idx: usize,
+    source: FlagsField,
+    state: FlagsField,
+}
+
+impl FlagsIterRaw {
+    const fn new(flags: &FlagsField) -> Self {
+        FlagsIterRaw {
+            idx: 0,
+            source: *flags,
+            state: *flags,
+        }
+    }
+}
+
 __impl_internal_bitflags! {
-    FlagsField: u32 {
+    FlagsField: u32, FlagsIter, FlagsIterRaw {
         A;
         B;
         C;
@@ -40,4 +64,9 @@ __impl_internal_bitflags! {
 
 impl crate::__private::InternalFlags for FlagsField {
     type PublicFlags = Flags;
+}
+
+impl crate::__private::InternalIter for FlagsField {
+    type Iter = FlagsIter;
+    type IterRaw = FlagsIterRaw;
 }
