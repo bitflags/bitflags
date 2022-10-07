@@ -12,7 +12,7 @@ macro_rules! __declare_internal_bitflags {
     (
         $vis:vis struct $InternalBitFlags:ident: $T:ty;
         $iter_vis:vis struct $Iter:ident;
-        $iter_raw_vis:vis struct $IterRaw:ident;
+        $iter_names_vis:vis struct $IterNames:ident;
     ) => {
         #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
         #[repr(transparent)]
@@ -20,9 +20,9 @@ macro_rules! __declare_internal_bitflags {
             bits: $T,
         }
 
-        $iter_vis struct $Iter($IterRaw);
+        $iter_vis struct $Iter($IterNames);
 
-        $iter_raw_vis struct $IterRaw {
+        $iter_names_vis struct $IterNames {
             idx: usize,
             source: $InternalBitFlags,
             state: $InternalBitFlags,
@@ -38,7 +38,7 @@ macro_rules! __declare_internal_bitflags {
 #[doc(hidden)]
 macro_rules! __impl_internal_bitflags {
     (
-        $InternalBitFlags:ident: $T:ty, $BitFlags:ident, $Iter:ident, $IterRaw:ident {
+        $InternalBitFlags:ident: $T:ty, $BitFlags:ident, $Iter:ident, $IterNames:ident {
             $(
                 $(#[$attr:ident $($args:tt)*])*
                 $Flag:ident;
@@ -60,7 +60,7 @@ macro_rules! __impl_internal_bitflags {
             fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
                 // Iterate over the valid flags
                 let mut first = true;
-                for (name, _) in self.iter_raw() {
+                for (name, _) in self.iter_names() {
                     if !first {
                         f.write_str(" | ")?;
                     }
@@ -168,13 +168,24 @@ macro_rules! __impl_internal_bitflags {
             }
 
             #[inline]
-            pub const fn iter(&self) -> $Iter {
-                $Iter(self.iter_raw())
+            pub fn from_name(name: &str) -> $crate::__private::core::option::Option<Self> {
+                match name {
+                    $(
+                        $(#[$attr $($args)*])*
+                        $crate::__private::core::stringify!($Flag) => $crate::__private::core::option::Option::Some(Self { bits: $BitFlags::$Flag.bits() }),
+                    )*
+                    _ => $crate::__private::core::option::Option::None,
+                }
             }
 
             #[inline]
-            pub const fn iter_raw(&self) -> $IterRaw {
-                $IterRaw {
+            pub const fn iter(&self) -> $Iter {
+                $Iter(self.iter_names())
+            }
+
+            #[inline]
+            pub const fn iter_names(&self) -> $IterNames {
+                $IterNames {
                     idx: 0,
                     source: *self,
                     state: *self,
@@ -260,12 +271,12 @@ macro_rules! __impl_internal_bitflags {
             type Item = $BitFlags;
 
             fn next(&mut self) -> $crate::__private::core::option::Option<Self::Item> {
-                self.0.next().map(|(_, value)| $BitFlags::from_bits_retain(value))
+                self.0.next().map(|(_, value)| value)
             }
         }
 
-        impl $crate::__private::core::iter::Iterator for $IterRaw {
-            type Item = (&'static str, $T);
+        impl $crate::__private::core::iter::Iterator for $IterNames {
+            type Item = (&'static str, $BitFlags);
 
             fn next(&mut self) -> $crate::__private::core::option::Option<Self::Item> {
                 const NUM_FLAGS: usize = {
@@ -316,7 +327,7 @@ macro_rules! __impl_internal_bitflags {
                         if self.source.contains($InternalBitFlags { bits: flag }) {
                             self.state.remove($InternalBitFlags { bits: flag });
 
-                            return $crate::__private::core::option::Option::Some((flag_name, flag))
+                            return $crate::__private::core::option::Option::Some((flag_name, $BitFlags::from_bits_retain(flag)))
                         }
                     }
 

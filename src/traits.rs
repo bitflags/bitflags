@@ -11,7 +11,7 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     type Iter: Iterator<Item = Self>;
 
     /// An iterator over the raw names and bits for enabled flags in an instance of the type.
-    type IterRaw: Iterator<Item = (&'static str, Self::Bits)>;
+    type IterNames: Iterator<Item = (&'static str, Self)>;
 
     /// Returns an empty set of flags.
     fn empty() -> Self;
@@ -36,11 +36,16 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     /// bits (even those not corresponding to a defined flag).
     fn from_bits_retain(bits: Self::Bits) -> Self;
 
+    /// Get the flag for a particular name.
+    fn from_name(name: &str) -> Option<Self>
+    where
+        Self: Sized;
+
     /// Iterate over enabled flag values.
     fn iter(&self) -> Self::Iter;
 
     /// Iterate over the raw names and bits for enabled flag values.
-    fn iter_raw(&self) -> Self::IterRaw;
+    fn iter_names(&self) -> Self::IterNames;
 
     /// Returns `true` if no flags are currently stored.
     fn is_empty(&self) -> bool;

@@ -26,7 +26,7 @@ macro_rules! __declare_public_bitflags {
 #[doc(hidden)]
 macro_rules! __impl_public_bitflags {
     (
-        $PublicBitFlags:ident: $T:ty, $InternalBitFlags:ident, $Iter:ident, $IterRaw:ident {
+        $PublicBitFlags:ident: $T:ty, $InternalBitFlags:ident, $Iter:ident, $IterNames:ident {
             $(
                 $(#[$attr:ident $($args:tt)*])*
                 $Flag:ident = $value:expr;
@@ -100,18 +100,21 @@ macro_rules! __impl_public_bitflags {
 
             /// Convert from underlying bit representation, preserving all
             /// bits (even those not corresponding to a defined flag).
-            ///
-            /// # Safety
-            ///
-            /// The caller of the `bitflags!` macro can choose to allow or
-            /// disallow extra bits for their bitflags type.
-            ///
-            /// The caller of `from_bits_retain()` has to ensure that
-            /// all bits correspond to a defined flag or that extra bits
-            /// are valid for this bitflags type.
             #[inline]
             pub const fn from_bits_retain(bits: $T) -> Self {
                 Self($InternalBitFlags::from_bits_retain(bits))
+            }
+
+            /// Get the value for a flag from its stringified name.
+            ///
+            /// Names are _case-sensitive_, so must correspond exactly to
+            /// the identifier given to the flag.
+            #[inline]
+            pub fn from_name(name: &str) -> $crate::__private::core::option::Option<Self> {
+                match $InternalBitFlags::from_name(name) {
+                    $crate::__private::core::option::Option::Some(bits) => $crate::__private::core::option::Option::Some(Self(bits)),
+                    $crate::__private::core::option::Option::None => $crate::__private::core::option::Option::None,
+                }
             }
 
             /// Iterate over enabled flag values.
@@ -120,10 +123,10 @@ macro_rules! __impl_public_bitflags {
                 self.0.iter()
             }
 
-            /// Iterate over the raw names and bits for enabled flag values.
+            /// Iterate over enabled flag values with their stringified names.
             #[inline]
-            pub const fn iter_raw(&self) -> $IterRaw {
-                self.0.iter_raw()
+            pub const fn iter_names(&self) -> $IterNames {
+                self.0.iter_names()
             }
 
             /// Returns `true` if no flags are currently stored.
@@ -377,7 +380,7 @@ macro_rules! __impl_public_bitflags {
             type Bits = $T;
 
             type Iter = $Iter;
-            type IterRaw = $IterRaw;
+            type IterNames = $IterNames;
 
             fn empty() -> Self {
                 $PublicBitFlags::empty()
@@ -403,12 +406,16 @@ macro_rules! __impl_public_bitflags {
                 $PublicBitFlags::from_bits_retain(bits)
             }
 
+            fn from_name(name: &str) -> $crate::__private::core::option::Option<$PublicBitFlags> {
+                $PublicBitFlags::from_name(name)
+            }
+
             fn iter(&self) -> Self::Iter {
                 $PublicBitFlags::iter(self)
             }
 
-            fn iter_raw(&self) -> Self::IterRaw {
-                $PublicBitFlags::iter_raw(self)
+            fn iter_names(&self) -> Self::IterNames {
+                $PublicBitFlags::iter_names(self)
             }
 
             fn is_empty(&self) -> bool {
