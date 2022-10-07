@@ -17,7 +17,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-bitflags = "1.3"
+bitflags = "2.0.0-rc.1"
 ```
 
 and this to your source code:
@@ -35,6 +35,7 @@ use bitflags::bitflags;
 
 // The `bitflags!` macro generates `struct`s that manage a set of flags.
 bitflags! {
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     struct Flags: u32 {
         const A = 0b00000001;
         const B = 0b00000010;
