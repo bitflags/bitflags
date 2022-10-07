@@ -339,7 +339,7 @@
 //! ```
 
 #![cfg_attr(not(test), no_std)]
-#![doc(html_root_url = "https://docs.rs/bitflags/1.3.2")]
+#![doc(html_root_url = "https://docs.rs/bitflags/2.0.0-rc.1")]
 
 #[doc(inline)]
 pub use traits::BitFlags;

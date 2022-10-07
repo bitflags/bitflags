@@ -1,3 +1,34 @@
+# 2.0.0-rc.1
+
+This is a big release including a few years worth of work on a new `BitFlags` trait, iteration, and better macro organization for future extensibility.
+
+## What's Changed
+* Fix a typo and call out MSRV bump by @KodrAus in https://github.com/bitflags/bitflags/pull/259
+* BitFlags trait by @arturoc in https://github.com/bitflags/bitflags/pull/220
+* Add a hidden trait to discourage manual impls of BitFlags by @KodrAus in https://github.com/bitflags/bitflags/pull/261
+* Sanitize `Ok` by @konsumlamm in https://github.com/bitflags/bitflags/pull/266
+* Fix bug in `Debug` implementation by @konsumlamm in https://github.com/bitflags/bitflags/pull/268
+* Fix a typo in the generated documentation by @wackbyte in https://github.com/bitflags/bitflags/pull/271
+* Use SPDX license format by @atouchet in https://github.com/bitflags/bitflags/pull/272
+* serde tests fail in CI by @arturoc in https://github.com/bitflags/bitflags/pull/277
+* Fix beta test output by @KodrAus in https://github.com/bitflags/bitflags/pull/279
+* Add example to the README.md file by @tiaanl in https://github.com/bitflags/bitflags/pull/270
+* Iterator over all the enabled options by @arturoc in https://github.com/bitflags/bitflags/pull/278
+* from_bits_(truncate) fail with composite flags by @arturoc in https://github.com/bitflags/bitflags/pull/276
+* Add more platform coverage to CI by @KodrAus in https://github.com/bitflags/bitflags/pull/280
+* rework the way cfgs are handled by @KodrAus in https://github.com/bitflags/bitflags/pull/281
+* Split generated code into two types by @KodrAus in https://github.com/bitflags/bitflags/pull/282
+* expose bitflags iters using nameable types by @KodrAus in https://github.com/bitflags/bitflags/pull/286
+* Support creating flags from their names by @KodrAus in https://github.com/bitflags/bitflags/pull/287
+* Update README.md by @KodrAus in https://github.com/bitflags/bitflags/pull/288
+
+## New Contributors
+* @wackbyte made their first contribution in https://github.com/bitflags/bitflags/pull/271
+* @atouchet made their first contribution in https://github.com/bitflags/bitflags/pull/272
+* @tiaanl made their first contribution in https://github.com/bitflags/bitflags/pull/270
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/1.3.2...2.0.0-rc.1
+
 # 1.3.2
 
 - Allow `non_snake_case` in generated flags types ([#256])
