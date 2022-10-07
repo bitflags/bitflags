@@ -1381,22 +1381,22 @@ mod tests {
             assert!(flags.contains(flag));
         }
 
-        let mut iter = flags.iter_raw();
+        let mut iter = flags.iter_names();
 
-        assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE.bits()));
-        assert_eq!(iter.next().unwrap(), ("TWO", Flags::TWO.bits()));
-        assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE.bits()));
+        assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE));
+        assert_eq!(iter.next().unwrap(), ("TWO", Flags::TWO));
+        assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE));
 
         #[cfg(unix)]
         {
-            assert_eq!(iter.next().unwrap(), ("FOUR_UNIX", Flags::FOUR_UNIX.bits()));
+            assert_eq!(iter.next().unwrap(), ("FOUR_UNIX", Flags::FOUR_UNIX));
         }
         #[cfg(windows)]
         {
-            assert_eq!(iter.next().unwrap(), ("FOUR_WIN", Flags::FOUR_WIN.bits()));
+            assert_eq!(iter.next().unwrap(), ("FOUR_WIN", Flags::FOUR_WIN));
         }
 
-        assert_eq!(iter.next().unwrap(), ("FIVE", Flags::FIVE.bits()));
+        assert_eq!(iter.next().unwrap(), ("FIVE", Flags::FIVE));
 
         assert_eq!(iter.next(), None);
 
@@ -1406,10 +1406,25 @@ mod tests {
         let flags = Flags::ONE | Flags::THREE;
         assert_eq!(flags.into_iter().count(), 2);
 
-        let mut iter = flags.iter_raw();
+        let mut iter = flags.iter_names();
 
-        assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE.bits()));
-        assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE.bits()));
+        assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE));
+        assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE));
         assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn test_from_name() {
+        let flags = Flags::all();
+
+        let mut rebuilt = Flags::empty();
+
+        for (name, value) in flags.iter_names() {
+            assert_eq!(value, Flags::from_name(name).unwrap());
+
+            rebuilt |= Flags::from_name(name).unwrap();
+        }
+
+        assert_eq!(flags, rebuilt);
     }
 }
