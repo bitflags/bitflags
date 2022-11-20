@@ -56,7 +56,7 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
     /// Returns `true` if there are flags common to both `self` and `other`.
     fn intersects(&self, other: Self) -> bool;
 
-    /// Returns `true` all of the flags in `other` are contained within `self`.
+    /// Returns `true` if all of the flags in `other` are contained within `self`.
     fn contains(&self, other: Self) -> bool;
 
     /// Inserts the specified flags in-place.
