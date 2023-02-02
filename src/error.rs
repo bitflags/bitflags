@@ -5,6 +5,7 @@ pub struct ParseError(ParseErrorKind);
 
 #[derive(Debug)]
 enum ParseErrorKind {
+    EmptyFlag,
     InvalidNamedFlag {
         #[cfg(not(feature = "std"))]
         got: (),
@@ -45,6 +46,10 @@ impl ParseError {
 
         ParseError(ParseErrorKind::InvalidNamedFlag { got })
     }
+
+    pub fn empty_flag() -> Self {
+        ParseError(ParseErrorKind::EmptyFlag)
+    }
 }
 
 impl fmt::Display for ParseError {
@@ -69,6 +74,9 @@ impl fmt::Display for ParseError {
                 {
                     write!(f, " `{}`", _got)?;
                 }
+            }
+            ParseErrorKind::EmptyFlag => {
+                write!(f, "encountered empty flag")?;
             }
         }
 

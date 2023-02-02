@@ -603,17 +603,27 @@ mod tests {
         }
     }
 
-    impl fmt::Display for Flags {
-        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-            fmt::Display::fmt(&self.0, f)
+    bitflags! {
+        #[derive(Debug, PartialEq, Eq)]
+        struct FmtFlags: u16 {
+            const 고양이 = 0b0000_0001;
+            const 개 = 0b0000_0010;
+            const 물고기 = 0b0000_0100;
+            const 물고기_고양이 = Self::고양이.bits() | Self::물고기.bits();
         }
     }
 
-    impl str::FromStr for Flags {
+    impl str::FromStr for FmtFlags {
         type Err = crate::ParseError;
 
         fn from_str(flags: &str) -> Result<Self, Self::Err> {
             Ok(Self(flags.parse()?))
+        }
+    }
+
+    impl fmt::Display for FmtFlags {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            fmt::Display::fmt(&self.0, f)
         }
     }
 
@@ -1144,23 +1154,60 @@ mod tests {
     }
 
     #[test]
-    fn test_display_from_str() {
-        fn format_parse_case(flags: Flags) {
+    fn test_display_from_str_roundtrip() {
+        fn format_parse_case(flags: FmtFlags) {
             assert_eq!(flags, {
-                match flags.to_string().parse::<Flags>() {
+                match flags.to_string().parse::<FmtFlags>() {
                     Ok(flags) => flags,
                     Err(e) => panic!("failed to parse `{}`: {}", flags, e),
                 }
             });
         }
 
-        format_parse_case(Flags::empty());
-        format_parse_case(Flags::A);
-        format_parse_case(Flags::A | Flags::B);
-        format_parse_case(Flags::ABC);
-        format_parse_case(Flags::all());
-        format_parse_case(Flags::from_bits_retain(0xb8));
-        format_parse_case(Flags::from_bits_retain(0x20));
+        fn parse_case(expected: FmtFlags, flags: &str) {
+            assert_eq!(expected, flags.parse::<FmtFlags>().unwrap());
+        }
+
+        format_parse_case(FmtFlags::empty());
+        format_parse_case(FmtFlags::all());
+        format_parse_case(FmtFlags::고양이);
+        format_parse_case(FmtFlags::고양이 | FmtFlags::개);
+        format_parse_case(FmtFlags::물고기_고양이);
+        format_parse_case(FmtFlags::from_bits_retain(0xb8));
+        format_parse_case(FmtFlags::from_bits_retain(0x20));
+
+        parse_case(FmtFlags::empty(), "");
+        parse_case(FmtFlags::empty(), " \r\n\t");
+        parse_case(FmtFlags::empty(), "0x0");
+        parse_case(FmtFlags::empty(), "0x0");
+
+        parse_case(FmtFlags::고양이, "고양이");
+        parse_case(FmtFlags::고양이, "  고양이  ");
+        parse_case(FmtFlags::고양이, "고양이 | 고양이 | 고양이");
+        parse_case(FmtFlags::고양이, "0x01");
+
+        parse_case(FmtFlags::고양이 | FmtFlags::개, "고양이 | 개");
+        parse_case(FmtFlags::고양이 | FmtFlags::개, "고양이|개");
+        parse_case(FmtFlags::고양이 | FmtFlags::개, "\n고양이|개 ");
+
+        parse_case(FmtFlags::고양이 | FmtFlags::물고기, "물고기_고양이");
+    }
+
+    #[test]
+    fn test_from_str_err() {
+        fn parse_case(pat: &str, flags: &str) {
+            let err = flags.parse::<FmtFlags>().unwrap_err().to_string();
+            assert!(err.contains(pat), "`{}` not found in error `{}`", pat, err);
+        }
+
+        parse_case("empty flag", "|");
+        parse_case("empty flag", "|||");
+        parse_case("empty flag", "고양이 |");
+        parse_case("unrecognized named flag", "NOT_A_FLAG");
+        parse_case("unrecognized named flag", "고양이 개");
+        parse_case("unrecognized named flag", "고양이 | NOT_A_FLAG");
+        parse_case("invalid hex flag", "0xhi");
+        parse_case("invalid hex flag", "고양이 | 0xhi");
     }
 
     #[test]
