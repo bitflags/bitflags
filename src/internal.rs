@@ -82,8 +82,15 @@ macro_rules! __impl_internal_bitflags {
                     if !first {
                         f.write_str(" | ")?;
                     }
+
                     first = false;
                     $crate::__private::core::write!(f, "{:#x}", extra_bits)?;
+                }
+
+                // If no flags are set then write the empty flags to avoid producing
+                // an empty string
+                if first {
+                    $crate::__private::core::write!(f, "{:#x}", <$T as $crate::__private::Bits>::EMPTY)?;
                 }
 
                 $crate::__private::core::fmt::Result::Ok(())
@@ -95,7 +102,13 @@ macro_rules! __impl_internal_bitflags {
             type Err = $crate::ParseError;
 
             fn from_str(s: &str) -> $crate::__private::core::result::Result<Self, Self::Err> {
+                let s = s.trim();
+
                 let mut parsed_flags = Self::empty();
+
+                if s.is_empty() {
+                    return Ok(parsed_flags);
+                }
 
                 for flag in s.split('|') {
                     let flag = flag.trim();

@@ -558,8 +558,12 @@ pub mod example_generated;
 
 #[cfg(test)]
 mod tests {
-    use std::collections::hash_map::DefaultHasher;
-    use std::hash::{Hash, Hasher};
+    use std::{
+        collections::hash_map::DefaultHasher,
+        fmt,
+        hash::{Hash, Hasher},
+        str,
+    };
 
     bitflags! {
         #[doc = "> The first principle is that you must not fool yourself — and"]
@@ -596,6 +600,20 @@ mod tests {
         #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct LongFlags: u32 {
             const LONG_A = 0b1111111111111111;
+        }
+    }
+
+    impl fmt::Display for Flags {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            fmt::Display::fmt(&self.0, f)
+        }
+    }
+
+    impl str::FromStr for Flags {
+        type Err = crate::ParseError;
+
+        fn from_str(flags: &str) -> Result<Self, Self::Err> {
+            Ok(Self(flags.parse()?))
         }
     }
 
@@ -1109,7 +1127,7 @@ mod tests {
     #[test]
     fn test_debug() {
         assert_eq!(format!("{:?}", Flags::A | Flags::B), "Flags(A | B)");
-        assert_eq!(format!("{:?}", Flags::empty()), "Flags()");
+        assert_eq!(format!("{:?}", Flags::empty()), "Flags(0x0)");
         assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C)");
 
         let extra = Flags::from_bits_retain(0xb8);
@@ -1122,7 +1140,27 @@ mod tests {
             "Flags(A | B | C | ABC | 0xb8)"
         );
 
-        assert_eq!(format!("{:?}", EmptyFlags::empty()), "EmptyFlags()");
+        assert_eq!(format!("{:?}", EmptyFlags::empty()), "EmptyFlags(0x0)");
+    }
+
+    #[test]
+    fn test_display_from_str() {
+        fn format_parse_case(flags: Flags) {
+            assert_eq!(flags, {
+                match flags.to_string().parse::<Flags>() {
+                    Ok(flags) => flags,
+                    Err(e) => panic!("failed to parse `{}`: {}", flags, e),
+                }
+            });
+        }
+
+        format_parse_case(Flags::empty());
+        format_parse_case(Flags::A);
+        format_parse_case(Flags::A | Flags::B);
+        format_parse_case(Flags::ABC);
+        format_parse_case(Flags::all());
+        format_parse_case(Flags::from_bits_retain(0xb8));
+        format_parse_case(Flags::from_bits_retain(0x20));
     }
 
     #[test]
@@ -1286,7 +1324,6 @@ mod tests {
         assert!(Flags::SOME.contains(Flags::NONE));
         assert!(Flags::NONE.is_empty());
 
-        assert_eq!(format!("{:?}", Flags::empty()), "Flags()");
         assert_eq!(format!("{:?}", Flags::SOME), "Flags(NONE | SOME)");
     }
 
