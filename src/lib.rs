@@ -338,14 +338,17 @@
 //! assert_eq!(2, count_unset_flags(&Flags::B));
 //! ```
 
-#![cfg_attr(not(test), no_std)]
+#![cfg_attr(not(any(feature = "std", test)), no_std)]
 #![doc(html_root_url = "https://docs.rs/bitflags/2.0.0-rc.1")]
 #![forbid(unsafe_code)]
 
 #[doc(inline)]
 pub use traits::BitFlags;
 
+mod parser;
 mod traits;
+
+pub use parser::*;
 
 #[doc(hidden)]
 pub mod __private {
@@ -360,7 +363,7 @@ pub mod __private {
 /*
 How does the bitflags crate work?
 
-This library generates `struct`s in the end-user's crate with a bunch of constants on it that represent flags.
+This library generates a `struct` in the end-user's crate with a bunch of constants on it that represent flags.
 The difference between `bitflags` and a lot of other libraries is that we don't actually control the generated `struct` in the end.
 It's part of the end-user's crate, so it belongs to them. That makes it difficult to extend `bitflags` with new functionality
 because we could end up breaking valid code that was already written.

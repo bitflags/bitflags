@@ -48,9 +48,9 @@ macro_rules! __impl_external_bitflags_serde {
                 &self,
                 serializer: S,
             ) -> $crate::__private::core::result::Result<S::Ok, S::Error> {
-                $crate::__private::serde_support::serialize_bits_default(
+                $crate::__private::serde_support::serialize_bits_default::<$InternalBitFlags, $T, S>(
                     $crate::__private::core::stringify!($InternalBitFlags),
-                    &self.bits,
+                    &self,
                     serializer,
                 )
             }
@@ -60,14 +60,10 @@ macro_rules! __impl_external_bitflags_serde {
             fn deserialize<D: $crate::__private::serde::Deserializer<'de>>(
                 deserializer: D,
             ) -> $crate::__private::core::result::Result<Self, D::Error> {
-                let bits = $crate::__private::serde_support::deserialize_bits_default(
+                $crate::__private::serde_support::deserialize_bits_default::<$InternalBitFlags, $T, D>(
                     $crate::__private::core::stringify!($InternalBitFlags),
                     deserializer,
-                )?;
-
-                $crate::__private::core::result::Result::Ok($InternalBitFlags::from_bits_retain(
-                    bits,
-                ))
+                )
             }
         }
     };

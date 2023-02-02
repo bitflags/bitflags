@@ -58,6 +58,12 @@ macro_rules! __impl_internal_bitflags {
 
         impl $crate::__private::core::fmt::Debug for $InternalBitFlags {
             fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+                $crate::__private::core::fmt::Display::fmt(self, f)
+            }
+        }
+
+        impl $crate::__private::core::fmt::Display for $InternalBitFlags {
+            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
                 // Iterate over the valid flags
                 let mut first = true;
                 for (name, _) in self.iter_names() {
@@ -85,6 +91,25 @@ macro_rules! __impl_internal_bitflags {
                 }
 
                 $crate::__private::core::fmt::Result::Ok(())
+            }
+        }
+
+        // The impl for `FromStr` should mirror what's produced by `Display`
+        impl $crate::__private::core::str::FromStr for $InternalBitFlags {
+            type Err = $crate::ParseError;
+
+            fn from_str(s: &str) -> $crate::__private::core::result::Result<Self, Self::Err> {
+                let mut parsed_flags = Self::empty();
+
+                for flag in s.split('|') {
+                    let flag = flag.trim();
+
+                    let parsed_flag = Self::from_name(flag).ok_or_else(|| $crate::ParseError::invalid_flag(flag))?;
+
+                    parsed_flags.insert(parsed_flag);
+                }
+
+                $crate::__private::core::result::Result::Ok(parsed_flags)
             }
         }
 
@@ -264,6 +289,18 @@ macro_rules! __impl_internal_bitflags {
             #[must_use]
             pub const fn complement(self) -> Self {
                 Self::from_bits_truncate(!self.bits)
+            }
+        }
+
+        impl $crate::__private::core::convert::AsRef<$T> for $InternalBitFlags {
+            fn as_ref(&self) -> &$T {
+                &self.bits
+            }
+        }
+
+        impl $crate::__private::core::convert::From<$T> for $InternalBitFlags {
+            fn from(bits: $T) -> Self {
+                Self::from_bits_retain(bits)
             }
         }
 
