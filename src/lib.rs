@@ -345,10 +345,10 @@
 #[doc(inline)]
 pub use traits::BitFlags;
 
-mod parser;
+mod error;
 mod traits;
 
-pub use parser::*;
+pub use error::*;
 
 #[doc(hidden)]
 pub mod __private {
@@ -358,13 +358,6 @@ pub mod __private {
 
     #[cfg(feature = "serde")]
     pub use serde;
-}
-
-#[cfg(feature = "serde")]
-pub mod serde_support {
-    //! Utilities for integrating `serde` with generated flags types.
-
-    pub use crate::external::serde_support::legacy_format;
 }
 
 /*
@@ -1116,7 +1109,7 @@ mod tests {
     #[test]
     fn test_debug() {
         assert_eq!(format!("{:?}", Flags::A | Flags::B), "Flags(A | B)");
-        assert_eq!(format!("{:?}", Flags::empty()), "Flags(empty)");
+        assert_eq!(format!("{:?}", Flags::empty()), "Flags()");
         assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C)");
 
         let extra = Flags::from_bits_retain(0xb8);
@@ -1129,7 +1122,7 @@ mod tests {
             "Flags(A | B | C | ABC | 0xb8)"
         );
 
-        assert_eq!(format!("{:?}", EmptyFlags::empty()), "EmptyFlags(empty)");
+        assert_eq!(format!("{:?}", EmptyFlags::empty()), "EmptyFlags()");
     }
 
     #[test]
@@ -1293,7 +1286,7 @@ mod tests {
         assert!(Flags::SOME.contains(Flags::NONE));
         assert!(Flags::NONE.is_empty());
 
-        assert_eq!(format!("{:?}", Flags::empty()), "Flags(empty)");
+        assert_eq!(format!("{:?}", Flags::empty()), "Flags()");
         assert_eq!(format!("{:?}", Flags::SOME), "Flags(NONE | SOME)");
     }
 

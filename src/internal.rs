@@ -86,10 +86,6 @@ macro_rules! __impl_internal_bitflags {
                     $crate::__private::core::write!(f, "{:#x}", extra_bits)?;
                 }
 
-                if first {
-                    f.write_str("empty")?;
-                }
-
                 $crate::__private::core::fmt::Result::Ok(())
             }
         }

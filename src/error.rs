@@ -16,7 +16,7 @@ enum ParseErrorKind {
         got: (),
         #[cfg(feature = "std")]
         got: String,
-    }
+    },
 }
 
 impl ParseError {
@@ -30,9 +30,7 @@ impl ParseError {
             }
         };
 
-        ParseError(ParseErrorKind::InvalidHexFlag {
-            got,
-        })
+        ParseError(ParseErrorKind::InvalidHexFlag { got })
     }
 
     pub fn invalid_named_flag(flag: impl fmt::Display) -> Self {
@@ -45,9 +43,7 @@ impl ParseError {
             }
         };
 
-        ParseError(ParseErrorKind::InvalidNamedFlag {
-            got,
-        })
+        ParseError(ParseErrorKind::InvalidNamedFlag { got })
     }
 }
 
@@ -66,7 +62,7 @@ impl fmt::Display for ParseError {
             }
             ParseErrorKind::InvalidHexFlag { got } => {
                 let _got = got;
-                
+
                 write!(f, "invalid hex flag")?;
 
                 #[cfg(feature = "std")]
