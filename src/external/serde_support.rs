@@ -67,8 +67,10 @@ where
 
 #[cfg(test)]
 mod tests {
+    use serde_test::{assert_tokens, Configure, Token::*};
     bitflags! {
-        #[derive(serde_derive::Serialize, serde_derive::Deserialize)]
+        #[derive(serde_derive::Serialize, serde_derive::Deserialize, Debug, PartialEq, Eq)]
+        #[serde(transparent)]
         struct SerdeFlags: u32 {
             const A = 1;
             const B = 2;
@@ -78,48 +80,13 @@ mod tests {
     }
 
     #[test]
-    fn test_serde_bitflags_default_serialize_empty() {
-        let flags = SerdeFlags::empty();
+    fn test_serde_bitflags_default() {
+        assert_tokens(&SerdeFlags::empty().readable(), &[Str("")]);
 
-        let serialized = serde_json::to_string(&flags).unwrap();
+        assert_tokens(&SerdeFlags::empty().compact(), &[U32(0)]);
 
-        assert_eq!(serialized, r#""""#);
-    }
+        assert_tokens(&(SerdeFlags::A | SerdeFlags::B).readable(), &[Str("A | B")]);
 
-    #[test]
-    fn test_serde_bitflags_default_serialize() {
-        let flags = SerdeFlags::A | SerdeFlags::B;
-
-        let serialized = serde_json::to_string(&flags).unwrap();
-
-        assert_eq!(serialized, r#""A | B""#);
-    }
-
-    #[test]
-    fn test_serde_bitflags_default_deserialize_empty() {
-        let deserialized: SerdeFlags = serde_json::from_str(r#""""#).unwrap();
-
-        let expected = SerdeFlags::empty();
-
-        assert_eq!(deserialized.bits(), expected.bits());
-    }
-
-    #[test]
-    fn test_serde_bitflags_default_deserialize() {
-        let deserialized: SerdeFlags = serde_json::from_str(r#""C | D""#).unwrap();
-
-        let expected = SerdeFlags::C | SerdeFlags::D;
-
-        assert_eq!(deserialized.bits(), expected.bits());
-    }
-
-    #[test]
-    fn test_serde_bitflags_default_roundtrip() {
-        let flags = SerdeFlags::A | SerdeFlags::B;
-
-        let deserialized: SerdeFlags =
-            serde_json::from_str(&serde_json::to_string(&flags).unwrap()).unwrap();
-
-        assert_eq!(deserialized.bits(), flags.bits());
+        assert_tokens(&(SerdeFlags::A | SerdeFlags::B).compact(), &[U32(1 | 2)]);
     }
 }
