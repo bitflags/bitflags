@@ -360,6 +360,13 @@ pub mod __private {
     pub use serde;
 }
 
+#[cfg(feature = "serde")]
+pub mod serde_support {
+    //! Utilities for integrating `serde` with generated flags types.
+
+    pub use crate::external::serde_support::legacy_format;
+}
+
 /*
 How does the bitflags crate work?
 

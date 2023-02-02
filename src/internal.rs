@@ -104,7 +104,15 @@ macro_rules! __impl_internal_bitflags {
                 for flag in s.split('|') {
                     let flag = flag.trim();
 
-                    let parsed_flag = Self::from_name(flag).ok_or_else(|| $crate::ParseError::invalid_flag(flag))?;
+                    let parsed_flag = if flag.starts_with("0x") {
+                        // Parse a flag formatted as hex
+                        let flag = &flag[2..];
+                        let bits = <$T>::from_str_radix(flag, 16).map_err(|_| $crate::ParseError::invalid_hex_flag(flag))?;
+
+                        Self::from_bits_retain(bits)
+                    } else {
+                        Self::from_name(flag).ok_or_else(|| $crate::ParseError::invalid_named_flag(flag))?
+                    };
 
                     parsed_flags.insert(parsed_flag);
                 }

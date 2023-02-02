@@ -1,35 +1,79 @@
 use core::fmt;
 
 #[derive(Debug)]
-pub struct ParseError {
-    #[cfg(feature = "std")]
-    invalid: String,
+pub struct ParseError(ParseErrorKind);
+
+#[derive(Debug)]
+enum ParseErrorKind {
+    InvalidNamedFlag {
+        #[cfg(not(feature = "std"))]
+        got: (),
+        #[cfg(feature = "std")]
+        got: String,
+    },
+    InvalidHexFlag {
+        #[cfg(not(feature = "std"))]
+        got: (),
+        #[cfg(feature = "std")]
+        got: String,
+    }
 }
 
 impl ParseError {
-    pub fn invalid_flag(flag: impl fmt::Display) -> Self {
-        #[cfg(feature = "std")]
-        {
-            ParseError {
-                invalid: flag.to_string(),
-            }
-        }
-        #[cfg(not(feature = "std"))]
-        {
-            let _ = flag;
+    pub fn invalid_hex_flag(flag: impl fmt::Display) -> Self {
+        let _flag = flag;
 
-            ParseError {}
-        }
+        let got = {
+            #[cfg(feature = "std")]
+            {
+                _flag.to_string()
+            }
+        };
+
+        ParseError(ParseErrorKind::InvalidHexFlag {
+            got,
+        })
+    }
+
+    pub fn invalid_named_flag(flag: impl fmt::Display) -> Self {
+        let _flag = flag;
+
+        let got = {
+            #[cfg(feature = "std")]
+            {
+                _flag.to_string()
+            }
+        };
+
+        ParseError(ParseErrorKind::InvalidNamedFlag {
+            got,
+        })
     }
 }
 
 impl fmt::Display for ParseError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "failed to parse a set of bitflags")?;
+        match self.0 {
+            ParseErrorKind::InvalidNamedFlag { got } => {
+                let _got = got;
 
-        #[cfg(feature = "std")]
-        {
-            write!(f, ": unrecognized flag `{}`", self.invalid)?;
+                write!(f, "unrecognized named flag")?;
+
+                #[cfg(feature = "std")]
+                {
+                    write!(f, " `{}`", _got)?;
+                }
+            }
+            ParseErrorKind::InvalidHexFlag { got } => {
+                let _got = got;
+                
+                write!(f, "invalid hex flag")?;
+
+                #[cfg(feature = "std")]
+                {
+                    write!(f, " `{}`", _got)?;
+                }
+            }
         }
 
         Ok(())
