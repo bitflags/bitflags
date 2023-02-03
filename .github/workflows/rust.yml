@@ -63,8 +63,8 @@ jobs:
 
       - name: Install Rust toolchain
         run: |
-        - rustup default nightly
-        - rustup target add thumbv6m-none-eabi
+          rustup default nightly
+          rustup target add thumbv6m-none-eabi
 
       - name: Default features
         uses: actions-rs/cargo@v1
