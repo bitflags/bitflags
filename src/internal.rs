@@ -58,7 +58,19 @@ macro_rules! __impl_internal_bitflags {
 
         impl $crate::__private::core::fmt::Debug for $InternalBitFlags {
             fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
-                $crate::__private::core::fmt::Display::fmt(self, f)
+                if self.is_empty() {
+                    // If no flags are set then write an empty hex flag to avoid
+                    // writing an empty string. In some contexts, like serialization,
+                    // an empty string is preferrable, but it may be unexpected in
+                    // others for a format not to produce any output.
+                    //
+                    // We can remove this `0x0` and remain compatible with `FromStr`,
+                    // because an empty string will still parse to an empty set of flags,
+                    // just like `0x0` does.
+                    $crate::__private::core::write!(f, "{:#x}", <$T as $crate::__private::Bits>::EMPTY)
+                } else {
+                    $crate::__private::core::fmt::Display::fmt(self, f)
+                }
             }
         }
 
@@ -91,20 +103,7 @@ macro_rules! __impl_internal_bitflags {
                         f.write_str(" | ")?;
                     }
 
-                    first = false;
                     $crate::__private::core::write!(f, "{:#x}", extra_bits)?;
-                }
-
-                // If no flags are set then write an empty hex flag to avoid
-                // writing an empty string. In some contexts, like serialization,
-                // an empty string is preferrable, but it may be unexpected in
-                // others for a format not to produce any output.
-                //
-                // We can remove this `0x0` and remain compatible with `FromStr`,
-                // because an empty string will still parse to an empty set of flags,
-                // just like `0x0` does.
-                if first {
-                    $crate::__private::core::write!(f, "{:#x}", <$T as $crate::__private::Bits>::EMPTY)?;
                 }
 
                 $crate::__private::core::fmt::Result::Ok(())

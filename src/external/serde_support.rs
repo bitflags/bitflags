@@ -6,19 +6,11 @@ use serde::{
 
 pub fn serialize_bits_default<T: fmt::Display + AsRef<B>, B: Serialize, S: Serializer>(
     flags: &T,
-    is_empty: bool,
     serializer: S,
 ) -> Result<S::Ok, S::Error> {
     // Serialize human-readable flags as a string like `"A | B"`
     if serializer.is_human_readable() {
-        // Special case for empty flags through `serde`
-        // Rather than serializing as `0x0`, serialize as
-        // an empty string
-        if is_empty {
-            serializer.serialize_str("")
-        } else {
-            serializer.collect_str(flags)
-        }
+        serializer.collect_str(flags)
     }
     // Serialize non-human-readable flags directly as the underlying bits
     else {
