@@ -154,6 +154,9 @@
 //! - `LowerHex` and `UpperHex`.
 //! - `Octal`.
 //!
+//! Also see the _Debug and Display_ section for details about standard text
+//! representations for flags types.
+//!
 //! ## Operators
 //!
 //! The following operator traits are implemented for the generated `struct`s:
@@ -267,7 +270,20 @@
 //!
 //! ## `Debug` and `Display`
 //!
-//! The `Debug` trait can be derived for a reasonable implementation.
+//! The `Debug` trait can be derived for a reasonable implementation. This library defines a standard
+//! text-based representation for flags that generated flags types can use. It uses the following
+//! whitespace and case insensitive grammar:
+//!
+//! - _Flags:_ (_Flag_)`|`*
+//! - _Flag:_ _Identifier_ | _HexNumber_
+//! - _Identifier:_ Any Rust identifier
+//! - _HexNumber_: `0x`([0-9a-zA-Z])*
+//!
+//! As an example, this is how `Flags::A | Flags::B | 0x0c` can be represented as text:
+//!
+//! ```text
+//! A | B | 0x0c
+//! ```
 //!
 //! ## `PartialEq` and `PartialOrd`
 //!
