@@ -1,5 +1,6 @@
 use core::fmt;
 
+/// An error encountered while parsing flags from text.
 #[derive(Debug)]
 pub struct ParseError(ParseErrorKind);
 
@@ -21,6 +22,7 @@ enum ParseErrorKind {
 }
 
 impl ParseError {
+    /// An invalid hex flag was encountered.
     pub fn invalid_hex_flag(flag: impl fmt::Display) -> Self {
         let _flag = flag;
 
@@ -34,6 +36,7 @@ impl ParseError {
         ParseError(ParseErrorKind::InvalidHexFlag { got })
     }
 
+    /// A named flag that doesn't correspond to any on the flags type was encountered.
     pub fn invalid_named_flag(flag: impl fmt::Display) -> Self {
         let _flag = flag;
 
@@ -47,6 +50,7 @@ impl ParseError {
         ParseError(ParseErrorKind::InvalidNamedFlag { got })
     }
 
+    /// A hex or named flag wasn't found between separators.
     pub fn empty_flag() -> Self {
         ParseError(ParseErrorKind::EmptyFlag)
     }
