@@ -17,7 +17,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-bitflags = "2.0.0-rc.1"
+bitflags = "2.0.0-rc.2"
 ```
 
 and this to your source code:

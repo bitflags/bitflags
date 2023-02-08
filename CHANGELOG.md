@@ -1,3 +1,27 @@
+# 2.0.0-rc.2
+
+## Changes to `serde` serialization
+
+**⚠️ NOTE ⚠️** This release changes the default serialization you'll get if you `#[derive(Serialize, Deserialize)]`
+on your generated flags types. It will now use a formatted string for human-readable formats and the underlying bits
+type for compact formats.
+
+To keep the old behavior, see the [`bitflags-serde-legacy`](https://github.com/KodrAus/bitflags-serde-legacy) library.
+
+## What's Changed
+
+* Add missing "if" to contains doc-comment in traits.rs by @rusty-snake in https://github.com/bitflags/bitflags/pull/291
+* Forbid unsafe_code by @fintelia in https://github.com/bitflags/bitflags/pull/294
+* serde: enable no-std support by @nim65s in https://github.com/bitflags/bitflags/pull/296
+* Add a parser for flags formatted as bar-separated-values by @KodrAus in https://github.com/bitflags/bitflags/pull/297
+
+## New Contributors
+* @rusty-snake made their first contribution in https://github.com/bitflags/bitflags/pull/291
+* @fintelia made their first contribution in https://github.com/bitflags/bitflags/pull/294
+* @nim65s made their first contribution in https://github.com/bitflags/bitflags/pull/296
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.0.0-rc.1...2.0.0-rc.2
+
 # 2.0.0-rc.1
 
 This is a big release including a few years worth of work on a new `BitFlags` trait, iteration, and better macro organization for future extensibility.
