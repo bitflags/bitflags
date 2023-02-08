@@ -154,6 +154,9 @@
 //! - `LowerHex` and `UpperHex`.
 //! - `Octal`.
 //!
+//! Also see the _Debug and Display_ section for details about standard text
+//! representations for flags types.
+//!
 //! ## Operators
 //!
 //! The following operator traits are implemented for the generated `struct`s:
@@ -267,7 +270,9 @@
 //!
 //! ## `Debug` and `Display`
 //!
-//! The `Debug` trait can be derived for a reasonable implementation.
+//! The `Debug` trait can be derived for a reasonable implementation. This library defines a standard
+//! text-based representation for flags that generated flags types can use. For details on the exact
+//! grammar, see the [`parser`] module.
 //!
 //! ## `PartialEq` and `PartialOrd`
 //!
@@ -338,13 +343,14 @@
 //! assert_eq!(2, count_unset_flags(&Flags::B));
 //! ```
 
-#![cfg_attr(not(test), no_std)]
+#![cfg_attr(not(any(feature = "std", test)), no_std)]
 #![doc(html_root_url = "https://docs.rs/bitflags/2.0.0-rc.1")]
 #![forbid(unsafe_code)]
 
 #[doc(inline)]
 pub use traits::BitFlags;
 
+pub mod parser;
 mod traits;
 
 #[doc(hidden)]
@@ -360,7 +366,7 @@ pub mod __private {
 /*
 How does the bitflags crate work?
 
-This library generates `struct`s in the end-user's crate with a bunch of constants on it that represent flags.
+This library generates a `struct` in the end-user's crate with a bunch of constants on it that represent flags.
 The difference between `bitflags` and a lot of other libraries is that we don't actually control the generated `struct` in the end.
 It's part of the end-user's crate, so it belongs to them. That makes it difficult to extend `bitflags` with new functionality
 because we could end up breaking valid code that was already written.
@@ -555,8 +561,12 @@ pub mod example_generated;
 
 #[cfg(test)]
 mod tests {
-    use std::collections::hash_map::DefaultHasher;
-    use std::hash::{Hash, Hasher};
+    use std::{
+        collections::hash_map::DefaultHasher,
+        fmt,
+        hash::{Hash, Hasher},
+        str,
+    };
 
     bitflags! {
         #[doc = "> The first principle is that you must not fool yourself — and"]
@@ -593,6 +603,30 @@ mod tests {
         #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct LongFlags: u32 {
             const LONG_A = 0b1111111111111111;
+        }
+    }
+
+    bitflags! {
+        #[derive(Debug, PartialEq, Eq)]
+        struct FmtFlags: u16 {
+            const 고양이 = 0b0000_0001;
+            const 개 = 0b0000_0010;
+            const 물고기 = 0b0000_0100;
+            const 물고기_고양이 = Self::고양이.bits() | Self::물고기.bits();
+        }
+    }
+
+    impl str::FromStr for FmtFlags {
+        type Err = crate::parser::ParseError;
+
+        fn from_str(flags: &str) -> Result<Self, Self::Err> {
+            Ok(Self(flags.parse()?))
+        }
+    }
+
+    impl fmt::Display for FmtFlags {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            fmt::Display::fmt(&self.0, f)
         }
     }
 
@@ -1106,7 +1140,7 @@ mod tests {
     #[test]
     fn test_debug() {
         assert_eq!(format!("{:?}", Flags::A | Flags::B), "Flags(A | B)");
-        assert_eq!(format!("{:?}", Flags::empty()), "Flags(empty)");
+        assert_eq!(format!("{:?}", Flags::empty()), "Flags(0x0)");
         assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C)");
 
         let extra = Flags::from_bits_retain(0xb8);
@@ -1119,7 +1153,64 @@ mod tests {
             "Flags(A | B | C | ABC | 0xb8)"
         );
 
-        assert_eq!(format!("{:?}", EmptyFlags::empty()), "EmptyFlags(empty)");
+        assert_eq!(format!("{:?}", EmptyFlags::empty()), "EmptyFlags(0x0)");
+    }
+
+    #[test]
+    fn test_display_from_str_roundtrip() {
+        fn format_parse_case(flags: FmtFlags) {
+            assert_eq!(flags, {
+                match flags.to_string().parse::<FmtFlags>() {
+                    Ok(flags) => flags,
+                    Err(e) => panic!("failed to parse `{}`: {}", flags, e),
+                }
+            });
+        }
+
+        fn parse_case(expected: FmtFlags, flags: &str) {
+            assert_eq!(expected, flags.parse::<FmtFlags>().unwrap());
+        }
+
+        format_parse_case(FmtFlags::empty());
+        format_parse_case(FmtFlags::all());
+        format_parse_case(FmtFlags::고양이);
+        format_parse_case(FmtFlags::고양이 | FmtFlags::개);
+        format_parse_case(FmtFlags::물고기_고양이);
+        format_parse_case(FmtFlags::from_bits_retain(0xb8));
+        format_parse_case(FmtFlags::from_bits_retain(0x20));
+
+        parse_case(FmtFlags::empty(), "");
+        parse_case(FmtFlags::empty(), " \r\n\t");
+        parse_case(FmtFlags::empty(), "0x0");
+        parse_case(FmtFlags::empty(), "0x0");
+
+        parse_case(FmtFlags::고양이, "고양이");
+        parse_case(FmtFlags::고양이, "  고양이  ");
+        parse_case(FmtFlags::고양이, "고양이 | 고양이 | 고양이");
+        parse_case(FmtFlags::고양이, "0x01");
+
+        parse_case(FmtFlags::고양이 | FmtFlags::개, "고양이 | 개");
+        parse_case(FmtFlags::고양이 | FmtFlags::개, "고양이|개");
+        parse_case(FmtFlags::고양이 | FmtFlags::개, "\n고양이|개 ");
+
+        parse_case(FmtFlags::고양이 | FmtFlags::물고기, "물고기_고양이");
+    }
+
+    #[test]
+    fn test_from_str_err() {
+        fn parse_case(pat: &str, flags: &str) {
+            let err = flags.parse::<FmtFlags>().unwrap_err().to_string();
+            assert!(err.contains(pat), "`{}` not found in error `{}`", pat, err);
+        }
+
+        parse_case("empty flag", "|");
+        parse_case("empty flag", "|||");
+        parse_case("empty flag", "고양이 |");
+        parse_case("unrecognized named flag", "NOT_A_FLAG");
+        parse_case("unrecognized named flag", "고양이 개");
+        parse_case("unrecognized named flag", "고양이 | NOT_A_FLAG");
+        parse_case("invalid hex flag", "0xhi");
+        parse_case("invalid hex flag", "고양이 | 0xhi");
     }
 
     #[test]
@@ -1283,7 +1374,6 @@ mod tests {
         assert!(Flags::SOME.contains(Flags::NONE));
         assert!(Flags::NONE.is_empty());
 
-        assert_eq!(format!("{:?}", Flags::empty()), "Flags(empty)");
         assert_eq!(format!("{:?}", Flags::SOME), "Flags(NONE | SOME)");
     }
 

@@ -40,23 +40,35 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install Rust Toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        override: true
-        profile: minimal
-        toolchain: ${{ matrix.channel }}-${{ matrix.rust_target }}
+      run: rustup default ${{ matrix.channel }}-${{ matrix.rust_target }}
 
     - name: Install cargo-hack
       run: cargo install cargo-hack
 
     - name: Powerset
-      run: cargo hack test --feature-powerset --lib --optional-deps "serde" --depth 3 --skip rustc-dep-of-std
+      run: cargo hack test --feature-powerset --lib --optional-deps "std serde" --depth 3 --skip rustc-dep-of-std
 
     - name: Docs
       run: cargo doc --features example_generated
 
     - name: Smoke test
       run: cargo run --manifest-path tests/smoke-test/Cargo.toml
+
+  benches:
+    name: Benches
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install Rust toolchain
+        run: rustup default nightly
+
+      - name: Default features
+        uses: actions-rs/cargo@v1
+        with:
+          command: bench
+          args: --no-run
 
   embedded:
     name: Build (embedded)
@@ -66,12 +78,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          target: thumbv6m-none-eabi
-          override: true
+        run: |
+          rustup default nightly
+          rustup target add thumbv6m-none-eabi
 
       - name: Default features
         uses: actions-rs/cargo@v1

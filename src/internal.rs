@@ -58,6 +58,32 @@ macro_rules! __impl_internal_bitflags {
 
         impl $crate::__private::core::fmt::Debug for $InternalBitFlags {
             fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+                if self.is_empty() {
+                    // If no flags are set then write an empty hex flag to avoid
+                    // writing an empty string. In some contexts, like serialization,
+                    // an empty string is preferrable, but it may be unexpected in
+                    // others for a format not to produce any output.
+                    //
+                    // We can remove this `0x0` and remain compatible with `FromStr`,
+                    // because an empty string will still parse to an empty set of flags,
+                    // just like `0x0` does.
+                    $crate::__private::core::write!(f, "{:#x}", <$T as $crate::__private::Bits>::EMPTY)
+                } else {
+                    $crate::__private::core::fmt::Display::fmt(self, f)
+                }
+            }
+        }
+
+        impl $crate::__private::core::fmt::Display for $InternalBitFlags {
+            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+                // A formatter for bitflags that produces text output like:
+                //
+                // A | B | 0xf6
+                //
+                // The names of set flags are written in a bar-separated-format,
+                // followed by a hex number of any remaining bits that are set
+                // but don't correspond to any flags.
+
                 // Iterate over the valid flags
                 let mut first = true;
                 for (name, _) in self.iter_names() {
@@ -76,15 +102,55 @@ macro_rules! __impl_internal_bitflags {
                     if !first {
                         f.write_str(" | ")?;
                     }
-                    first = false;
+
                     $crate::__private::core::write!(f, "{:#x}", extra_bits)?;
                 }
 
-                if first {
-                    f.write_str("empty")?;
+                $crate::__private::core::fmt::Result::Ok(())
+            }
+        }
+
+        // The impl for `FromStr` should parse anything produced by `Display`
+        impl $crate::__private::core::str::FromStr for $InternalBitFlags {
+            type Err = $crate::parser::ParseError;
+
+            fn from_str(s: &str) -> $crate::__private::core::result::Result<Self, Self::Err> {
+                let s = s.trim();
+
+                let mut parsed_flags = Self::empty();
+
+                // If the input is empty then return an empty set of flags
+                if s.is_empty() {
+                    return $crate::__private::core::result::Result::Ok(parsed_flags);
                 }
 
-                $crate::__private::core::fmt::Result::Ok(())
+                for flag in s.split('|') {
+                    let flag = flag.trim();
+
+                    // If the flag is empty then we've got missing input
+                    if flag.is_empty() {
+                        return $crate::__private::core::result::Result::Err($crate::parser::ParseError::empty_flag());
+                    }
+
+                    // If the flag starts with `0x` then it's a hex number
+                    // Parse it directly to the underlying bits type
+                    let parsed_flag = if flag.starts_with("0x") {
+                        let flag = &flag[2..];
+                        let bits = <$T>::from_str_radix(flag, 16).map_err(|_| $crate::parser::ParseError::invalid_hex_flag(flag))?;
+
+                        Self::from_bits_retain(bits)
+                    }
+                    // Otherwise the flag is a name
+                    // The generated flags type will determine whether
+                    // or not it's a valid identifier
+                    else {
+                        Self::from_name(flag).ok_or_else(|| $crate::parser::ParseError::invalid_named_flag(flag))?
+                    };
+
+                    parsed_flags.insert(parsed_flag);
+                }
+
+                $crate::__private::core::result::Result::Ok(parsed_flags)
             }
         }
 
@@ -264,6 +330,18 @@ macro_rules! __impl_internal_bitflags {
             #[must_use]
             pub const fn complement(self) -> Self {
                 Self::from_bits_truncate(!self.bits)
+            }
+        }
+
+        impl $crate::__private::core::convert::AsRef<$T> for $InternalBitFlags {
+            fn as_ref(&self) -> &$T {
+                &self.bits
+            }
+        }
+
+        impl $crate::__private::core::convert::From<$T> for $InternalBitFlags {
+            fn from(bits: $T) -> Self {
+                Self::from_bits_retain(bits)
             }
         }
 
