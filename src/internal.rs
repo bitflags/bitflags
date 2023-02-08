@@ -112,7 +112,7 @@ macro_rules! __impl_internal_bitflags {
 
         // The impl for `FromStr` should parse anything produced by `Display`
         impl $crate::__private::core::str::FromStr for $InternalBitFlags {
-            type Err = $crate::ParseError;
+            type Err = $crate::parser::ParseError;
 
             fn from_str(s: &str) -> $crate::__private::core::result::Result<Self, Self::Err> {
                 let s = s.trim();
@@ -129,14 +129,14 @@ macro_rules! __impl_internal_bitflags {
 
                     // If the flag is empty then we've got missing input
                     if flag.is_empty() {
-                        return $crate::__private::core::result::Result::Err($crate::ParseError::empty_flag());
+                        return $crate::__private::core::result::Result::Err($crate::parser::ParseError::empty_flag());
                     }
 
                     // If the flag starts with `0x` then it's a hex number
                     // Parse it directly to the underlying bits type
                     let parsed_flag = if flag.starts_with("0x") {
                         let flag = &flag[2..];
-                        let bits = <$T>::from_str_radix(flag, 16).map_err(|_| $crate::ParseError::invalid_hex_flag(flag))?;
+                        let bits = <$T>::from_str_radix(flag, 16).map_err(|_| $crate::parser::ParseError::invalid_hex_flag(flag))?;
 
                         Self::from_bits_retain(bits)
                     }
@@ -144,7 +144,7 @@ macro_rules! __impl_internal_bitflags {
                     // The generated flags type will determine whether
                     // or not it's a valid identifier
                     else {
-                        Self::from_name(flag).ok_or_else(|| $crate::ParseError::invalid_named_flag(flag))?
+                        Self::from_name(flag).ok_or_else(|| $crate::parser::ParseError::invalid_named_flag(flag))?
                     };
 
                     parsed_flags.insert(parsed_flag);

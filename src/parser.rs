@@ -1,3 +1,5 @@
+//! Parsing flags from text.
+
 use core::fmt;
 
 /// An error encountered while parsing flags from text.

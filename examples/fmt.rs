@@ -2,7 +2,7 @@
 
 use core::{fmt, str};
 
-fn main() -> Result<(), bitflags::ParseError> {
+fn main() -> Result<(), bitflags::parser::ParseError> {
     bitflags::bitflags! {
         // You can `#[derive]` the `Debug` trait, but implementing it manually
         // can produce output like `A | B` instead of `Flags(A | B)`.
@@ -29,7 +29,7 @@ fn main() -> Result<(), bitflags::ParseError> {
     }
 
     impl str::FromStr for Flags {
-        type Err = bitflags::ParseError;
+        type Err = bitflags::parser::ParseError;
 
         fn from_str(flags: &str) -> Result<Self, Self::Err> {
             Ok(Self(flags.parse()?))

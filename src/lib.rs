@@ -361,10 +361,8 @@
 #[doc(inline)]
 pub use traits::BitFlags;
 
-mod error;
+pub mod parser;
 mod traits;
-
-pub use error::*;
 
 #[doc(hidden)]
 pub mod __private {
@@ -630,7 +628,7 @@ mod tests {
     }
 
     impl str::FromStr for FmtFlags {
-        type Err = crate::ParseError;
+        type Err = crate::parser::ParseError;
 
         fn from_str(flags: &str) -> Result<Self, Self::Err> {
             Ok(Self(flags.parse()?))
