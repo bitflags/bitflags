@@ -54,6 +54,22 @@ jobs:
     - name: Smoke test
       run: cargo run --manifest-path tests/smoke-test/Cargo.toml
 
+  benches:
+    name: Benches
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install Rust toolchain
+        run: rustup default nightly
+
+      - name: Default features
+        uses: actions-rs/cargo@v1
+        with:
+          command: bench
+          args: --no-run
+
   embedded:
     name: Build (embedded)
     runs-on: ubuntu-latest
