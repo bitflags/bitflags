@@ -1,4 +1,18 @@
 //! Parsing flags from text.
+//!
+//! `bitflags` defines the following whitespace-insensitive grammar for flags formatted
+//! as text:
+//!
+//! - _Flags:_ (_Flag_)`|`*
+//! - _Flag:_ _Identifier_ | _HexNumber_
+//! - _Identifier:_ Any Rust identifier
+//! - _HexNumber_: `0x`([0-9a-zA-Z])*
+//!
+//! As an example, this is how `Flags::A | Flags::B | 0x0c` can be represented as text:
+//!
+//! ```text
+//! A | B | 0x0c
+//! ```
 
 use core::fmt;
 
