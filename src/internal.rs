@@ -134,8 +134,7 @@ macro_rules! __impl_internal_bitflags {
 
                     // If the flag starts with `0x` then it's a hex number
                     // Parse it directly to the underlying bits type
-                    let parsed_flag = if flag.starts_with("0x") {
-                        let flag = &flag[2..];
+                    let parsed_flag = if let $crate::__private::core::option::Option::Some(flag) = flag.strip_prefix("0x") {
                         let bits = <$T>::from_str_radix(flag, 16).map_err(|_| $crate::parser::ParseError::invalid_hex_flag(flag))?;
 
                         Self::from_bits_retain(bits)
