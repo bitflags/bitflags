@@ -14,6 +14,8 @@
 //! A | B | 0x0c
 //! ```
 
+#![allow(clippy::let_unit_value)]
+
 use core::fmt;
 
 /// An error encountered while parsing flags from text.
@@ -21,6 +23,7 @@ use core::fmt;
 pub struct ParseError(ParseErrorKind);
 
 #[derive(Debug)]
+#[allow(clippy::enum_variant_names)]
 enum ParseErrorKind {
     EmptyFlag,
     InvalidNamedFlag {

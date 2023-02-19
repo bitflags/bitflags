@@ -433,14 +433,12 @@ The macros are split into 3 modules:
 ///     }
 /// }
 ///
-/// fn main() {
-///     let e1 = Flags::A | Flags::C;
-///     let e2 = Flags::B | Flags::C;
-///     assert_eq!((e1 | e2), Flags::ABC);   // union
-///     assert_eq!((e1 & e2), Flags::C);     // intersection
-///     assert_eq!((e1 - e2), Flags::A);     // set difference
-///     assert_eq!(!e2, Flags::A);           // set complement
-/// }
+/// let e1 = Flags::A | Flags::C;
+/// let e2 = Flags::B | Flags::C;
+/// assert_eq!((e1 | e2), Flags::ABC);   // union
+/// assert_eq!((e1 & e2), Flags::C);     // intersection
+/// assert_eq!((e1 - e2), Flags::A);     // set difference
+/// assert_eq!(!e2, Flags::A);           // set complement
 /// ```
 ///
 /// The generated `struct`s can also be extended with type and trait
@@ -465,15 +463,13 @@ The macros are split into 3 modules:
 ///     }
 /// }
 ///
-/// fn main() {
-///     let mut flags = Flags::A | Flags::B;
+/// let mut flags = Flags::A | Flags::B;
 ///
-///     flags.clear();
-///     assert!(flags.is_empty());
+/// flags.clear();
+/// assert!(flags.is_empty());
 ///
-///     assert_eq!(format!("{:?}", Flags::A | Flags::B), "Flags(A | B)");
-///     assert_eq!(format!("{:?}", Flags::B), "Flags(B)");
-/// }
+/// assert_eq!(format!("{:?}", Flags::A | Flags::B), "Flags(A | B)");
+/// assert_eq!(format!("{:?}", Flags::B), "Flags(B)");
 /// ```
 #[macro_export(local_inner_macros)]
 macro_rules! bitflags {
