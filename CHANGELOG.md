@@ -1,3 +1,14 @@
+# 2.0.0-rc.3
+
+## What's Changed
+* Use strip_prefix instead of starts_with + slice by @QuinnPainter in https://github.com/bitflags/bitflags/pull/301
+* Fix up some clippy lints by @KodrAus in https://github.com/bitflags/bitflags/pull/302
+
+## New Contributors
+* @QuinnPainter made their first contribution in https://github.com/bitflags/bitflags/pull/301
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.0.0-rc.2...2.0.0-rc.3
+
 # 2.0.0-rc.2
 
 ## Changes to `serde` serialization
