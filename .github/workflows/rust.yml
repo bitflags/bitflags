@@ -5,6 +5,9 @@ on: [push, pull_request]
 env:
   CARGO_TERM_COLOR: always
 
+permissions:
+  contents: read
+
 jobs:
   check:
     name: "Tests / OS: ${{ matrix.os }} - ${{ matrix.channel }}-${{ matrix.rust_target }}"
