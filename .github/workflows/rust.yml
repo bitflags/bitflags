@@ -87,7 +87,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: -Z avoid-dev-deps --features example_generated
+          working-directory: ./tests/smoke-test
 
   embedded:
     name: Build (embedded)
