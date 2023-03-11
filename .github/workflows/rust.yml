@@ -73,6 +73,23 @@ jobs:
           command: bench
           args: --no-run
 
+  msrv:
+      name: MSRV
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout sources
+            uses: actions/checkout@v2
+
+      - name: Install Rust toolchain
+        run: |
+          rustup default 1.56.0
+
+      - name: Default features
+        uses: actions-rs/cargo@v1
+        with:
+            command: build
+            args: -Z avoid-dev-deps --features example_generated
+
   embedded:
     name: Build (embedded)
     runs-on: ubuntu-latest

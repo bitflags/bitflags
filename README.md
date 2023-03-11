@@ -56,4 +56,4 @@ fn main() {
 
 ## Rust Version Support
 
-The minimum supported Rust version is 1.46 due to use of associated constants and const functions.
+The minimum supported Rust version is 1.56.0. This may be bumped in minor releases as necessary.
