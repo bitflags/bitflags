@@ -84,10 +84,8 @@ jobs:
         run: rustup default 1.56.0
 
       - name: Default features
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          working-directory: ./tests/smoke-test
+        run: cargo build
+        working-directory: ./tests/smoke-test
 
   embedded:
     name: Build (embedded)
