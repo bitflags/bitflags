@@ -80,12 +80,15 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
 
-      - name: Install Rust toolchain
-        run: rustup default 1.56.0
+      - name: Install tombl
+        run: cargo install tombl
 
-      - name: Default features
-        run: cargo build
-        working-directory: ./tests/smoke-test
+      - name: Smoke test
+        run: |
+          eval $(tombl -e msrv=package.rust-version Cargo.toml)
+          rustup update $msrv
+          cd ./tests/smoke-test
+          cargo +$msrv build
 
   embedded:
     name: Build (embedded)

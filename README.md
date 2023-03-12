@@ -56,4 +56,5 @@ fn main() {
 
 ## Rust Version Support
 
-The minimum supported Rust version is 1.56.0. This may be bumped in minor releases as necessary.
+The minimum supported Rust version is documented in the `Cargo.toml` file.
+This may be bumped in minor releases as necessary.
