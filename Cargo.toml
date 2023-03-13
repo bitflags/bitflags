@@ -3,8 +3,9 @@ name = "bitflags"
 # NB: When modifying, also modify:
 #   1. html_root_url in lib.rs
 #   2. number in readme (for breaking changes)
-version = "2.0.0-rc.3"
-edition = "2018"
+version = "2.0.0"
+edition = "2021"
+rust-version = "1.56.0"
 authors = ["The Rust Project Developers"]
 license = "MIT OR Apache-2.0"
 keywords = ["bit", "bitmask", "bitflags", "flags"]

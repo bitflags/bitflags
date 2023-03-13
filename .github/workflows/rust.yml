@@ -73,6 +73,23 @@ jobs:
           command: bench
           args: --no-run
 
+  msrv:
+    name: MSRV
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install tombl
+        run: cargo install tombl
+
+      - name: Smoke test
+        run: |
+          eval $(tombl -e msrv=package.rust-version Cargo.toml)
+          rustup update $msrv
+          cd ./tests/smoke-test
+          cargo +$msrv build
+
   embedded:
     name: Build (embedded)
     runs-on: ubuntu-latest

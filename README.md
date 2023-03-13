@@ -17,7 +17,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-bitflags = "2.0.0-rc.3"
+bitflags = "2.0.0"
 ```
 
 and this to your source code:
@@ -56,4 +56,5 @@ fn main() {
 
 ## Rust Version Support
 
-The minimum supported Rust version is 1.46 due to use of associated constants and const functions.
+The minimum supported Rust version is documented in the `Cargo.toml` file.
+This may be bumped in minor releases as necessary.
