@@ -1498,6 +1498,17 @@ mod tests {
         assert_eq!(iter.next().unwrap(), ("ONE", Flags::ONE));
         assert_eq!(iter.next().unwrap(), ("THREE", Flags::THREE));
         assert_eq!(iter.next(), None);
+
+        let flags = Flags::from_bits_retain(0b1000_0000);
+        assert_eq!(flags.into_iter().count(), 1);
+        assert_eq!(flags.iter_names().count(), 0);
+    }
+
+    #[test]
+    fn into_iter_from_iter_roundtrip() {
+        let flags = Flags::ABC | Flags::from_bits_retain(0b1000_0000);
+
+        assert_eq!(flags, flags.into_iter().collect::<Flags>());
     }
 
     #[test]

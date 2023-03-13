@@ -20,7 +20,10 @@ macro_rules! __declare_internal_bitflags {
             bits: $T,
         }
 
-        $iter_vis struct $Iter($IterNames);
+        $iter_vis struct $Iter {
+            inner: $IterNames,
+            done: bool,
+        }
 
         $iter_names_vis struct $IterNames {
             idx: usize,
@@ -245,7 +248,10 @@ macro_rules! __impl_internal_bitflags {
 
             #[inline]
             pub const fn iter(&self) -> $Iter {
-                $Iter(self.iter_names())
+                $Iter {
+                    inner: self.iter_names(),
+                    done: false,
+                }
             }
 
             #[inline]
@@ -348,7 +354,22 @@ macro_rules! __impl_internal_bitflags {
             type Item = $BitFlags;
 
             fn next(&mut self) -> $crate::__private::core::option::Option<Self::Item> {
-                self.0.next().map(|(_, value)| value)
+                match self.inner.next().map(|(_, value)| value) {
+                    $crate::__private::core::option::Option::Some(value) => $crate::__private::core::option::Option::Some(value),
+                    $crate::__private::core::option::Option::None if !self.done => {
+                        self.done = true;
+
+                        // After iterating through valid names, if there are any bits left over
+                        // then return one final value that includes them. This makes `into_iter`
+                        // and `from_iter` roundtrip
+                        if self.inner.state != $InternalBitFlags::empty() {
+                            $crate::__private::core::option::Option::Some($BitFlags::from_bits_retain(self.inner.state.bits()))
+                        } else {
+                            $crate::__private::core::option::Option::None
+                        }
+                    },
+                    _ => $crate::__private::core::option::Option::None,
+                }
             }
         }
 
