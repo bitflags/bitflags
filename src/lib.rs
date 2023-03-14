@@ -134,7 +134,7 @@
 //!
 //! # What's implemented by `bitflags!`
 //!
-//! The `bitflags!` trait adds some trait implementations and inherent methods
+//! The `bitflags!` macro adds some trait implementations and inherent methods
 //! to generated flags types, but leaves room for you to choose the semantics
 //! of others.
 //!
@@ -344,7 +344,7 @@
 //! ```
 
 #![cfg_attr(not(any(feature = "std", test)), no_std)]
-#![doc(html_root_url = "https://docs.rs/bitflags/2.0.0-rc.2")]
+#![doc(html_root_url = "https://docs.rs/bitflags/2.0.0")]
 #![forbid(unsafe_code)]
 
 #[doc(inline)]
