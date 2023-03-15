@@ -82,7 +82,7 @@ impl ParseError {
     }
 
     /// A hex or named flag wasn't found between separators.
-    pub fn empty_flag() -> Self {
+    pub const fn empty_flag() -> Self {
         ParseError(ParseErrorKind::EmptyFlag)
     }
 }
