@@ -1154,17 +1154,39 @@ mod tests {
 
     #[test]
     fn test_display_from_str_roundtrip() {
-        fn format_parse_case(flags: FmtFlags) {
+        fn format_parse_case<T: fmt::Debug + fmt::Display + str::FromStr + PartialEq>(flags: T) where <T as str::FromStr>::Err: fmt::Display {
             assert_eq!(flags, {
-                match flags.to_string().parse::<FmtFlags>() {
+                match flags.to_string().parse::<T>() {
                     Ok(flags) => flags,
                     Err(e) => panic!("failed to parse `{}`: {}", flags, e),
                 }
             });
         }
 
-        fn parse_case(expected: FmtFlags, flags: &str) {
-            assert_eq!(expected, flags.parse::<FmtFlags>().unwrap());
+        fn parse_case<T: fmt::Debug + str::FromStr + PartialEq>(expected: T, flags: &str) where <T as str::FromStr>::Err: fmt::Display + fmt::Debug {
+            assert_eq!(expected, flags.parse::<T>().unwrap());
+        }
+
+        bitflags! {
+            #[derive(Debug, Eq, PartialEq)]
+            pub struct MultiBitFmtFlags: u8 {
+                const A = 0b0000_0001u8;
+                const B = 0b0001_1110u8;
+            }
+        }
+
+        impl fmt::Display for MultiBitFmtFlags {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                fmt::Display::fmt(&self.0, f)
+            }
+        }
+
+        impl str::FromStr for MultiBitFmtFlags {
+            type Err = crate::parser::ParseError;
+
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                Ok(MultiBitFmtFlags(s.parse()?))
+            }
         }
 
         format_parse_case(FmtFlags::empty());
@@ -1174,6 +1196,7 @@ mod tests {
         format_parse_case(FmtFlags::물고기_고양이);
         format_parse_case(FmtFlags::from_bits_retain(0xb8));
         format_parse_case(FmtFlags::from_bits_retain(0x20));
+        format_parse_case(MultiBitFmtFlags::from_bits_retain(3));
 
         parse_case(FmtFlags::empty(), "");
         parse_case(FmtFlags::empty(), " \r\n\t");

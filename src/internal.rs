@@ -89,7 +89,8 @@ macro_rules! __impl_internal_bitflags {
 
                 // Iterate over the valid flags
                 let mut first = true;
-                for (name, _) in self.iter_names() {
+                let mut iter = self.iter_names();
+                for (name, _) in &mut iter {
                     if !first {
                         f.write_str(" | ")?;
                     }
@@ -99,8 +100,7 @@ macro_rules! __impl_internal_bitflags {
                 }
 
                 // Append any extra bits that correspond to flags to the end of the format
-                let extra_bits = self.bits & !Self::all().bits;
-
+                let extra_bits = iter.state.bits();
                 if extra_bits != <$T as $crate::__private::Bits>::EMPTY {
                     if !first {
                         f.write_str(" | ")?;
