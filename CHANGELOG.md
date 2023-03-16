@@ -1,3 +1,15 @@
+# 2.0.1
+
+## What's Changed
+* Fix up some docs issues by @KodrAus in https://github.com/bitflags/bitflags/pull/309
+* Make empty_flag() const. by @tormeh in https://github.com/bitflags/bitflags/pull/313
+* Fix formatting of multi-bit flags with partial overlap by @KodrAus in https://github.com/bitflags/bitflags/pull/316
+
+## New Contributors
+* @tormeh made their first contribution in https://github.com/bitflags/bitflags/pull/313
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.0.0...2.0.1
+
 # 2.0.0
 
 ## What's Changed
