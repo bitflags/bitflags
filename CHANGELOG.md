@@ -1,3 +1,10 @@
+# 2.0.2
+
+## What's Changed
+* Fix up missing isize and usize Bits impls by @KodrAus in https://github.com/bitflags/bitflags/pull/321
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.0.1...2.0.2
+
 # 2.0.1
 
 ## What's Changed
