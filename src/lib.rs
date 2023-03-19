@@ -344,7 +344,7 @@
 //! ```
 
 #![cfg_attr(not(any(feature = "std", test)), no_std)]
-#![doc(html_root_url = "https://docs.rs/bitflags/2.0.0")]
+#![doc(html_root_url = "https://docs.rs/bitflags/2.0.2")]
 #![forbid(unsafe_code)]
 
 #[doc(inline)]
