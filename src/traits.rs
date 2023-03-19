@@ -138,6 +138,7 @@ impl_bits! {
     u32, i32,
     u64, i64,
     u128, i128,
+    usize, isize,
 }
 
 /// A trait for referencing the `bitflags`-owned internal type
