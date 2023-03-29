@@ -361,6 +361,8 @@ pub mod __private {
 
     #[cfg(feature = "serde")]
     pub use serde;
+    #[cfg(feature = "zerocopy_0_6")]
+    pub use zerocopy;
 }
 
 /*

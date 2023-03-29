@@ -14,6 +14,12 @@ macro_rules! __declare_internal_bitflags {
         $iter_vis:vis struct $Iter:ident;
         $iter_names_vis:vis struct $IterNames:ident;
     ) => {
+        #[cfg(feature = "zerocopy_0_6")]
+        use $crate::__private::zerocopy;
+        #[cfg(feature = "zerocopy_0_6")]
+        use ::core::marker::Sized;
+
+        #[cfg_attr(feature = "zerocopy_0_6", derive($crate::__private::zerocopy::AsBytes, $crate::__private::zerocopy::FromBytes))]
         #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
         #[repr(transparent)]
         $vis struct $InternalBitFlags {

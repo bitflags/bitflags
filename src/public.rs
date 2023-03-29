@@ -14,7 +14,7 @@ macro_rules! __declare_public_bitflags {
         $vis:vis struct $BitFlags:ident;
     ) => {
         $(#[$outer])*
-        $vis struct $BitFlags(<Self as $crate::__private::PublicFlags>::Internal);
+        $vis struct $BitFlags(<$BitFlags as $crate::__private::PublicFlags>::Internal);
     };
 }
 
