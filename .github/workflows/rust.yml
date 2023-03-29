@@ -49,7 +49,7 @@ jobs:
       run: cargo install cargo-hack
 
     - name: Powerset
-      run: cargo hack test --feature-powerset --lib --optional-deps "std serde" --depth 3 --skip rustc-dep-of-std
+      run: cargo hack test --feature-powerset --lib --optional-deps "std serde zerocopy_0_6" --depth 3 --skip rustc-dep-of-std
 
     - name: Docs
       run: cargo doc --features example_generated
