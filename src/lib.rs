@@ -411,6 +411,9 @@ pub mod __private {
 
     #[cfg(feature = "serde")]
     pub use serde;
+
+    #[cfg(feature = "arbitrary")]
+    pub use arbitrary;
 }
 
 /*

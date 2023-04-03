@@ -3,6 +3,9 @@
 #[cfg(feature = "serde")]
 pub mod serde_support;
 
+#[cfg(feature = "arbitrary")]
+pub mod arbitrary_support;
+
 /// Implements traits from external libraries for the internal bitflags type.
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
@@ -20,6 +23,15 @@ macro_rules! __impl_external_bitflags {
         // and a no-op when it isn't
 
         __impl_external_bitflags_serde! {
+            $InternalBitFlags: $T {
+                $(
+                    $(#[$attr $($args)*])*
+                    $Flag;
+                )*
+            }
+        }
+
+        __impl_external_bitflags_arbitrary! {
             $InternalBitFlags: $T {
                 $(
                     $(#[$attr $($args)*])*
@@ -78,5 +90,42 @@ macro_rules! __impl_external_bitflags_serde {
                 $Flag:ident;
             )*
         }
+    ) => {};
+}
+
+/// Implement `Arbitrary` for the internal bitflags type.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+#[cfg(feature = "arbitrary")]
+macro_rules! __impl_external_bitflags_arbitrary {
+    (
+            $InternalBitFlags:ident: $T:ty {
+                $(
+                    $(#[$attr:ident $($args:tt)*])*
+                    $Flag:ident;
+                )*
+            }
+    ) => {
+        impl<'a> $crate::__private::arbitrary::Arbitrary<'a> for $InternalBitFlags {
+            fn arbitrary(
+                u: &mut $crate::__private::arbitrary::Unstructured<'a>,
+            ) -> $crate::__private::arbitrary::Result<Self> {
+                Self::from_bits(u.arbitrary()?).ok_or_else(|| $crate::__private::arbitrary::Error::IncorrectFormat)
+            }
+        }
+    };
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+#[cfg(not(feature = "arbitrary"))]
+macro_rules! __impl_external_bitflags_arbitrary {
+    (
+            $InternalBitFlags:ident: $T:ty {
+                $(
+                    $(#[$attr:ident $($args:tt)*])*
+                    $Flag:ident;
+                )*
+            }
     ) => {};
 }
