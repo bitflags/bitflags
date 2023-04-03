@@ -60,7 +60,7 @@ macro_rules! __impl_internal_bitflags {
         }
 
         impl $crate::__private::core::fmt::Debug for $InternalBitFlags {
-            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter<'_>) -> $crate::__private::core::fmt::Result {
                 if self.is_empty() {
                     // If no flags are set then write an empty hex flag to avoid
                     // writing an empty string. In some contexts, like serialization,
@@ -78,7 +78,7 @@ macro_rules! __impl_internal_bitflags {
         }
 
         impl $crate::__private::core::fmt::Display for $InternalBitFlags {
-            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter<'_>) -> $crate::__private::core::fmt::Result {
                 // A formatter for bitflags that produces text output like:
                 //
                 // A | B | 0xf6
