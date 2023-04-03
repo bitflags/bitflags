@@ -274,6 +274,43 @@
 //! text-based representation for flags that generated flags types can use. For details on the exact
 //! grammar, see the [`parser`] module.
 //!
+//! To support formatting and parsing your generated flags types using that representation, you can implement
+//! the standard `Display` and `FromStr` traits in this fashion:
+//!
+//! ```
+//! use bitflags::bitflags;
+//! use std::{fmt, str};
+//!
+//! bitflags::bitflags! {
+//!     pub struct Flags: u32 {
+//!         const A = 1;
+//!         const B = 2;
+//!         const C = 4;
+//!         const D = 8;
+//!     }
+//! }
+//!
+//! impl fmt::Debug for Flags {
+//!     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//!         fmt::Debug::fmt(&self.0, f)
+//!     }
+//! }
+//!
+//! impl fmt::Display for Flags {
+//!     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//!         fmt::Display::fmt(&self.0, f)
+//!     }
+//! }
+//!
+//! impl str::FromStr for Flags {
+//!     type Err = bitflags::parser::ParseError;
+//!
+//!     fn from_str(flags: &str) -> Result<Self, Self::Err> {
+//!         Ok(Self(flags.parse()?))
+//!     }
+//! }
+//! ```
+//!
 //! ## `PartialEq` and `PartialOrd`
 //!
 //! Equality and ordering can be derived for a reasonable implementation, or implemented manually
@@ -342,6 +379,19 @@
 //!
 //! assert_eq!(2, count_unset_flags(&Flags::B));
 //! ```
+//!
+//! # The internal field
+//!
+//! This library generates newtypes like:
+//!
+//! ```
+//! # pub struct Field0;
+//! pub struct Flags(Field0);
+//! ```
+//!
+//! You can freely use methods and trait implementations on this internal field as `.0`.
+//! For details on exactly what's generated for it, see the [`Field0`](example_generated/struct.Field0.html)
+//! example docs.
 
 #![cfg_attr(not(any(feature = "std", test)), no_std)]
 #![doc(html_root_url = "https://docs.rs/bitflags/2.0.2")]
