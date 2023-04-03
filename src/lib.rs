@@ -274,8 +274,8 @@
 //! text-based representation for flags that generated flags types can use. For details on the exact
 //! grammar, see the [`parser`] module.
 //!
-//! To support formatting and parsing your generated flags types, you can implement the standard `Display`
-//! and `FromStr` traits:
+//! To support formatting and parsing your generated flags types using that representation, you can implement
+//! the standard `Display` and `FromStr` traits in this fashion:
 //!
 //! ```
 //! use bitflags::bitflags;
