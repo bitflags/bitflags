@@ -407,6 +407,7 @@ macro_rules! __impl_internal_bitflags {
                 if self.state.is_empty() || NUM_FLAGS == 0 {
                     $crate::__private::core::option::Option::None
                 } else {
+                    #[allow(clippy::indexing_slicing)]
                     for (flag, flag_name) in OPTIONS[self.idx..NUM_FLAGS].iter().copied()
                         .zip(OPTIONS_NAMES[self.idx..NUM_FLAGS].iter().copied())
                     {
