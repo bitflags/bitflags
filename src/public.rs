@@ -26,12 +26,7 @@ macro_rules! __declare_public_bitflags {
 #[doc(hidden)]
 macro_rules! __impl_public_bitflags {
     (
-        $PublicBitFlags:ident: $T:ty, $InternalBitFlags:ident, $Iter:ident, $IterNames:ident {
-            $(
-                $(#[$attr:ident $($args:tt)*])*
-                $Flag:ident = $value:expr;
-            )*
-        }
+        $PublicBitFlags:ident: $T:ty, $InternalBitFlags:ident, $Iter:ident, $IterNames:ident;
     ) => {
         impl $crate::__private::core::fmt::Binary for $PublicBitFlags {
             fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
@@ -58,11 +53,6 @@ macro_rules! __impl_public_bitflags {
         }
 
         impl $PublicBitFlags {
-            $(
-                $(#[$attr $($args)*])*
-                pub const $Flag: Self = Self::from_bits_retain($value);
-            )*
-
             /// Returns an empty set of flags.
             #[inline]
             pub const fn empty() -> Self {
@@ -452,5 +442,26 @@ macro_rules! __impl_public_bitflags {
         }
 
         impl $crate::__private::ImplementedByBitFlagsMacro for $PublicBitFlags {}
+    };
+}
+
+/// Implement constants on the public (user-facing) bitflags type.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! __impl_public_bitflags_consts {
+    (
+        $PublicBitFlags:ident {
+            $(
+                $(#[$attr:ident $($args:tt)*])*
+                $Flag:ident = $value:expr;
+            )*
+        }
+    ) => {
+        impl $PublicBitFlags {
+            $(
+                $(#[$attr $($args)*])*
+                pub const $Flag: Self = Self::from_bits_retain($value);
+            )*
+        }
     };
 }

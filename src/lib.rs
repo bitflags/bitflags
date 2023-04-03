@@ -544,6 +544,22 @@ macro_rules! bitflags {
             $vis struct $BitFlags;
         }
 
+        // Workaround for: https://github.com/bitflags/bitflags/issues/320
+        __impl_public_bitflags_consts! {
+            $BitFlags {
+                $(
+                    $(#[$inner $($args)*])*
+                    #[allow(
+                        dead_code,
+                        deprecated,
+                        unused_attributes,
+                        non_upper_case_globals
+                    )]
+                    $Flag = $value;
+                )*
+            }
+        }
+
         #[allow(
             dead_code,
             deprecated,
@@ -582,12 +598,7 @@ macro_rules! bitflags {
             }
 
             __impl_public_bitflags! {
-                $BitFlags: $T, InternalBitFlags, Iter, IterRaw {
-                    $(
-                        $(#[$inner $($args)*])*
-                        $Flag = $value;
-                    )*
-                }
+                $BitFlags: $T, InternalBitFlags, Iter, IterRaw;
             }
         };
 
