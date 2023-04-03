@@ -28,7 +28,11 @@ __impl_internal_bitflags! {
 }
 
 __impl_public_bitflags! {
-    Flags: u32, Field0, Iter, IterRaw {
+    Flags: u32, Field0, Iter, IterRaw;
+}
+
+__impl_public_bitflags_consts! {
+    Flags {
         A = 0b00000001;
         B = 0b00000010;
         C = 0b00000100;
