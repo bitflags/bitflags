@@ -1,3 +1,16 @@
+# 2.1.0
+
+## What's Changed
+* Add docs for the internal Field0 and examples of formatting/parsing by @KodrAus in https://github.com/bitflags/bitflags/pull/328
+* Add support for arbitrary by @KodrAus in https://github.com/bitflags/bitflags/pull/324
+* Fix up missing docs for consts within consts by @KodrAus in https://github.com/bitflags/bitflags/pull/330
+* Ignore clippy lint in generated code by @Jake-Shadle in https://github.com/bitflags/bitflags/pull/331
+
+## New Contributors
+* @Jake-Shadle made their first contribution in https://github.com/bitflags/bitflags/pull/331
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.0.2...2.1.0
+
 # 2.0.2
 
 ## What's Changed
