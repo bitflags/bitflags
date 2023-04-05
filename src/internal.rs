@@ -308,6 +308,20 @@ macro_rules! __impl_internal_bitflags {
             }
 
             #[inline]
+            pub fn insert_if(&mut self, other: Self, value: bool) {
+                if value {
+                    self.insert(other);
+                }
+            }
+
+            #[inline]
+            pub fn remove_if(&mut self, other: Self, value: bool) {
+                if value {
+                    self.remove(other);
+                }
+            }
+
+            #[inline]
             #[must_use]
             pub const fn intersection(self, other: Self) -> Self {
                 Self { bits: self.bits & other.bits }

@@ -1086,6 +1086,24 @@ mod tests {
     }
 
     #[test]
+    fn test_insert_if() {
+        let mut e1 = Flags::A;
+        e1.insert_if(Flags::B, true);
+        e1.insert_if(Flags::C, false);
+
+        assert_eq!(e1, Flags::A | Flags::B);
+    }
+
+    #[test]
+    fn test_remove_if() {
+        let mut e1 = Flags::A | Flags::B | Flags::C;
+        e1.remove_if(Flags::A, true);
+        e1.remove_if(Flags::B, false);
+
+        assert_eq!(e1, Flags::B | Flags::C);
+    }
+
+    #[test]
     fn test_assignment_operators() {
         let mut m1 = Flags::empty();
         let e1 = Flags::A | Flags::C;

@@ -70,6 +70,12 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
 
     /// Inserts or removes the specified flags depending on the passed value.
     fn set(&mut self, other: Self, value: bool);
+
+    /// Inserts the specified flags if the value is true; does nothing if the value is false.
+    fn insert_if(&mut self, other: Self, value: bool);
+
+    /// Removes the specified flags if the value is true; does nothing if the value is false.
+    fn remove_if(&mut self, other: Self, value: bool);
 }
 
 /// A marker trait that signals that an implementation of `BitFlags` came from the `bitflags!` macro.

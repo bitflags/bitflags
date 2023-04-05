@@ -167,6 +167,18 @@ macro_rules! __impl_public_bitflags {
                 self.0.set(other.0, value)
             }
 
+            /// Inserts the specified flags if the passed value is true.
+            #[inline]
+            pub fn insert_if(&mut self, other: Self, value: bool) {
+                self.0.insert_if(other.0, value)
+            }
+
+            /// Removes the specified flags if the passed value is true.
+            #[inline]
+            pub fn remove_if(&mut self, other: Self, value: bool) {
+                self.0.remove_if(other.0, value)
+            }
+
             /// Returns the intersection between the flags in `self` and
             /// `other`.
             ///
@@ -438,6 +450,14 @@ macro_rules! __impl_public_bitflags {
 
             fn set(&mut self, other: $PublicBitFlags, value: bool) {
                 $PublicBitFlags::set(self, other, value)
+            }
+
+            fn insert_if(&mut self, other: $PublicBitFlags, value: bool) {
+                $PublicBitFlags::insert_if(self, other, value)
+            }
+
+            fn remove_if(&mut self, other: $PublicBitFlags, value: bool) {
+                $PublicBitFlags::remove_if(self, other, value)
             }
         }
 
