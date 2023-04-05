@@ -60,7 +60,7 @@ macro_rules! __impl_internal_bitflags {
         }
 
         impl $crate::__private::core::fmt::Debug for $InternalBitFlags {
-            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter<'_>) -> $crate::__private::core::fmt::Result {
                 if self.is_empty() {
                     // If no flags are set then write an empty hex flag to avoid
                     // writing an empty string. In some contexts, like serialization,
@@ -78,7 +78,7 @@ macro_rules! __impl_internal_bitflags {
         }
 
         impl $crate::__private::core::fmt::Display for $InternalBitFlags {
-            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter<'_>) -> $crate::__private::core::fmt::Result {
                 // A formatter for bitflags that produces text output like:
                 //
                 // A | B | 0xf6
@@ -407,6 +407,7 @@ macro_rules! __impl_internal_bitflags {
                 if self.state.is_empty() || NUM_FLAGS == 0 {
                     $crate::__private::core::option::Option::None
                 } else {
+                    #[allow(clippy::indexing_slicing)]
                     for (flag, flag_name) in OPTIONS[self.idx..NUM_FLAGS].iter().copied()
                         .zip(OPTIONS_NAMES[self.idx..NUM_FLAGS].iter().copied())
                     {
