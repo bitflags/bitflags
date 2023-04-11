@@ -225,6 +225,8 @@ macro_rules! __impl_external_bitflags_bytemuck {
                 )*
         }
     ) => {
+        // SAFETY: $InternalBitFlags is guaranteed to have the same ABI as $T,
+        // and $T implements Pod
         unsafe impl $crate::__private::bytemuck::Pod for $InternalBitFlags
         where
             $T: $crate::__private::bytemuck::Pod,
@@ -232,6 +234,8 @@ macro_rules! __impl_external_bitflags_bytemuck {
 
         }
 
+        // SAFETY: $InternalBitFlags is guaranteed to have the same ABI as $T,
+        // and $T implements Zeroable
         unsafe impl $crate::__private::bytemuck::Zeroable for $InternalBitFlags
         where
             $T: $crate::__private::bytemuck::Zeroable,
