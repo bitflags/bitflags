@@ -118,7 +118,7 @@ macro_rules! __impl_external_bitflags {
                 $(
                     $(#[$attr $($args)*])*
                     $Flag;
-                    )*
+                )*
             }
         }
     };

@@ -14,6 +14,9 @@ macro_rules! __declare_internal_bitflags {
         $iter_vis:vis struct $Iter:ident;
         $iter_names_vis:vis struct $IterNames:ident;
     ) => {
+        // NOTE: The ABI of this type is _guaranteed_ to be the same as `T`
+        // This is relied on by some external libraries like `bytemuck` to make
+        // its `unsafe` trait impls sound.
         #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
         #[repr(transparent)]
         $vis struct $InternalBitFlags {
