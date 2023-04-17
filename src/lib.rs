@@ -350,6 +350,33 @@
 //!
 //! Users should generally avoid defining a flag with a value of zero.
 //!
+//! ## Multi-bit Flags
+//!
+//! It is allowed to define a flag with multiple bits set, however such
+//! flags are _not_ treated as a set where any of those bits is a valid
+//! flag. Instead, each flag is treated as a unit when converting from
+//! bits with [`from_bits`] or [`from_bits_truncate`].
+//!
+//! ```
+//! use bitflags::bitflags;
+//!
+//! bitflags! {
+//!     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+//!     struct Flags: u8 {
+//!         const F3 = 0b00000011;
+//!     }
+//! }
+//!
+//! fn main() {
+//!     // This bit pattern does not set all the bits in `F3`, so it is rejected.
+//!     assert!(Flags::from_bits(0b00000001).is_none());
+//!     assert!(Flags::from_bits_truncate(0b00000001).is_empty());
+//! }
+//! ```
+//!
+//! [`from_bits`]: BitFlags::from_bits
+//! [`from_bits_truncate`]: BitFlags::from_bits_truncate
+//!
 //! # The `BitFlags` trait
 //!
 //! This library defines a `BitFlags` trait that's implemented by all generated flags types.
