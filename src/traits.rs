@@ -24,12 +24,20 @@ pub trait BitFlags: ImplementedByBitFlagsMacro {
 
     /// Convert from underlying bit representation, unless that
     /// representation contains bits that do not correspond to a flag.
+    ///
+    /// Note that each [multi-bit flag] is treated as a unit for this comparison.
+    ///
+    /// [multi-bit flag]: index.html#multi-bit-flags
     fn from_bits(bits: Self::Bits) -> Option<Self>
     where
         Self: Sized;
 
     /// Convert from underlying bit representation, dropping any bits
     /// that do not correspond to flags.
+    ///
+    /// Note that each [multi-bit flag] is treated as a unit for this comparison.
+    ///
+    /// [multi-bit flag]: index.html#multi-bit-flags
     fn from_bits_truncate(bits: Self::Bits) -> Self;
 
     /// Convert from underlying bit representation, preserving all
