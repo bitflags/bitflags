@@ -559,6 +559,315 @@ macro_rules! bitflags {
 
         $($t:tt)*
     ) => {
+        __declare_bitflags!(
+            $(#[$outer])*
+            $vis struct $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    const $Flag = $value;
+                )*
+            }
+        );
+
+        bitflags! {
+            $($t)*
+        }
+    };
+    () => {};
+}
+
+/// A macro that processed the input to `bitflags!` and shuffles attributes around
+/// based on whether or not they're "expression-safe".
+///
+/// This macro is a token-tree muncher that works on 2 levels:
+///
+/// 1. Each flag, like `#[cfg(true)] const A: 42`
+/// 2. Each attribute on that flag, like `#[cfg(true)]`
+///
+/// Flags and attributes start in an "unprocessed" list, and are shifted one token
+/// at a time into an appropriate processed list until the unprocessed lists are empty.
+///
+/// For each attribute, we explicitly match on its identifier, like `cfg` to determine
+/// whether or not it should be considered expression-safe.
+///
+/// If you find yourself with an attribute that should be considered expression-safe
+/// and isn't, it can be added here.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! __declare_bitflags {
+    // Entrypoint: Move all flags and all attributes into `unprocessed` lists
+    // where they'll be munched one-at-a-time
+    (
+        $(#[$outer:meta])*
+        $vis:vis struct $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )*
+        }
+    ) => {
+        __declare_bitflags! {
+            decl: {
+                attrs: [$(#[$outer])*],
+                vis: $vis,
+                ident: $BitFlags,
+                ty: $T,
+            },
+            flags: {
+                // All flags start here
+                unprocessed: [
+                    $(
+                        {
+                            ident: $Flag,
+                            value: $value,
+                            attrs: {
+                                // All attributes start here
+                                unprocessed: [$(#[$inner $($args)*])*],
+                                processed: {
+                                    // Attributes that should be added to item declarations go here
+                                    all: [],
+                                    // Attributes that are safe on expressions go here
+                                    safe: [],
+                                }
+                            },
+                        },
+                    )*
+                ],
+                // Flags that have had their attributes sorted are pushed here
+                processed: [],
+            }
+        }
+    };
+    // Process the next attribute on the current flag
+    // `cfg`: The next flag should be propagated to inner macros
+    // NOTE: You can copy this rules block and replace `cfg` with
+    // your attribute name that should be considered expression-safe
+    (
+        decl: {
+            attrs: [$(#[$outer:meta])*],
+            vis: $vis:vis,
+            ident: $BitFlags:ident,
+            ty: $T:ty,
+        },
+        flags: {
+            unprocessed: [
+                {
+                    ident: $Flag:ident,
+                    value: $value:expr,
+                    attrs: {
+                        unprocessed: [
+                            // cfg matched here
+                            #[cfg $($args:tt)*]
+                            $($attrs_rest:tt)*
+                        ],
+                        processed: {
+                            all: [$($all:tt)*],
+                            safe: [$($safe:tt)*],
+                        }
+                    },
+                },
+                $($flags_rest:tt)*
+            ],
+            processed: [
+                $($flags:tt)*
+            ],
+        }
+    ) => {
+        __declare_bitflags! {
+            decl: {
+                attrs: [$(#[$outer])*],
+                vis: $vis,
+                ident: $BitFlags,
+                ty: $T,
+            },
+            flags: {
+                unprocessed: [
+                    {
+                        ident: $Flag,
+                        value: $value,
+                        attrs: {
+                            unprocessed: [
+                                $($attrs_rest)*
+                            ],
+                            processed: {
+                                all: [
+                                    // cfg added here
+                                    #[cfg $($args)*]
+                                    $($all)*
+                                ],
+                                safe: [
+                                    // cfg added here
+                                    #[cfg $($args)*]
+                                    $($safe)*
+                                ],
+                            }
+                        },
+                    },
+                    $($flags_rest)*
+                ],
+                processed: [
+                    $($flags)*
+                ],
+            }
+        }
+    };
+    // Process the next attribute on the current flag
+    // `$other`: The next flag should not be propagated to inner macros
+    (
+        decl: {
+            attrs: [$(#[$outer:meta])*],
+            vis: $vis:vis,
+            ident: $BitFlags:ident,
+            ty: $T:ty,
+        },
+        flags: {
+            unprocessed: [
+                {
+                    ident: $Flag:ident,
+                    value: $value:expr,
+                    attrs: {
+                        unprocessed: [
+                            // $other matched here
+                            #[$other:ident $($args:tt)*]
+                            $($attrs_rest:tt)*
+                        ],
+                        processed: {
+                            all: [$($all:tt)*],
+                            safe: [$($safe:tt)*],
+                        }
+                    },
+                },
+                $($flags_rest:tt)*
+            ],
+            processed: [
+                $($flags:tt)*
+            ],
+        }
+    ) => {
+        __declare_bitflags! {
+            decl: {
+                attrs: [$(#[$outer])*],
+                vis: $vis,
+                ident: $BitFlags,
+                ty: $T,
+            },
+            flags: {
+                unprocessed: [
+                    {
+                        ident: $Flag,
+                        value: $value,
+                        attrs: {
+                            unprocessed: [
+                                $($attrs_rest)*
+                            ],
+                            processed: {
+                                all: [
+                                    // $other added here
+                                    #[$other $($args)*]
+                                    $($all)*
+                                ],
+                                safe: [
+                                    // $other not added here
+                                    $($safe)*
+                                ],
+                            }
+                        },
+                    },
+                    $($flags_rest)*
+                ],
+                processed: [
+                    $($flags)*
+                ],
+            }
+        }
+    };
+    // Complete the current flag once there are no unprocessed attributes left
+    (
+        decl: {
+            attrs: [$(#[$outer:meta])*],
+            vis: $vis:vis,
+            ident: $BitFlags:ident,
+            ty: $T:ty,
+        },
+        flags: {
+            unprocessed: [
+                {
+                    ident: $Flag:ident,
+                    value: $value:expr,
+                    attrs: {
+                        unprocessed: [],
+                        processed: {
+                            all: [$($all:tt)*],
+                            safe: [$($safe:tt)*],
+                        }
+                    },
+                },
+                $($flags_rest:tt)*
+            ],
+            processed: [
+                $($flags:tt)*
+            ],
+        }
+    ) => {
+        __declare_bitflags! {
+            decl: {
+                attrs: [$(#[$outer])*],
+                vis: $vis,
+                ident: $BitFlags,
+                ty: $T,
+            },
+            flags: {
+                unprocessed: [
+                    $($flags_rest)*
+                ],
+                processed: [
+                    $($flags)*
+                    {
+                        ident: $Flag,
+                        value: $value,
+                        attrs: {
+                            unprocessed: [],
+                            processed: {
+                                all: [
+                                    $($all)*
+                                ],
+                                safe: [
+                                    $($safe)*
+                                ],
+                            }
+                        },
+                    },
+                ],
+            }
+        }
+    };
+    // Once all attributes on all flags are processed, generate the actual code
+    (
+        decl: {
+            attrs: [$(#[$outer:meta])*],
+            vis: $vis:vis,
+            ident: $BitFlags:ident,
+            ty: $T:ty,
+        },
+        flags: {
+            unprocessed: [],
+            processed: [
+                $(
+                    {
+                        ident: $Flag:ident,
+                        value: $value:expr,
+                        attrs: {
+                            unprocessed: [],
+                            processed: {
+                                all: [$(#[$inner:ident $($args:tt)*])*],
+                                safe: [$(#[$safeinner:ident $($safeargs:tt)*])*],
+                            }
+                        },
+                    },
+                )*
+            ],
+        }
+    ) => {
         // Declared in the scope of the `bitflags!` call
         // This type appears in the end-user's API
         __declare_public_bitflags! {
@@ -603,7 +912,7 @@ macro_rules! bitflags {
             __impl_internal_bitflags! {
                 InternalBitFlags: $T, $BitFlags, Iter, IterRaw {
                     $(
-                        $(#[$inner $($args)*])*
+                        $(#[$safeinner $($safeargs)*])*
                         $Flag;
                     )*
                 }
@@ -613,7 +922,7 @@ macro_rules! bitflags {
             __impl_external_bitflags! {
                 InternalBitFlags: $T {
                     $(
-                        $(#[$inner $($args)*])*
+                        $(#[$safeinner $($safeargs)*])*
                         $Flag;
                     )*
                 }
@@ -623,12 +932,7 @@ macro_rules! bitflags {
                 $BitFlags: $T, InternalBitFlags, Iter, IterRaw;
             }
         };
-
-        bitflags! {
-            $($t)*
-        }
-    };
-    () => {};
+    }
 }
 
 #[macro_use]
