@@ -423,7 +423,7 @@
 #![cfg_attr(not(any(feature = "std", test)), no_std)]
 #![cfg_attr(not(test), forbid(unsafe_code))]
 
-#![doc(html_root_url = "https://docs.rs/bitflags/2.1.0")]
+#![doc(html_root_url = "https://docs.rs/bitflags/2.2.0")]
 
 #[doc(inline)]
 pub use traits::BitFlags;
