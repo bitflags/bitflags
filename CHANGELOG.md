@@ -1,3 +1,16 @@
+# 2.2.0
+
+## What's Changed
+* Create SECURITY.md by @KodrAus in https://github.com/bitflags/bitflags/pull/338
+* add docs to describe the behavior of multi-bit flags by @nicholasbishop in https://github.com/bitflags/bitflags/pull/340
+* Add support for bytemuck by @KodrAus in https://github.com/bitflags/bitflags/pull/336
+* Add a top-level macro for filtering attributes by @KodrAus in https://github.com/bitflags/bitflags/pull/341
+
+## New Contributors
+* @nicholasbishop made their first contribution in https://github.com/bitflags/bitflags/pull/340
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.1.0...2.2.0
+
 # 2.1.0
 
 ## What's Changed
