@@ -625,9 +625,9 @@ macro_rules! __declare_bitflags {
                                 unprocessed: [$(#[$inner $($args)*])*],
                                 processed: {
                                     // Attributes that should be added to item declarations go here
-                                    all: [],
+                                    decl: [],
                                     // Attributes that are safe on expressions go here
-                                    safe: [],
+                                    expr: [],
                                 }
                             },
                         },
@@ -639,7 +639,7 @@ macro_rules! __declare_bitflags {
         }
     };
     // Process the next attribute on the current flag
-    // `cfg`: The next flag should be propagated to inner macros
+    // `cfg`: The next flag should be propagated to expressions
     // NOTE: You can copy this rules block and replace `cfg` with
     // your attribute name that should be considered expression-safe
     (
@@ -661,8 +661,8 @@ macro_rules! __declare_bitflags {
                             $($attrs_rest:tt)*
                         ],
                         processed: {
-                            all: [$($all:tt)*],
-                            safe: [$($safe:tt)*],
+                            decl: [$($decl:tt)*],
+                            expr: [$($expr:tt)*],
                         }
                     },
                 },
@@ -690,15 +690,15 @@ macro_rules! __declare_bitflags {
                                 $($attrs_rest)*
                             ],
                             processed: {
-                                all: [
+                                decl: [
                                     // cfg added here
                                     #[cfg $($args)*]
-                                    $($all)*
+                                    $($decl)*
                                 ],
-                                safe: [
+                                expr: [
                                     // cfg added here
                                     #[cfg $($args)*]
-                                    $($safe)*
+                                    $($expr)*
                                 ],
                             }
                         },
@@ -712,7 +712,7 @@ macro_rules! __declare_bitflags {
         }
     };
     // Process the next attribute on the current flag
-    // `$other`: The next flag should not be propagated to inner macros
+    // `$other`: The next flag should not be propagated to expressions
     (
         decl: {
             attrs: [$(#[$outer:meta])*],
@@ -732,8 +732,8 @@ macro_rules! __declare_bitflags {
                             $($attrs_rest:tt)*
                         ],
                         processed: {
-                            all: [$($all:tt)*],
-                            safe: [$($safe:tt)*],
+                            decl: [$($decl:tt)*],
+                            expr: [$($expr:tt)*],
                         }
                     },
                 },
@@ -761,14 +761,14 @@ macro_rules! __declare_bitflags {
                                 $($attrs_rest)*
                             ],
                             processed: {
-                                all: [
+                                decl: [
                                     // $other added here
                                     #[$other $($args)*]
-                                    $($all)*
+                                    $($decl)*
                                 ],
-                                safe: [
+                                expr: [
                                     // $other not added here
-                                    $($safe)*
+                                    $($expr)*
                                 ],
                             }
                         },
@@ -797,8 +797,8 @@ macro_rules! __declare_bitflags {
                     attrs: {
                         unprocessed: [],
                         processed: {
-                            all: [$($all:tt)*],
-                            safe: [$($safe:tt)*],
+                            decl: [$($decl:tt)*],
+                            expr: [$($expr:tt)*],
                         }
                     },
                 },
@@ -828,11 +828,11 @@ macro_rules! __declare_bitflags {
                         attrs: {
                             unprocessed: [],
                             processed: {
-                                all: [
-                                    $($all)*
+                                decl: [
+                                    $($decl)*
                                 ],
-                                safe: [
-                                    $($safe)*
+                                expr: [
+                                    $($expr)*
                                 ],
                             }
                         },
@@ -859,8 +859,8 @@ macro_rules! __declare_bitflags {
                         attrs: {
                             unprocessed: [],
                             processed: {
-                                all: [$(#[$inner:ident $($args:tt)*])*],
-                                safe: [$(#[$safeinner:ident $($safeargs:tt)*])*],
+                                decl: [$(#[$decl:ident $($declargs:tt)*])*],
+                                expr: [$(#[$expr:ident $($exprargs:tt)*])*],
                             }
                         },
                     },
@@ -879,7 +879,7 @@ macro_rules! __declare_bitflags {
         __impl_public_bitflags_consts! {
             $BitFlags {
                 $(
-                    $(#[$inner $($args)*])*
+                    $(#[$decl $($declargs)*])*
                     #[allow(
                         dead_code,
                         deprecated,
@@ -912,7 +912,7 @@ macro_rules! __declare_bitflags {
             __impl_internal_bitflags! {
                 InternalBitFlags: $T, $BitFlags, Iter, IterRaw {
                     $(
-                        $(#[$safeinner $($safeargs)*])*
+                        $(#[$expr $($exprargs)*])*
                         $Flag;
                     )*
                 }
@@ -922,7 +922,7 @@ macro_rules! __declare_bitflags {
             __impl_external_bitflags! {
                 InternalBitFlags: $T {
                     $(
-                        $(#[$safeinner $($safeargs)*])*
+                        $(#[$expr $($exprargs)*])*
                         $Flag;
                     )*
                 }
