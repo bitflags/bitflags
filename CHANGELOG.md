@@ -1,3 +1,10 @@
+# 2.2.1
+
+## What's Changed
+* Refactor attribute filtering to apply per-flag by @KodrAus in https://github.com/bitflags/bitflags/pull/345
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.2.0...2.2.1
+
 # 2.2.0
 
 ## What's Changed
