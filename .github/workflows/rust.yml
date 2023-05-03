@@ -40,7 +40,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
 
     - name: Install Rust Toolchain
       run: rustup default ${{ matrix.channel }}-${{ matrix.rust_target }}
@@ -62,23 +62,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
 
       - name: Install Rust toolchain
         run: rustup default nightly
 
       - name: Default features
-        uses: actions-rs/cargo@v1
-        with:
-          command: bench
-          args: --no-run
+        run: cargo bench --no-run
 
   msrv:
     name: MSRV
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
 
       - name: Install tombl
         run: cargo install tombl
@@ -95,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
 
       - name: Install Rust toolchain
         run: |
@@ -103,7 +100,4 @@ jobs:
           rustup target add thumbv6m-none-eabi
 
       - name: Default features
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: -Z avoid-dev-deps --features example_generated --target thumbv6m-none-eabi
+        run: cargo build -Z avoid-dev-deps --features example_generated --target thumbv6m-none-eabi
