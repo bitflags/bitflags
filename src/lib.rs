@@ -573,7 +573,7 @@ macro_rules! bitflags {
 
         // Workaround for: https://github.com/bitflags/bitflags/issues/320
         __impl_public_bitflags_consts! {
-            $BitFlags {
+            $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
                     #[allow(
@@ -622,7 +622,7 @@ macro_rules! bitflags {
                 }
             }
 
-            __impl_public_bitflags! {
+            __impl_public_bitflags_forward! {
                 $BitFlags: $T, InternalBitFlags {
                     $(
                         $(#[$inner $($args)*])*
@@ -637,6 +637,255 @@ macro_rules! bitflags {
         }
     };
     () => {};
+}
+
+/// Implement functions on the public (user-facing) bitflags type.
+///
+/// We need to be careful about adding new methods and trait implementations here because they
+/// could conflict with items added by the end-user.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! __impl_bitflags {
+    (
+        $PublicBitFlags:ident: $T:ty {
+            fn empty() $empty:block
+            fn all() $all:block
+            fn bits($bits0:ident) $bits:block
+            fn from_bits($from_bits0:ident) $from_bits:block
+            fn from_bits_truncate($from_bits_truncate0:ident) $from_bits_truncate:block
+            fn from_bits_retain($from_bits_retain0:ident) $from_bits_retain:block
+            fn from_name($from_name0:ident) $from_name:block
+            fn is_empty($is_empty0:ident) $is_empty:block
+            fn is_all($is_all0:ident) $is_all:block
+            fn intersects($intersects0:ident, $intersects1:ident) $intersects:block
+            fn contains($contains0:ident, $contains1:ident) $contains:block
+            fn insert($insert0:ident, $insert1:ident) $insert:block
+            fn remove($remove0:ident, $remove1:ident) $remove:block
+            fn toggle($toggle0:ident, $toggle1:ident) $toggle:block
+            fn set($set0:ident, $set1:ident, $set2:ident) $set:block
+            fn intersection($intersection0:ident, $intersection1:ident) $intersection:block
+            fn union($union0:ident, $union1:ident) $union:block
+            fn difference($difference0:ident, $difference1:ident) $difference:block
+            fn symmetric_difference($symmetric_difference0:ident, $symmetric_difference1:ident) $symmetric_difference:block
+            fn complement($complement0:ident) $complement:block
+        }
+    ) => {
+        impl $PublicBitFlags {
+            /// Returns an empty set of flags.
+            #[inline]
+            pub const fn empty() -> Self {
+                $empty
+            }
+
+            /// Returns the set containing all flags.
+            #[inline]
+            pub const fn all() -> Self {
+                $all
+            }
+
+            /// Returns the raw value of the flags currently stored.
+            #[inline]
+            pub const fn bits(&self) -> $T {
+                let $bits0 = self;
+                $bits
+            }
+
+            /// Convert from underlying bit representation, unless that
+            /// representation contains bits that do not correspond to a flag.
+            #[inline]
+            pub const fn from_bits(bits: $T) -> $crate::__private::core::option::Option<Self> {
+                let $from_bits0 = bits;
+                $from_bits
+            }
+
+            /// Convert from underlying bit representation, dropping any bits
+            /// that do not correspond to flags.
+            #[inline]
+            pub const fn from_bits_truncate(bits: $T) -> Self {
+                let $from_bits_truncate0 = bits;
+                $from_bits_truncate
+            }
+
+            /// Convert from underlying bit representation, preserving all
+            /// bits (even those not corresponding to a defined flag).
+            #[inline]
+            pub const fn from_bits_retain(bits: $T) -> Self {
+                let $from_bits_retain0 = bits;
+                $from_bits_retain
+            }
+
+            /// Get the value for a flag from its stringified name.
+            ///
+            /// Names are _case-sensitive_, so must correspond exactly to
+            /// the identifier given to the flag.
+            #[inline]
+            pub fn from_name(name: &str) -> $crate::__private::core::option::Option<Self> {
+                let $from_name0 = name;
+                $from_name
+            }
+
+            /// Returns `true` if no flags are currently stored.
+            #[inline]
+            pub const fn is_empty(&self) -> bool {
+                let $is_empty0 = self;
+                $is_empty
+            }
+
+            /// Returns `true` if all flags are currently set.
+            #[inline]
+            pub const fn is_all(&self) -> bool {
+                let $is_all0 = self;
+                $is_all
+            }
+
+            /// Returns `true` if there are flags common to both `self` and `other`.
+            #[inline]
+            pub const fn intersects(&self, other: Self) -> bool {
+                let $intersects0 = self;
+                let $intersects1 = other;
+                $intersects
+            }
+
+            /// Returns `true` if all of the flags in `other` are contained within `self`.
+            #[inline]
+            pub const fn contains(&self, other: Self) -> bool {
+                let $contains0 = self;
+                let $contains1 = other;
+                $contains
+            }
+
+            /// Inserts the specified flags in-place.
+            #[inline]
+            pub fn insert(&mut self, other: Self) {
+                let $insert0 = self;
+                let $insert1 = other;
+                $insert
+            }
+
+            /// Removes the specified flags in-place.
+            #[inline]
+            pub fn remove(&mut self, other: Self) {
+                let $remove0 = self;
+                let $remove1 = other;
+                $remove
+            }
+
+            /// Toggles the specified flags in-place.
+            #[inline]
+            pub fn toggle(&mut self, other: Self) {
+                let $toggle0 = self;
+                let $toggle1 = other;
+                $toggle
+            }
+
+            /// Inserts or removes the specified flags depending on the passed value.
+            #[inline]
+            pub fn set(&mut self, other: Self, value: bool) {
+                let $set0 = self;
+                let $set1 = other;
+                let $set2 = value;
+                $set
+            }
+
+            /// Returns the intersection between the flags in `self` and
+            /// `other`.
+            ///
+            /// Specifically, the returned set contains only the flags which are
+            /// present in *both* `self` *and* `other`.
+            ///
+            /// This is equivalent to using the `&` operator (e.g.
+            /// [`ops::BitAnd`]), as in `flags & other`.
+            ///
+            /// [`ops::BitAnd`]: https://doc.rust-lang.org/std/ops/trait.BitAnd.html
+            #[inline]
+            #[must_use]
+            pub const fn intersection(self, other: Self) -> Self {
+                let $intersection0 = self;
+                let $intersection1 = other;
+                $intersection
+            }
+
+            /// Returns the union of between the flags in `self` and `other`.
+            ///
+            /// Specifically, the returned set contains all flags which are
+            /// present in *either* `self` *or* `other`, including any which are
+            /// present in both (see [`Self::symmetric_difference`] if that
+            /// is undesirable).
+            ///
+            /// This is equivalent to using the `|` operator (e.g.
+            /// [`ops::BitOr`]), as in `flags | other`.
+            ///
+            /// [`ops::BitOr`]: https://doc.rust-lang.org/std/ops/trait.BitOr.html
+            #[inline]
+            #[must_use]
+            pub const fn union(self, other: Self) -> Self {
+                let $union0 = self;
+                let $union1 = other;
+                $union
+            }
+
+            /// Returns the difference between the flags in `self` and `other`.
+            ///
+            /// Specifically, the returned set contains all flags present in
+            /// `self`, except for the ones present in `other`.
+            ///
+            /// It is also conceptually equivalent to the "bit-clear" operation:
+            /// `flags & !other` (and this syntax is also supported).
+            ///
+            /// This is equivalent to using the `-` operator (e.g.
+            /// [`ops::Sub`]), as in `flags - other`.
+            ///
+            /// [`ops::Sub`]: https://doc.rust-lang.org/std/ops/trait.Sub.html
+            #[inline]
+            #[must_use]
+            pub const fn difference(self, other: Self) -> Self {
+                let $difference0 = self;
+                let $difference1 = other;
+                $difference
+            }
+
+            /// Returns the [symmetric difference][sym-diff] between the flags
+            /// in `self` and `other`.
+            ///
+            /// Specifically, the returned set contains the flags present which
+            /// are present in `self` or `other`, but that are not present in
+            /// both. Equivalently, it contains the flags present in *exactly
+            /// one* of the sets `self` and `other`.
+            ///
+            /// This is equivalent to using the `^` operator (e.g.
+            /// [`ops::BitXor`]), as in `flags ^ other`.
+            ///
+            /// [sym-diff]: https://en.wikipedia.org/wiki/Symmetric_difference
+            /// [`ops::BitXor`]: https://doc.rust-lang.org/std/ops/trait.BitXor.html
+            #[inline]
+            #[must_use]
+            pub const fn symmetric_difference(self, other: Self) -> Self {
+                let $symmetric_difference0 = self;
+                let $symmetric_difference1 = other;
+                $symmetric_difference
+            }
+
+            /// Returns the complement of this set of flags.
+            ///
+            /// Specifically, the returned set contains all the flags which are
+            /// not set in `self`, but which are allowed for this type.
+            ///
+            /// Alternatively, it can be thought of as the set difference
+            /// between [`Self::all()`] and `self` (e.g. `Self::all() - self`)
+            ///
+            /// This is equivalent to using the `!` operator (e.g.
+            /// [`ops::Not`]), as in `!flags`.
+            ///
+            /// [`Self::all()`]: Self::all
+            /// [`ops::Not`]: https://doc.rust-lang.org/std/ops/trait.Not.html
+            #[inline]
+            #[must_use]
+            pub const fn complement(self) -> Self {
+                let $complement0 = self;
+                $complement
+            }
+        }
+    };
 }
 
 /// A macro that processed the input to `bitflags!` and shuffles attributes around
