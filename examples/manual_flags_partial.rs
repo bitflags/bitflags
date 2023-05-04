@@ -7,6 +7,7 @@ use bitflags::bitflags;
 // First: Define your flags type. It needs to be a newtype over its underlying bits type
 pub struct ManualFlags(u32);
 
+// Next: use `impl Flags` instead of `struct Flags`
 bitflags! {
     impl ManualFlags: u32 {
         const A = 0b00000001;
