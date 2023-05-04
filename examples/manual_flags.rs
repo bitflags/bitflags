@@ -47,7 +47,7 @@ impl str::FromStr for ManualFlags {
 // Not required: Add formatting support
 impl fmt::Display for ManualFlags {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        bitflags::fmt::to_writer(self, f)
+        bitflags::parser::to_writer(self, f)
     }
 }
 

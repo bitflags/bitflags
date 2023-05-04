@@ -69,7 +69,7 @@ bitflags! {
     }
 }
 
-fn has_uncorresponding_bits<B: BitFlags>(flags: B) -> bool {
+fn has_uncorresponding_bits<B: BitFlagsExt>(flags: B) -> bool {
     flags.has_uncorresponding_bits()
 }
 

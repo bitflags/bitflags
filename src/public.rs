@@ -374,9 +374,13 @@ macro_rules! __impl_public_bitflags {
         impl $crate::Flags for $PublicBitFlags {
             const FLAGS: &'static [$crate::Flag<$PublicBitFlags>] = &[
                 $(
-                    $(#[$attr $($args)*])*
-                    $crate::Flag::new($crate::__private::core::stringify!($Flag), $PublicBitFlags::$Flag)
-                ),*
+                    __bitflags_expr_safe_attrs!(
+                        $(#[$attr $($args)*])*
+                        {
+                            $crate::Flag::new($crate::__private::core::stringify!($Flag), $PublicBitFlags::$Flag)
+                        }
+                    ),
+                )*
             ];
 
             type Bits = $T;
