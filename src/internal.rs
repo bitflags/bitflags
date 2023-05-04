@@ -106,41 +106,44 @@ macro_rules! __impl_internal_bitflags {
             }
         }
 
-        impl $InternalBitFlags {
-            #[inline]
-            pub const fn empty() -> Self {
-                Self { bits: <$T as $crate::__private::Bits>::EMPTY }
+        impl $crate::__private::core::convert::AsRef<$T> for $InternalBitFlags {
+            fn as_ref(&self) -> &$T {
+                &self.bits
             }
+        }
 
-            #[inline]
-            pub const fn all() -> Self {
-                Self::from_bits_truncate(<$T as $crate::__private::Bits>::ALL)
+        impl $crate::__private::core::convert::From<$T> for $InternalBitFlags {
+            fn from(bits: $T) -> Self {
+                Self::from_bits_retain(bits)
             }
+        }
 
-            #[inline]
-            pub const fn bits(&self) -> $T {
-                self.bits
-            }
-
-            #[inline]
-            pub fn bits_mut(&mut self) -> &mut $T {
-                &mut self.bits
-            }
-
-            #[inline]
-            pub const fn from_bits(bits: $T) -> $crate::__private::core::option::Option<Self> {
-                let truncated = Self::from_bits_truncate(bits).bits;
-
-                if truncated == bits {
-                    $crate::__private::core::option::Option::Some(Self { bits })
-                } else {
-                    $crate::__private::core::option::Option::None
+        __impl_bitflags! {
+            $InternalBitFlags: $T {
+                fn empty() {
+                    Self { bits: <$T as $crate::__private::Bits>::EMPTY }
                 }
-            }
 
-            #[inline]
-            pub const fn from_bits_truncate(bits: $T) -> Self {
-                if bits == <$T as $crate::__private::Bits>::EMPTY {
+                fn all() {
+                    Self::from_bits_truncate(<$T as $crate::__private::Bits>::ALL)
+                }
+
+                fn bits(f) {
+                    f.bits
+                }
+
+                fn from_bits(bits) {
+                    let truncated = Self::from_bits_truncate(bits).bits;
+
+                    if truncated == bits {
+                        $crate::__private::core::option::Option::Some(Self { bits })
+                    } else {
+                        $crate::__private::core::option::Option::None
+                    }
+                }
+
+                fn from_bits_truncate(bits) {
+                    if bits == <$T as $crate::__private::Bits>::EMPTY {
                     return Self { bits }
                 }
 
@@ -158,124 +161,103 @@ macro_rules! __impl_internal_bitflags {
                 )*
 
                 Self { bits: truncated }
-            }
+                }
 
-            #[inline]
-            pub const fn from_bits_retain(bits: $T) -> Self {
-                Self { bits }
-            }
+                fn from_bits_retain(bits) {
+                    Self { bits }
+                }
 
-            #[inline]
-            pub fn from_name(name: &str) -> $crate::__private::core::option::Option<Self> {
-                $(
-                    __bitflags_expr_safe_attrs!(
-                        $(#[$attr $($args)*])*
+                fn from_name(name) {
+                    $(
+                        __bitflags_expr_safe_attrs!(
+                            $(#[$attr $($args)*])*
                         {
                             if name == $crate::__private::core::stringify!($Flag) {
                                 return $crate::__private::core::option::Option::Some(Self { bits: $BitFlags::$Flag.bits() });
                             }
                         }
                     );
-                )*
+                        )*
 
                 let _ = name;
-                $crate::__private::core::option::Option::None
+                    $crate::__private::core::option::Option::None
+                }
+
+                fn is_empty(f) {
+                    f.bits == Self::empty().bits
+                }
+
+                fn is_all(f) {
+                    Self::all().bits | f.bits == f.bits
+                }
+
+                fn intersects(f, other) {
+                    !(Self { bits: f.bits & other.bits}).is_empty()
+                }
+
+                fn contains(f, other) {
+                    (f.bits & other.bits) == other.bits
+                }
+
+                fn insert(f, other) {
+                    f.bits |= other.bits;
+                }
+
+                fn remove(f, other) {
+                    f.bits &= !other.bits;
+                }
+
+                fn toggle(f, other) {
+                    f.bits ^= other.bits;
+                }
+
+                fn set(f, other, value) {
+                    if value {
+                        f.insert(other);
+                    } else {
+                        f.remove(other);
+                    }
+                }
+
+                fn intersection(f, other) {
+                    Self { bits: f.bits & other.bits }
+                }
+
+                fn union(f, other) {
+                    Self { bits: f.bits | other.bits }
+                }
+
+                fn difference(f, other) {
+                    Self { bits: f.bits & !other.bits }
+                }
+
+                fn symmetric_difference(f, other) {
+                    Self { bits: f.bits ^ other.bits }
+                }
+
+                fn complement(f) {
+                    Self::from_bits_truncate(!f.bits)
+                }
+            }
+        }
+
+        impl $InternalBitFlags {
+            /// Returns a mutable reference to the raw value of the flags currently stored.
+            #[inline]
+            pub fn bits_mut(&mut self) -> &mut $T {
+                &mut self.bits
             }
 
+            /// Iterate over enabled flag values.
             #[inline]
             pub const fn iter(&self) -> $crate::iter::Iter<$BitFlags> {
                 $crate::iter::Iter::__private_const_new(<$BitFlags as $crate::Flags>::FLAGS, $BitFlags::from_bits_retain(self.bits()), $BitFlags::from_bits_retain(self.bits()))
             }
 
+            /// Iterate over enabled flag values with their stringified names.
             #[inline]
             pub const fn iter_names(&self) -> $crate::iter::IterNames<$BitFlags> {
                 $crate::iter::IterNames::__private_const_new(<$BitFlags as $crate::Flags>::FLAGS, $BitFlags::from_bits_retain(self.bits()), $BitFlags::from_bits_retain(self.bits()))
-            }
-
-            #[inline]
-            pub const fn is_empty(&self) -> bool {
-                self.bits == Self::empty().bits
-            }
-
-            #[inline]
-            pub const fn is_all(&self) -> bool {
-                Self::all().bits | self.bits == self.bits
-            }
-
-            #[inline]
-            pub const fn intersects(&self, other: Self) -> bool {
-                !(Self { bits: self.bits & other.bits}).is_empty()
-            }
-
-            #[inline]
-            pub const fn contains(&self, other: Self) -> bool {
-                (self.bits & other.bits) == other.bits
-            }
-
-            #[inline]
-            pub fn insert(&mut self, other: Self) {
-                self.bits |= other.bits;
-            }
-
-            #[inline]
-            pub fn remove(&mut self, other: Self) {
-                self.bits &= !other.bits;
-            }
-
-            #[inline]
-            pub fn toggle(&mut self, other: Self) {
-                self.bits ^= other.bits;
-            }
-
-            #[inline]
-            pub fn set(&mut self, other: Self, value: bool) {
-                if value {
-                    self.insert(other);
-                } else {
-                    self.remove(other);
-                }
-            }
-
-            #[inline]
-            #[must_use]
-            pub const fn intersection(self, other: Self) -> Self {
-                Self { bits: self.bits & other.bits }
-            }
-
-            #[inline]
-            #[must_use]
-            pub const fn union(self, other: Self) -> Self {
-                Self { bits: self.bits | other.bits }
-            }
-
-            #[inline]
-            #[must_use]
-            pub const fn difference(self, other: Self) -> Self {
-                Self { bits: self.bits & !other.bits }
-            }
-
-            #[inline]
-            #[must_use]
-            pub const fn symmetric_difference(self, other: Self) -> Self {
-                Self { bits: self.bits ^ other.bits }
-            }
-
-            #[inline]
-            #[must_use]
-            pub const fn complement(self) -> Self {
-                Self::from_bits_truncate(!self.bits)
-            }
-        }
-
-        impl $crate::__private::core::convert::AsRef<$T> for $InternalBitFlags {
-            fn as_ref(&self) -> &$T {
-                &self.bits
-            }
-        }
-
-        impl $crate::__private::core::convert::From<$T> for $InternalBitFlags {
-            fn from(bits: $T) -> Self {
-                Self::from_bits_retain(bits)
             }
         }
     };
