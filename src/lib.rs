@@ -428,7 +428,6 @@
 #[doc(inline)]
 pub use traits::{Flags, Flag, Bits};
 
-pub mod fmt;
 pub mod iter;
 pub mod parser;
 
@@ -638,6 +637,103 @@ macro_rules! bitflags {
         }
     };
     () => {};
+}
+
+/// A macro that processed the input to `bitflags!` and shuffles attributes around
+/// based on whether or not they're "expression-safe".
+///
+/// This macro is a token-tree muncher that works on 2 levels:
+///
+/// For each attribute, we explicitly match on its identifier, like `cfg` to determine
+/// whether or not it should be considered expression-safe.
+///
+/// If you find yourself with an attribute that should be considered expression-safe
+/// and isn't, it can be added here.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! __bitflags_expr_safe_attrs {
+    // Entrypoint: Move all flags and all attributes into `unprocessed` lists
+    // where they'll be munched one-at-a-time
+    (
+        $(#[$inner:ident $($args:tt)*])*
+        { $e:expr }
+    ) => {
+        __bitflags_expr_safe_attrs! {
+            expr: { $e },
+            attrs: {
+                // All attributes start here
+                unprocessed: [$(#[$inner $($args)*])*],
+                // Attributes that are safe on expressions go here
+                processed: [],
+            },
+        }
+    };
+    // Process the next attribute on the current flag
+    // `cfg`: The next flag should be propagated to expressions
+    // NOTE: You can copy this rules block and replace `cfg` with
+    // your attribute name that should be considered expression-safe
+    (
+        expr: { $e:expr },
+            attrs: {
+            unprocessed: [
+                // cfg matched here
+                #[cfg $($args:tt)*]
+                $($attrs_rest:tt)*
+            ],
+            processed: [$($expr:tt)*],
+        },
+    ) => {
+        __bitflags_expr_safe_attrs! {
+            expr: { $e },
+            attrs: {
+                unprocessed: [
+                    $($attrs_rest)*
+                ],
+                processed: [
+                    $($expr)*
+                    // cfg added here
+                    #[cfg $($args)*]
+                ],
+            },
+        }
+    };
+    // Process the next attribute on the current flag
+    // `$other`: The next flag should not be propagated to expressions
+    (
+        expr: { $e:expr },
+            attrs: {
+            unprocessed: [
+                // $other matched here
+                #[$other:ident $($args:tt)*]
+                $($attrs_rest:tt)*
+            ],
+            processed: [$($expr:tt)*],
+        },
+    ) => {
+        __bitflags_expr_safe_attrs! {
+            expr: { $e },
+                attrs: {
+                unprocessed: [
+                    $($attrs_rest)*
+                ],
+                processed: [
+                    // $other not added here
+                    $($expr)*
+                ],
+            },
+        }
+    };
+    // Once all attributes on all flags are processed, generate the actual code
+    (
+        expr: { $e:expr },
+        attrs: {
+            unprocessed: [],
+            processed: [$(#[$expr:ident $($exprargs:tt)*])*],
+        },
+    ) => {
+        $(#[$expr $($exprargs)*])*
+        { $e }
+    }
 }
 
 #[macro_use]

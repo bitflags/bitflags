@@ -69,7 +69,7 @@ macro_rules! __impl_internal_bitflags {
 
         impl $crate::__private::core::fmt::Display for $InternalBitFlags {
             fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter<'_>) -> $crate::__private::core::fmt::Result {
-                $crate::fmt::to_writer(&$BitFlags(*self), f)
+                $crate::parser::to_writer(&$BitFlags(*self), f)
             }
         }
 
@@ -147,7 +147,7 @@ macro_rules! __impl_internal_bitflags {
                 let mut truncated = <$T as $crate::__private::Bits>::EMPTY;
 
                 $(
-                    __expr_safe_flags!(
+                    __bitflags_expr_safe_attrs!(
                         $(#[$attr $($args)*])*
                         {
                             if bits & $BitFlags::$Flag.bits() == $BitFlags::$Flag.bits() {
@@ -168,7 +168,7 @@ macro_rules! __impl_internal_bitflags {
             #[inline]
             pub fn from_name(name: &str) -> $crate::__private::core::option::Option<Self> {
                 $(
-                    __expr_safe_flags!(
+                    __bitflags_expr_safe_attrs!(
                         $(#[$attr $($args)*])*
                         {
                             if name == $crate::__private::core::stringify!($Flag) {
@@ -279,113 +279,4 @@ macro_rules! __impl_internal_bitflags {
             }
         }
     };
-}
-
-/// A macro that processed the input to `bitflags!` and shuffles attributes around
-/// based on whether or not they're "expression-safe".
-///
-/// This macro is a token-tree muncher that works on 2 levels:
-///
-/// For each attribute, we explicitly match on its identifier, like `cfg` to determine
-/// whether or not it should be considered expression-safe.
-///
-/// If you find yourself with an attribute that should be considered expression-safe
-/// and isn't, it can be added here.
-#[macro_export(local_inner_macros)]
-#[doc(hidden)]
-macro_rules! __expr_safe_flags {
-    // Entrypoint: Move all flags and all attributes into `unprocessed` lists
-    // where they'll be munched one-at-a-time
-    (
-        $(#[$inner:ident $($args:tt)*])*
-        { $e:expr }
-    ) => {
-        __expr_safe_flags! {
-            expr: { $e },
-            attrs: {
-                // All attributes start here
-                unprocessed: [$(#[$inner $($args)*])*],
-                processed: {
-                    // Attributes that are safe on expressions go here
-                    expr: [],
-                },
-            },
-        }
-    };
-    // Process the next attribute on the current flag
-    // `cfg`: The next flag should be propagated to expressions
-    // NOTE: You can copy this rules block and replace `cfg` with
-    // your attribute name that should be considered expression-safe
-    (
-        expr: { $e:expr },
-            attrs: {
-            unprocessed: [
-                // cfg matched here
-                #[cfg $($args:tt)*]
-                $($attrs_rest:tt)*
-            ],
-            processed: {
-                expr: [$($expr:tt)*],
-            },
-        },
-    ) => {
-        __expr_safe_flags! {
-            expr: { $e },
-            attrs: {
-                unprocessed: [
-                    $($attrs_rest)*
-                ],
-                processed: {
-                    expr: [
-                        $($expr)*
-                        // cfg added here
-                        #[cfg $($args)*]
-                    ],
-                },
-            },
-        }
-    };
-    // Process the next attribute on the current flag
-    // `$other`: The next flag should not be propagated to expressions
-    (
-        expr: { $e:expr },
-            attrs: {
-            unprocessed: [
-                // $other matched here
-                #[$other:ident $($args:tt)*]
-                $($attrs_rest:tt)*
-            ],
-            processed: {
-                expr: [$($expr:tt)*],
-            },
-        },
-    ) => {
-        __expr_safe_flags! {
-            expr: { $e },
-                attrs: {
-                unprocessed: [
-                    $($attrs_rest)*
-                ],
-                processed: {
-                    expr: [
-                        // $other not added here
-                        $($expr)*
-                    ],
-                },
-            },
-        }
-    };
-    // Once all attributes on all flags are processed, generate the actual code
-    (
-        expr: { $e:expr },
-        attrs: {
-            unprocessed: [],
-            processed: {
-                expr: [$(#[$expr:ident $($exprargs:tt)*])*],
-            },
-        },
-    ) => {
-        $(#[$expr $($exprargs)*])*
-        { $e }
-    }
 }
