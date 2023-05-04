@@ -372,7 +372,7 @@ macro_rules! __impl_public_bitflags {
         }
 
         impl $crate::BitFlags for $PublicBitFlags {
-            const FLAGS: &'static [(&'static str, $PublicBitFlags)] = &[
+            const NAMES: &'static [(&'static str, $PublicBitFlags)] = &[
                 $(
                     $(#[$attr $($args)*])*
                     ($crate::__private::core::stringify!($Flag), $PublicBitFlags::from_bits_retain($value))

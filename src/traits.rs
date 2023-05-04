@@ -8,7 +8,7 @@ use crate::parser::{ParseError, FromHex};
 /// It can also be implemented manually for custom flags types.
 pub trait BitFlags: Sized + 'static {
     /// The set of available flags and their names.
-    const FLAGS: &'static [(&'static str, Self)];
+    const NAMES: &'static [(&'static str, Self)];
 
     /// The underlying storage type.
     type Bits: Bits;
@@ -61,7 +61,7 @@ pub trait BitFlags: Sized + 'static {
 
         let mut truncated = Self::Bits::EMPTY;
 
-        for (_, flag) in Self::FLAGS.iter() {
+        for (_, flag) in Self::NAMES.iter() {
             if bits & flag.bits() == flag.bits() {
                 truncated = truncated | flag.bits();
             }
@@ -76,7 +76,7 @@ pub trait BitFlags: Sized + 'static {
 
     /// Get the flag for a particular name.
     fn from_name(name: &str) -> Option<Self> {
-        for (known, flag) in Self::FLAGS {
+        for (known, flag) in Self::NAMES {
             if *known == name {
                 return Some(Self::from_bits_retain(flag.bits()))
             }

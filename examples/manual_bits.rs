@@ -55,7 +55,7 @@ impl Flags {
 }
 
 impl BitFlags for Flags {
-    const FLAGS: &'static [(&'static str, Self)] = &[
+    const NAMES: &'static [(&'static str, Self)] = &[
         ("A", Self::A),
         ("B", Self::B),
         ("C", Self::C),

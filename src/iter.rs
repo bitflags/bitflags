@@ -64,7 +64,7 @@ impl<B: BitFlags> IterNames<B> {
     /// Create a new iterator over the given set of flags.
     pub fn new(flags: &B) -> Self {
         IterNames {
-            flags: B::FLAGS,
+            flags: B::NAMES,
             idx: 0,
             state: B::from_bits_retain(flags.bits()),
             source: B::from_bits_retain(flags.bits()),

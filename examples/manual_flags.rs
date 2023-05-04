@@ -18,7 +18,7 @@ impl ManualFlags {
 // Next: Implement the `BitFlags` trait, specifying your set of valid flags
 // and iterators
 impl BitFlags for ManualFlags {
-    const FLAGS: &'static [(&'static str, Self)] = &[
+    const NAMES: &'static [(&'static str, Self)] = &[
         ("A", Self::A),
         ("B", Self::B),
         ("C", Self::C),
