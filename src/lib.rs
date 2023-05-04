@@ -607,7 +607,7 @@ macro_rules! bitflags {
                 InternalBitFlags: $T, $BitFlags {
                     $(
                         $(#[$inner $($args)*])*
-                        $Flag;
+                        $Flag = $value;
                     )*
                 }
             }
@@ -623,14 +623,55 @@ macro_rules! bitflags {
             }
 
             __impl_public_bitflags_forward! {
-                $BitFlags: $T, InternalBitFlags {
-                    $(
-                        $(#[$inner $($args)*])*
-                        $Flag = $value;
-                    )*
-                }
+                $BitFlags: $T, InternalBitFlags
+            }
+
+            __impl_public_bitflags_iter! {
+                $BitFlags
             }
         };
+
+        bitflags! {
+            $($t)*
+        }
+    };
+    (
+        impl $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )*
+        }
+
+        $($t:tt)*
+    ) => {
+        __impl_public_bitflags_consts! {
+            $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    #[allow(
+                        dead_code,
+                        deprecated,
+                        unused_attributes,
+                        non_upper_case_globals
+                    )]
+                    $Flag = $value;
+                )*
+            }
+        }
+
+        __impl_public_bitflags! {
+            $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    $Flag;
+                )*
+            }
+        }
+
+        __impl_public_bitflags_iter! {
+            $BitFlags
+        }
 
         bitflags! {
             $($t)*
@@ -670,6 +711,11 @@ macro_rules! __impl_bitflags {
             fn complement($complement0:ident) $complement:block
         }
     ) => {
+        #[allow(
+            dead_code,
+            deprecated,
+            unused_attributes
+        )]
         impl $PublicBitFlags {
             /// Returns an empty set of flags.
             #[inline]
@@ -1004,6 +1050,8 @@ mod tests {
         str,
     };
 
+    pub struct ManualFlags(u32);
+
     bitflags! {
         #[doc = "> The first principle is that you must not fool yourself — and"]
         #[doc = "> you are the easiest person to fool."]
@@ -1039,6 +1087,17 @@ mod tests {
         #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct LongFlags: u32 {
             const LONG_A = 0b1111111111111111;
+        }
+
+        impl ManualFlags: u32 {
+            const A = 0b00000001;
+            #[doc = "<pcwalton> macros are way better at generating code than trans is"]
+            const B = 0b00000010;
+            const C = 0b00000100;
+            #[doc = "* cmr bed"]
+            #[doc = "* strcat table"]
+            #[doc = "<strcat> wait what?"]
+            const ABC = Self::A.bits() | Self::B.bits() | Self::C.bits();
         }
     }
 
