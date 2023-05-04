@@ -371,18 +371,15 @@ macro_rules! __impl_public_bitflags {
             }
         }
 
-        impl $crate::BitFlags for $PublicBitFlags {
-            const NAMES: &'static [(&'static str, $PublicBitFlags)] = &[
+        impl $crate::Flags for $PublicBitFlags {
+            const FLAGS: &'static [$crate::Flag<$PublicBitFlags>] = &[
                 $(
                     $(#[$attr $($args)*])*
-                    ($crate::__private::core::stringify!($Flag), $PublicBitFlags::from_bits_retain($value))
+                    $crate::Flag::new($crate::__private::core::stringify!($Flag), $PublicBitFlags::$Flag)
                 ),*
             ];
 
             type Bits = $T;
-
-            type Iter = $crate::iter::Iter<$PublicBitFlags>;
-            type IterNames = $crate::iter::IterNames<$PublicBitFlags>;
 
             fn bits(&self) -> $T {
                 $PublicBitFlags::bits(self)
@@ -390,14 +387,6 @@ macro_rules! __impl_public_bitflags {
 
             fn from_bits_retain(bits: $T) -> $PublicBitFlags {
                 $PublicBitFlags::from_bits_retain(bits)
-            }
-
-            fn iter(&self) -> Self::Iter {
-                $PublicBitFlags::iter(self)
-            }
-
-            fn iter_names(&self) -> Self::IterNames {
-                $PublicBitFlags::iter_names(self)
             }
         }
     };

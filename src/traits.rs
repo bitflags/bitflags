@@ -1,23 +1,40 @@
-use core::{ops::{BitAnd, BitOr, BitXor, Not}};
+use core::ops::{BitAnd, BitOr, BitXor, Not};
 
-use crate::parser::{ParseError, FromHex};
+use crate::{parser::{ParseError, FromHex}, iter};
+
+/// Metadata for an individual flag.
+pub struct Flag<B> {
+    name: &'static str,
+    value: B,
+}
+
+impl<B> Flag<B> {
+    /// Create a new flag with the given name and value.
+    pub const fn new(name: &'static str, value: B) -> Self {
+        Flag { name, value }
+    }
+
+    /// Get the name of this flag.
+    pub const fn name(&self) -> &'static str {
+        self.name
+    }
+
+    /// Get the value of this flag.
+    pub const fn value(&self) -> &B {
+        &self.value
+    }
+}
 
 /// A set of flags.
 ///
 /// This trait is automatically implemented for flags types defined using the `bitflags!` macro.
 /// It can also be implemented manually for custom flags types.
-pub trait BitFlags: Sized + 'static {
+pub trait Flags: Sized + 'static {
     /// The set of available flags and their names.
-    const NAMES: &'static [(&'static str, Self)];
+    const FLAGS: &'static [Flag<Self>];
 
     /// The underlying storage type.
     type Bits: Bits;
-
-    /// An iterator over enabled flags in an instance of the type.
-    type Iter: Iterator<Item = Self>;
-
-    /// An iterator over the raw names and bits for enabled flags in an instance of the type.
-    type IterNames: Iterator<Item = (&'static str, Self)>;
 
     /// Returns an empty set of flags.
     fn empty() -> Self {
@@ -61,7 +78,9 @@ pub trait BitFlags: Sized + 'static {
 
         let mut truncated = Self::Bits::EMPTY;
 
-        for (_, flag) in Self::NAMES.iter() {
+        for flag in Self::FLAGS.iter() {
+            let flag = flag.value();
+
             if bits & flag.bits() == flag.bits() {
                 truncated = truncated | flag.bits();
             }
@@ -76,9 +95,9 @@ pub trait BitFlags: Sized + 'static {
 
     /// Get the flag for a particular name.
     fn from_name(name: &str) -> Option<Self> {
-        for (known, flag) in Self::NAMES {
-            if *known == name {
-                return Some(Self::from_bits_retain(flag.bits()))
+        for flag in Self::FLAGS {
+            if flag.name() == name {
+                return Some(Self::from_bits_retain(flag.value().bits()))
             }
         }
 
@@ -86,10 +105,14 @@ pub trait BitFlags: Sized + 'static {
     }
 
     /// Iterate over enabled flag values.
-    fn iter(&self) -> Self::Iter;
+    fn iter(&self) -> iter::Iter<Self> {
+        iter::Iter::new(self)
+    }
 
     /// Iterate over the raw names and bits for enabled flag values.
-    fn iter_names(&self) -> Self::IterNames;
+    fn iter_names(&self) -> iter::IterNames<Self> {
+        iter::IterNames::new(self)
+    }
 
     /// Returns `true` if no flags are currently stored.
     fn is_empty(&self) -> bool {
@@ -274,3 +297,27 @@ pub trait PublicFlags {
     /// The type of the internal field on the generated flags type.
     type Internal;
 }
+
+#[deprecated(note = "use the `Flags` trait instead")]
+pub trait BitFlags: ImplementedByBitFlagsMacro + Flags {
+    /// An iterator over enabled flags in an instance of the type.
+    type Iter: Iterator<Item = Self>;
+
+    /// An iterator over the raw names and bits for enabled flags in an instance of the type.
+    type IterNames: Iterator<Item = (&'static str, Self)>;
+}
+
+#[allow(deprecated)]
+impl<B: Flags> BitFlags for B {
+    type Iter = iter::Iter<Self>;
+    type IterNames = iter::IterNames<Self>;
+}
+
+impl<B: Flags> ImplementedByBitFlagsMacro for B {}
+
+/// A marker trait that signals that an implementation of `BitFlags` came from the `bitflags!` macro.
+///
+/// There's nothing stopping an end-user from implementing this trait, but we don't guarantee their
+/// manual implementations won't break between non-breaking releases.
+#[doc(hidden)]
+pub trait ImplementedByBitFlagsMacro {}

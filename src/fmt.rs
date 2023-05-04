@@ -4,13 +4,13 @@
 
 use core::fmt::{Write, self, LowerHex};
 
-use crate::{BitFlags, Bits};
+use crate::{Flags, Bits};
 
 /// Write a set of flags to a writer.
 ///
 /// Any bits that don't correspond to a valid flag will be formatted
 /// as a hex number.
-pub fn to_writer<B: BitFlags>(flags: &B, mut writer: impl Write) -> Result<(), fmt::Error>
+pub fn to_writer<B: Flags>(flags: &B, mut writer: impl Write) -> Result<(), fmt::Error>
 where
     B::Bits: LowerHex,
 {
@@ -21,15 +21,11 @@ where
     // The names of set flags are written in a bar-separated-format,
     // followed by a hex number of any remaining bits that are set
     // but don't correspond to any flags.
-    
-    let mut state = flags.bits();
 
     // Iterate over the valid flags
     let mut first = true;
     let mut iter = flags.iter_names();
-    for (name, flag) in &mut iter {
-        state = state & !flag.bits();
-        
+    for (name, _) in &mut iter {
         if !first {
             writer.write_str(" | ")?;
         }
@@ -39,12 +35,13 @@ where
     }
 
     // Append any extra bits that correspond to flags to the end of the format
-    if state != B::Bits::EMPTY {
+    let remaining = iter.remaining().bits();
+    if remaining != B::Bits::EMPTY {
         if !first {
             writer.write_str(" | ")?;
         }
 
-        write!(writer, "{:#x}", state)?;
+        write!(writer, "{:#x}", remaining)?;
     }
 
     fmt::Result::Ok(())

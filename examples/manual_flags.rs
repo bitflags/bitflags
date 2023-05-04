@@ -2,7 +2,7 @@
 
 use std::{fmt, str};
 
-use bitflags::BitFlags;
+use bitflags::{Flags, Flag};
 
 // First: Define your flags type. It just needs to be `Sized + 'static`.
 pub struct ManualFlags(u32);
@@ -17,17 +17,14 @@ impl ManualFlags {
 
 // Next: Implement the `BitFlags` trait, specifying your set of valid flags
 // and iterators
-impl BitFlags for ManualFlags {
-    const NAMES: &'static [(&'static str, Self)] = &[
-        ("A", Self::A),
-        ("B", Self::B),
-        ("C", Self::C),
+impl Flags for ManualFlags {
+    const FLAGS: &'static [Flag<Self>] = &[
+        Flag::new("A", Self::A),
+        Flag::new("B", Self::B),
+        Flag::new("C", Self::C),
     ];
 
     type Bits = u32;
-
-    type Iter = bitflags::iter::Iter<Self>;
-    type IterNames = bitflags::iter::IterNames<Self>;
 
     fn bits(&self) -> u32 {
         self.0
@@ -35,14 +32,6 @@ impl BitFlags for ManualFlags {
 
     fn from_bits_retain(bits: u32) -> Self {
         Self(bits)
-    }
-
-    fn iter(&self) -> Self::Iter {
-        bitflags::iter::Iter::new(self)
-    }
-
-    fn iter_names(&self) -> Self::IterNames {
-        bitflags::iter::IterNames::new(self)
     }
 }
 

@@ -1,15 +1,15 @@
-use crate::BitFlags;
+use crate::{Flags, Flag};
 
 /// An iterator over a set of flags.
 ///
 /// Any bits that don't correspond to a valid flag will be yielded
 /// as a final item from the iterator.
-pub struct Iter<B: BitFlags> {
+pub struct Iter<B: Flags> {
     inner: IterNames<B>,
     done: bool,
 }
 
-impl<B: BitFlags> Iter<B> {
+impl<B: Flags> Iter<B> {
     /// Create a new iterator over the given set of flags.
     pub fn new(flags: &B) -> Self {
         Iter {
@@ -19,7 +19,7 @@ impl<B: BitFlags> Iter<B> {
     }
     
     #[doc(hidden)]
-    pub const fn __private_const_new(flags: &'static [(&'static str, B)], source: B, state: B) -> Self {
+    pub const fn __private_const_new(flags: &'static [Flag<B>], source: B, state: B) -> Self {
         Iter {
             inner: IterNames::__private_const_new(flags, source, state),
             done: false,
@@ -27,12 +27,12 @@ impl<B: BitFlags> Iter<B> {
     }
 }
 
-impl<B: BitFlags> Iterator for Iter<B> {
+impl<B: Flags> Iterator for Iter<B> {
     type Item = B;
     
     fn next(&mut self) -> Option<Self::Item> {
         match self.inner.next() {
-            Some((_, value)) => Some(value),
+            Some((_, flag)) => Some(flag),
             None if !self.done => {
                 self.done = true;
                 
@@ -53,18 +53,18 @@ impl<B: BitFlags> Iterator for Iter<B> {
 /// An iterator over a set of flags and their names.
 ///
 /// Any bits that don't correspond to a valid flag will be ignored.
-pub struct IterNames<B: BitFlags> {
-    flags: &'static [(&'static str, B)],
+pub struct IterNames<B: Flags> {
+    flags: &'static [Flag<B>],
     idx: usize,
     source: B,
     state: B,
 }
 
-impl<B: BitFlags> IterNames<B> {
+impl<B: Flags> IterNames<B> {
     /// Create a new iterator over the given set of flags.
     pub fn new(flags: &B) -> Self {
         IterNames {
-            flags: B::NAMES,
+            flags: B::FLAGS,
             idx: 0,
             state: B::from_bits_retain(flags.bits()),
             source: B::from_bits_retain(flags.bits()),
@@ -72,7 +72,7 @@ impl<B: BitFlags> IterNames<B> {
     }
     
     #[doc(hidden)]
-    pub const fn __private_const_new(flags: &'static [(&'static str, B)], source: B, state: B) -> Self {
+    pub const fn __private_const_new(flags: &'static [Flag<B>], source: B, state: B) -> Self {
         IterNames {
             flags,
             idx: 0,
@@ -91,14 +91,14 @@ impl<B: BitFlags> IterNames<B> {
     }
 }
 
-impl<B: BitFlags> Iterator for IterNames<B> {
+impl<B: Flags> Iterator for IterNames<B> {
     type Item = (&'static str, B);
     
     fn next(&mut self) -> Option<Self::Item> {
-        while let Some((name, flag)) = self.flags.get(self.idx) {
+        while let Some(flag) = self.flags.get(self.idx) {
             self.idx += 1;
 
-            let bits = flag.bits();
+            let bits = flag.value().bits();
 
             // NOTE: We check whether the flag exists in self, but remove it from
             // a different value. This ensure that overlapping flags are handled
@@ -113,7 +113,7 @@ impl<B: BitFlags> Iterator for IterNames<B> {
             if self.source.contains(B::from_bits_retain(bits)) {
                 self.state.remove(B::from_bits_retain(bits));
 
-                return Some((name, B::from_bits_retain(bits)));
+                return Some((flag.name(), B::from_bits_retain(bits)));
             }
         }
         

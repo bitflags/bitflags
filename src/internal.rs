@@ -184,12 +184,12 @@ macro_rules! __impl_internal_bitflags {
 
             #[inline]
             pub const fn iter(&self) -> $crate::iter::Iter<$BitFlags> {
-                $crate::iter::Iter::__private_const_new(<$BitFlags as $crate::BitFlags>::FLAGS, $BitFlags::from_bits_retain(self.bits()), $BitFlags::from_bits_retain(self.bits()))
+                $crate::iter::Iter::__private_const_new(<$BitFlags as $crate::Flags>::FLAGS, $BitFlags::from_bits_retain(self.bits()), $BitFlags::from_bits_retain(self.bits()))
             }
 
             #[inline]
             pub const fn iter_names(&self) -> $crate::iter::IterNames<$BitFlags> {
-                $crate::iter::IterNames::__private_const_new(<$BitFlags as $crate::BitFlags>::FLAGS, $BitFlags::from_bits_retain(self.bits()), $BitFlags::from_bits_retain(self.bits()))
+                $crate::iter::IterNames::__private_const_new(<$BitFlags as $crate::Flags>::FLAGS, $BitFlags::from_bits_retain(self.bits()), $BitFlags::from_bits_retain(self.bits()))
             }
 
             #[inline]

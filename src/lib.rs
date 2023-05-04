@@ -426,7 +426,7 @@
 #![doc(html_root_url = "https://docs.rs/bitflags/2.2.1")]
 
 #[doc(inline)]
-pub use traits::{BitFlags, Bits};
+pub use traits::{Flags, Flag, Bits};
 
 pub mod fmt;
 pub mod iter;
@@ -440,6 +440,9 @@ pub mod __private {
 
     pub use core;
 }
+
+#[allow(deprecated)]
+pub use traits::BitFlags;
 
 /*
 How does the bitflags crate work?
@@ -1229,7 +1232,7 @@ mod tests {
     fn test_debug() {
         assert_eq!(format!("{:?}", Flags::A | Flags::B), "Flags(A | B)");
         assert_eq!(format!("{:?}", Flags::empty()), "Flags(0x0)");
-        assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C)");
+        assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C | ABC)");
 
         let extra = Flags::from_bits_retain(0xb8);
 
@@ -1513,7 +1516,7 @@ mod tests {
         assert_eq!(format!("{:?}", Flags::A), "Flags(A)");
         assert_eq!(format!("{:?}", Flags::B), "Flags(B)");
         assert_eq!(format!("{:?}", Flags::C), "Flags(C)");
-        assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C)");
+        assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C | ABC)");
     }
 
     #[test]
