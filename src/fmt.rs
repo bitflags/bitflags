@@ -1,7 +1,15 @@
+//! Formatting flags as text.
+//!
+//! For details on the format, see the [`parser`](../parser/index.html) module.
+
 use core::fmt::{Write, self, LowerHex};
 
 use crate::{BitFlags, Bits};
 
+/// Write a set of flags to a writer.
+///
+/// Any bits that don't correspond to a valid flag will be formatted
+/// as a hex number.
 pub fn to_writer<B: BitFlags>(flags: &B, mut writer: impl Write) -> Result<(), fmt::Error>
 where
     B::Bits: LowerHex,

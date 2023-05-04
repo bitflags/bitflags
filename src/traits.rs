@@ -1,4 +1,4 @@
-use core::{ops::{BitAnd, BitOr, BitXor, Not}, fmt::LowerHex};
+use core::{ops::{BitAnd, BitOr, BitXor, Not}};
 
 use crate::parser::{ParseError, FromHex};
 
@@ -221,8 +221,6 @@ pub trait Bits:
     + BitOr<Output = Self>
     + BitXor<Output = Self>
     + Not<Output = Self>
-    + LowerHex
-    + FromHex
     + Sized
     + 'static
 {

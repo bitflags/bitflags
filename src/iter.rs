@@ -1,11 +1,16 @@
 use crate::BitFlags;
 
+/// An iterator over a set of flags.
+///
+/// Any bits that don't correspond to a valid flag will be yielded
+/// as a final item from the iterator.
 pub struct Iter<B: BitFlags> {
     inner: IterNames<B>,
     done: bool,
 }
 
 impl<B: BitFlags> Iter<B> {
+    /// Create a new iterator over the given set of flags.
     pub fn new(flags: &B) -> Self {
         Iter {
             inner: IterNames::new(flags),
@@ -45,6 +50,9 @@ impl<B: BitFlags> Iterator for Iter<B> {
     }
 }
 
+/// An iterator over a set of flags and their names.
+///
+/// Any bits that don't correspond to a valid flag will be ignored.
 pub struct IterNames<B: BitFlags> {
     flags: &'static [(&'static str, B)],
     idx: usize,
@@ -53,6 +61,7 @@ pub struct IterNames<B: BitFlags> {
 }
 
 impl<B: BitFlags> IterNames<B> {
+    /// Create a new iterator over the given set of flags.
     pub fn new(flags: &B) -> Self {
         IterNames {
             flags: B::FLAGS,
@@ -71,7 +80,12 @@ impl<B: BitFlags> IterNames<B> {
             source,
         }
     }
-    
+
+    /// Get the remaining (unyielded) flags.
+    ///
+    /// Once the iterator has finished, this method can be used to
+    /// check whether or not there are any bits that didn't correspond
+    /// to a valid flag remaining.
     pub fn remaining(&self) -> &B {
         &self.state
     }

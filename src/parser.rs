@@ -32,6 +32,9 @@ use core::fmt;
 
 use crate::BitFlags;
 
+/// Parse a set of flags from text.
+///
+/// This function will fail on unknown flags rather than ignore them.
 pub fn from_str<B: BitFlags>(input: &str) -> Result<B, ParseError>
 where
     B::Bits: FromHex,
