@@ -426,9 +426,12 @@
 #![doc(html_root_url = "https://docs.rs/bitflags/2.2.1")]
 
 #[doc(inline)]
-pub use traits::BitFlags;
+pub use traits::{BitFlags, Bits};
 
+pub mod fmt;
+pub mod iter;
 pub mod parser;
+
 mod traits;
 
 #[doc(hidden)]
@@ -596,12 +599,10 @@ macro_rules! bitflags {
             // These types don't appear in the end-user's API
             __declare_internal_bitflags! {
                 $vis struct InternalBitFlags: $T;
-                $vis struct Iter;
-                $vis struct IterRaw;
             }
 
             __impl_internal_bitflags! {
-                InternalBitFlags: $T, $BitFlags, Iter, IterRaw {
+                InternalBitFlags: $T, $BitFlags {
                     $(
                         $(#[$inner $($args)*])*
                         $Flag;
@@ -620,7 +621,12 @@ macro_rules! bitflags {
             }
 
             __impl_public_bitflags! {
-                $BitFlags: $T, InternalBitFlags, Iter, IterRaw;
+                $BitFlags: $T, InternalBitFlags {
+                    $(
+                        $(#[$inner $($args)*])*
+                        $Flag = $value;
+                    )*
+                }
             }
         };
 

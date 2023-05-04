@@ -26,7 +26,12 @@ macro_rules! __declare_public_bitflags {
 #[doc(hidden)]
 macro_rules! __impl_public_bitflags {
     (
-        $PublicBitFlags:ident: $T:ty, $InternalBitFlags:ident, $Iter:ident, $IterNames:ident;
+        $PublicBitFlags:ident: $T:ty, $InternalBitFlags:ident {
+            $(
+                $(#[$attr:ident $($args:tt)*])*
+                $Flag:ident = $value:expr;
+            )*
+        }
     ) => {
         impl $crate::__private::core::fmt::Binary for $PublicBitFlags {
             fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
@@ -109,13 +114,13 @@ macro_rules! __impl_public_bitflags {
 
             /// Iterate over enabled flag values.
             #[inline]
-            pub const fn iter(&self) -> $Iter {
+            pub const fn iter(&self) -> $crate::iter::Iter<Self> {
                 self.0.iter()
             }
 
             /// Iterate over enabled flag values with their stringified names.
             #[inline]
-            pub const fn iter_names(&self) -> $IterNames {
+            pub const fn iter_names(&self) -> $crate::iter::IterNames<Self> {
                 self.0.iter_names()
             }
 
@@ -359,7 +364,7 @@ macro_rules! __impl_public_bitflags {
 
         impl $crate::__private::core::iter::IntoIterator for $PublicBitFlags {
             type Item = Self;
-            type IntoIter = $Iter;
+            type IntoIter = $crate::iter::Iter<$PublicBitFlags>;
 
             fn into_iter(self) -> Self::IntoIter {
                 self.0.iter()
@@ -367,37 +372,24 @@ macro_rules! __impl_public_bitflags {
         }
 
         impl $crate::BitFlags for $PublicBitFlags {
+            const FLAGS: &'static [(&'static str, $PublicBitFlags)] = &[
+                $(
+                    $(#[$attr $($args)*])*
+                    ($crate::__private::core::stringify!($Flag), $PublicBitFlags::from_bits_retain($value))
+                ),*
+            ];
+
             type Bits = $T;
 
-            type Iter = $Iter;
-            type IterNames = $IterNames;
-
-            fn empty() -> Self {
-                $PublicBitFlags::empty()
-            }
-
-            fn all() -> Self {
-                $PublicBitFlags::all()
-            }
+            type Iter = $crate::iter::Iter<$PublicBitFlags>;
+            type IterNames = $crate::iter::IterNames<$PublicBitFlags>;
 
             fn bits(&self) -> $T {
                 $PublicBitFlags::bits(self)
             }
 
-            fn from_bits(bits: $T) -> $crate::__private::core::option::Option<$PublicBitFlags> {
-                $PublicBitFlags::from_bits(bits)
-            }
-
-            fn from_bits_truncate(bits: $T) -> $PublicBitFlags {
-                $PublicBitFlags::from_bits_truncate(bits)
-            }
-
             fn from_bits_retain(bits: $T) -> $PublicBitFlags {
                 $PublicBitFlags::from_bits_retain(bits)
-            }
-
-            fn from_name(name: &str) -> $crate::__private::core::option::Option<$PublicBitFlags> {
-                $PublicBitFlags::from_name(name)
             }
 
             fn iter(&self) -> Self::Iter {
@@ -407,41 +399,7 @@ macro_rules! __impl_public_bitflags {
             fn iter_names(&self) -> Self::IterNames {
                 $PublicBitFlags::iter_names(self)
             }
-
-            fn is_empty(&self) -> bool {
-                $PublicBitFlags::is_empty(self)
-            }
-
-            fn is_all(&self) -> bool {
-                $PublicBitFlags::is_all(self)
-            }
-
-            fn intersects(&self, other: $PublicBitFlags) -> bool {
-                $PublicBitFlags::intersects(self, other)
-            }
-
-            fn contains(&self, other: $PublicBitFlags) -> bool {
-                $PublicBitFlags::contains(self, other)
-            }
-
-            fn insert(&mut self, other: $PublicBitFlags) {
-                $PublicBitFlags::insert(self, other)
-            }
-
-            fn remove(&mut self, other: $PublicBitFlags) {
-                $PublicBitFlags::remove(self, other)
-            }
-
-            fn toggle(&mut self, other: $PublicBitFlags) {
-                $PublicBitFlags::toggle(self, other)
-            }
-
-            fn set(&mut self, other: $PublicBitFlags, value: bool) {
-                $PublicBitFlags::set(self, other, value)
-            }
         }
-
-        impl $crate::__private::ImplementedByBitFlagsMacro for $PublicBitFlags {}
     };
 }
 

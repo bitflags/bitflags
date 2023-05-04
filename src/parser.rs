@@ -30,6 +30,55 @@
 
 use core::fmt;
 
+use crate::BitFlags;
+
+pub fn from_str<B: BitFlags>(input: &str) -> Result<B, ParseError>
+where
+    B::Bits: FromHex,
+{
+    let input = input.trim();
+
+    let mut parsed_flags = B::empty();
+
+    // If the input is empty then return an empty set of flags
+    if input.is_empty() {
+        return Ok(parsed_flags);
+    }
+
+    for flag in input.split('|') {
+        let flag = flag.trim();
+
+        // If the flag is empty then we've got missing input
+        if flag.is_empty() {
+            return Err(ParseError::empty_flag());
+        }
+
+        // If the flag starts with `0x` then it's a hex number
+        // Parse it directly to the underlying bits type
+        let parsed_flag = if let Some(flag) = flag.strip_prefix("0x") {
+            let bits = <B::Bits>::from_hex(flag).map_err(|_| ParseError::invalid_hex_flag(flag))?;
+
+            B::from_bits_retain(bits)
+        }
+        // Otherwise the flag is a name
+        // The generated flags type will determine whether
+        // or not it's a valid identifier
+        else {
+            B::from_name(flag).ok_or_else(|| ParseError::invalid_named_flag(flag))?
+        };
+
+        parsed_flags.insert(parsed_flag);
+    }
+
+    Ok(parsed_flags)
+}
+
+pub trait FromHex {
+    fn from_hex(input: &str) -> Result<Self, ParseError>
+    where
+        Self: Sized;
+}
+
 /// An error encountered while parsing flags from text.
 #[derive(Debug)]
 pub struct ParseError(ParseErrorKind);
