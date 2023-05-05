@@ -11,7 +11,7 @@
 macro_rules! __declare_public_bitflags {
     (
         $(#[$outer:meta])*
-        $vis:vis struct $PublicBitFlags:ident;
+        $vis:vis struct $PublicBitFlags:ident
     ) => {
         $(#[$outer])*
         $vis struct $PublicBitFlags(<$PublicBitFlags as $crate::__private::PublicFlags>::Internal);
@@ -450,6 +450,7 @@ macro_rules! __impl_public_bitflags_consts {
                     __bitflags_expr_safe_attrs!(
                         $(#[$attr $($args)*])*
                         {
+                            #[allow(deprecated)]
                             $crate::Flag::new($crate::__private::core::stringify!($Flag), $PublicBitFlags::$Flag)
                         }
                     ),

@@ -10,7 +10,7 @@
 #[doc(hidden)]
 macro_rules! __declare_internal_bitflags {
     (
-        $vis:vis struct $InternalBitFlags:ident: $T:ty;
+        $vis:vis struct $InternalBitFlags:ident: $T:ty
     ) => {
         // NOTE: The ABI of this type is _guaranteed_ to be the same as `T`
         // This is relied on by some external libraries like `bytemuck` to make
@@ -90,6 +90,8 @@ macro_rules! __impl_internal_bitflags {
                 Self::from_bits_retain(bits)
             }
         }
+
+        // The internal flags type offers a similar API to the public one
 
         __impl_public_bitflags! {
             $InternalBitFlags: $T {

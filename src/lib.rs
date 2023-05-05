@@ -568,7 +568,7 @@ macro_rules! bitflags {
         // This type appears in the end-user's API
         __declare_public_bitflags! {
             $(#[$outer])*
-            $vis struct $BitFlags;
+            $vis struct $BitFlags
         }
 
         // Workaround for: https://github.com/bitflags/bitflags/issues/320
@@ -576,12 +576,6 @@ macro_rules! bitflags {
             $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
-                    #[allow(
-                        dead_code,
-                        deprecated,
-                        unused_attributes,
-                        non_upper_case_globals
-                    )]
                     $Flag = $value;
                 )*
             }
@@ -600,7 +594,7 @@ macro_rules! bitflags {
             // Declared in a "hidden" scope that can't be reached directly
             // These types don't appear in the end-user's API
             __declare_internal_bitflags! {
-                $vis struct InternalBitFlags: $T;
+                $vis struct InternalBitFlags: $T
             }
 
             __impl_internal_bitflags! {
@@ -649,29 +643,34 @@ macro_rules! bitflags {
             $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
-                    #[allow(
-                        dead_code,
-                        deprecated,
-                        unused_attributes,
-                        non_upper_case_globals
-                    )]
                     $Flag = $value;
                 )*
             }
         }
 
-        __impl_public_bitflags! {
-            $BitFlags: $T {
-                $(
-                    $(#[$inner $($args)*])*
-                    $Flag;
-                )*
+        #[allow(
+            dead_code,
+            deprecated,
+            unused_doc_comments,
+            unused_attributes,
+            unused_mut,
+            unused_imports,
+            non_upper_case_globals
+        )]
+        const _: () = {
+            __impl_public_bitflags! {
+                $BitFlags: $T {
+                    $(
+                        $(#[$inner $($args)*])*
+                        $Flag;
+                    )*
+                }
             }
-        }
 
-        __impl_public_bitflags_iter! {
-            $BitFlags
-        }
+            __impl_public_bitflags_iter! {
+                $BitFlags
+            }
+        };
 
         bitflags! {
             $($t)*
@@ -680,7 +679,7 @@ macro_rules! bitflags {
     () => {};
 }
 
-/// Implement functions on the public (user-facing) bitflags type.
+/// Implement functions on bitflags types.
 ///
 /// We need to be careful about adding new methods and trait implementations here because they
 /// could conflict with items added by the end-user.

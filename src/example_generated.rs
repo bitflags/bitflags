@@ -9,30 +9,41 @@ __declare_public_bitflags! {
     /// This is the same `Flags` struct defined in the [crate level example](../index.html#example).
     /// Note that this struct is just for documentation purposes only, it must not be used outside
     /// this crate.
-    pub struct Flags;
+    pub struct Flags
 }
 
 __declare_internal_bitflags! {
-    pub struct Field0: u32;
-    pub struct Iter;
-    pub struct IterRaw;
+    pub struct Field0: u32
 }
 
 __impl_internal_bitflags! {
-    Field0: u32, Flags, Iter, IterRaw {
-        A;
-        B;
-        C;
-        ABC;
+    Field0: u32, Flags {
+        // Field `A`.
+        ///
+        /// This flag has the value `0b00000001`.
+        A = 0b00000001;
+        /// Field `B`.
+        ///
+        /// This flag has the value `0b00000010`.
+        B = 0b00000010;
+        /// Field `C`.
+        ///
+        /// This flag has the value `0b00000100`.
+        C = 0b00000100;
+        ABC = Self::A.bits() | Self::B.bits() | Self::C.bits();
     }
 }
 
-__impl_public_bitflags! {
-    Flags: u32, Field0, Iter, IterRaw;
+__impl_public_bitflags_forward! {
+    Flags: u32, Field0
+}
+
+__impl_public_bitflags_iter! {
+    Flags
 }
 
 __impl_public_bitflags_consts! {
-    Flags {
+    Flags: u32 {
         /// Field `A`.
         ///
         /// This flag has the value `0b00000001`.
