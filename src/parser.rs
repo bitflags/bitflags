@@ -128,7 +128,9 @@ where
     Ok(parsed_flags)
 }
 
+/// Parse a value from a number encoded as a hex string.
 pub trait FromHex {
+    /// Perform the conversion.
     fn from_hex(input: &str) -> Result<Self, ParseError>
     where
         Self: Sized;
