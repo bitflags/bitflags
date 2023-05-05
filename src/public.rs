@@ -440,6 +440,10 @@ macro_rules! __impl_public_bitflags_consts {
         impl $PublicBitFlags {
             $(
                 $(#[$attr $($args)*])*
+                #[allow(
+                    deprecated,
+                    non_upper_case_globals,
+                )]
                 pub const $Flag: Self = Self::from_bits_retain($value);
             )*
         }
@@ -450,7 +454,10 @@ macro_rules! __impl_public_bitflags_consts {
                     __bitflags_expr_safe_attrs!(
                         $(#[$attr $($args)*])*
                         {
-                            #[allow(deprecated)]
+                            #[allow(
+                                deprecated,
+                                non_upper_case_globals,
+                            )]
                             $crate::Flag::new($crate::__private::core::stringify!($Flag), $PublicBitFlags::$Flag)
                         }
                     ),
