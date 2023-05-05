@@ -5,7 +5,13 @@ How do I support a new external library?
 
 Let's say we want to add support for `my_library`.
 
-First, we define a macro like so:
+First, we create a module under `external`, like `serde` with any specialized code.
+Ideally, any utilities in here should just work off the `Flags` trait and maybe a
+few other assumed bounds.
+
+Next, re-export the library from the `__private` module here.
+
+Next, define a macro like so:
 
 ```rust
 #[macro_export(local_inner_macros)]
@@ -57,27 +63,78 @@ __impl_external_bitflags_my_library! {
     }
 }
 ```
-
-What about libraries that _must_ be supported through `#[derive]`?
-
-In these cases, the attributes will need to be added to the `__declare_internal_bitflags` macro when
-the internal type is declared.
 */
 
+pub(crate) mod __private {
+    #[cfg(feature = "serde")]
+    pub use serde;
+
+    #[cfg(feature = "arbitrary")]
+    pub use arbitrary;
+
+    #[cfg(feature = "bytemuck")]
+    pub use bytemuck;
+}
+
 #[cfg(feature = "serde")]
-pub mod serde_support;
+pub mod serde;
+
+/// Implement `Serialize` and `Deserialize` for the internal bitflags type.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
 #[cfg(feature = "serde")]
-pub use serde;
+macro_rules! __impl_external_bitflags_serde {
+    (
+        $InternalBitFlags:ident: $T:ty {
+            $(
+                $(#[$attr:ident $($args:tt)*])*
+                $Flag:ident;
+                )*
+        }
+    ) => {
+        impl $crate::__private::serde::Serialize for $InternalBitFlags {
+            fn serialize<S: $crate::__private::serde::Serializer>(
+                &self,
+                serializer: S,
+            ) -> $crate::__private::core::result::Result<S::Ok, S::Error> {
+                $crate::serde::serialize(
+                    self,
+                    serializer,
+                )
+            }
+        }
+
+        impl<'de> $crate::__private::serde::Deserialize<'de> for $InternalBitFlags {
+            fn deserialize<D: $crate::__private::serde::Deserializer<'de>>(
+                deserializer: D,
+            ) -> $crate::__private::core::result::Result<Self, D::Error> {
+                $crate::serde::deserialize(
+                    deserializer,
+                )
+            }
+        }
+    };
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+#[cfg(not(feature = "serde"))]
+macro_rules! __impl_external_bitflags_serde {
+    (
+        $InternalBitFlags:ident: $T:ty {
+            $(
+                $(#[$attr:ident $($args:tt)*])*
+                $Flag:ident;
+                )*
+        }
+    ) => {};
+}
 
 #[cfg(feature = "arbitrary")]
-pub mod arbitrary_support;
-#[cfg(feature = "arbitrary")]
-pub use arbitrary;
+pub mod arbitrary;
 
 #[cfg(feature = "bytemuck")]
-pub mod bytemuck_support;
-#[cfg(feature = "bytemuck")]
-pub use bytemuck;
+mod bytemuck;
 
 /// Implements traits from external libraries for the internal bitflags type.
 #[macro_export(local_inner_macros)]
@@ -124,57 +181,6 @@ macro_rules! __impl_external_bitflags {
     };
 }
 
-/// Implement `Serialize` and `Deserialize` for the internal bitflags type.
-#[macro_export(local_inner_macros)]
-#[doc(hidden)]
-#[cfg(feature = "serde")]
-macro_rules! __impl_external_bitflags_serde {
-    (
-        $InternalBitFlags:ident: $T:ty {
-            $(
-                $(#[$attr:ident $($args:tt)*])*
-                $Flag:ident;
-            )*
-        }
-    ) => {
-        impl $crate::__private::serde::Serialize for $InternalBitFlags {
-            fn serialize<S: $crate::__private::serde::Serializer>(
-                &self,
-                serializer: S,
-            ) -> $crate::__private::core::result::Result<S::Ok, S::Error> {
-                $crate::__private::serde_support::serialize_bits_default::<$InternalBitFlags, $T, S>(
-                    &self,
-                    serializer,
-                )
-            }
-        }
-
-        impl<'de> $crate::__private::serde::Deserialize<'de> for $InternalBitFlags {
-            fn deserialize<D: $crate::__private::serde::Deserializer<'de>>(
-                deserializer: D,
-            ) -> $crate::__private::core::result::Result<Self, D::Error> {
-                $crate::__private::serde_support::deserialize_bits_default::<$InternalBitFlags, $T, D>(
-                    deserializer,
-                )
-            }
-        }
-    };
-}
-
-#[macro_export(local_inner_macros)]
-#[doc(hidden)]
-#[cfg(not(feature = "serde"))]
-macro_rules! __impl_external_bitflags_serde {
-    (
-        $InternalBitFlags:ident: $T:ty {
-            $(
-                $(#[$attr:ident $($args:tt)*])*
-                $Flag:ident;
-            )*
-        }
-    ) => {};
-}
-
 /// Implement `Arbitrary` for the internal bitflags type.
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
@@ -192,7 +198,7 @@ macro_rules! __impl_external_bitflags_arbitrary {
             fn arbitrary(
                 u: &mut $crate::__private::arbitrary::Unstructured<'a>,
             ) -> $crate::__private::arbitrary::Result<Self> {
-                Self::from_bits(u.arbitrary()?).ok_or_else(|| $crate::__private::arbitrary::Error::IncorrectFormat)
+                $crate::arbitrary::arbitrary(u)
             }
         }
     };

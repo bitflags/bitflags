@@ -6,3 +6,4 @@ publish = false
 
 [dependencies.bitflags]
 path = "../../"
+all-features = true

@@ -422,7 +422,6 @@
 
 #![cfg_attr(not(any(feature = "std", test)), no_std)]
 #![cfg_attr(not(test), forbid(unsafe_code))]
-
 #![doc(html_root_url = "https://docs.rs/bitflags/2.2.1")]
 
 #[doc(inline)]
@@ -435,10 +434,13 @@ mod traits;
 
 #[doc(hidden)]
 pub mod __private {
-    pub use crate::{external::*, traits::*};
+    pub use crate::{external::__private::*, traits::__private::*};
 
     pub use core;
 }
+
+#[allow(unused_imports)]
+pub use external::*;
 
 #[allow(deprecated)]
 pub use traits::BitFlags;

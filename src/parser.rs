@@ -73,6 +73,17 @@ where
     fmt::Result::Ok(())
 }
 
+pub(crate) struct AsDisplay<'a, B>(pub(crate) &'a B);
+
+impl<'a, B: Flags> fmt::Display for AsDisplay<'a, B>
+where
+    B::Bits: LowerHex,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        to_writer(self.0, f)
+    }
+}
+
 /// Parse a set of flags from text.
 ///
 /// This function will fail on unknown flags rather than ignore them.

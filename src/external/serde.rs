@@ -1,59 +1,66 @@
-use core::{fmt, str};
+//! Specialized serialization for flags types using `serde`.
+
+use core::{fmt::{self, LowerHex}, str};
+use crate::{Flags, parser::{self, FromHex}};
 use serde::{
     de::{Error, Visitor},
     Deserialize, Deserializer, Serialize, Serializer,
 };
 
-pub fn serialize_bits_default<T: fmt::Display + AsRef<B>, B: Serialize, S: Serializer>(
-    flags: &T,
+/// Serialize a set of flags as a human-readable string or their underlying bits.
+pub fn serialize<B: Flags, S: Serializer>(
+    flags: &B,
     serializer: S,
-) -> Result<S::Ok, S::Error> {
+) -> Result<S::Ok, S::Error>
+where
+    B::Bits: LowerHex + Serialize,
+{
     // Serialize human-readable flags as a string like `"A | B"`
     if serializer.is_human_readable() {
-        serializer.collect_str(flags)
+        serializer.collect_str(&parser::AsDisplay(flags))
     }
     // Serialize non-human-readable flags directly as the underlying bits
     else {
-        flags.as_ref().serialize(serializer)
+        flags.bits().serialize(serializer)
     }
 }
 
-pub fn deserialize_bits_default<
+/// Deserialize a set of flags from a human-readable string or their underlying bits.
+pub fn deserialize<
     'de,
-    T: str::FromStr + From<B>,
-    B: Deserialize<'de>,
+    B: Flags,
     D: Deserializer<'de>,
 >(
     deserializer: D,
-) -> Result<T, D::Error>
+) -> Result<B, D::Error>
 where
-    <T as str::FromStr>::Err: fmt::Display,
+    B::Bits: FromHex + Deserialize<'de>,
 {
     if deserializer.is_human_readable() {
         // Deserialize human-readable flags by parsing them from strings like `"A | B"`
-        struct FlagsVisitor<T>(core::marker::PhantomData<T>);
+        struct FlagsVisitor<B>(core::marker::PhantomData<B>);
 
-        impl<'de, T: str::FromStr> Visitor<'de> for FlagsVisitor<T>
+        impl<'de, B: Flags> Visitor<'de> for FlagsVisitor<B>
         where
-            <T as str::FromStr>::Err: fmt::Display,
+            B::Bits: FromHex,
         {
-            type Value = T;
+            type Value = B;
 
             fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
                 formatter.write_str("a string value of `|` separated flags")
             }
 
             fn visit_str<E: Error>(self, flags: &str) -> Result<Self::Value, E> {
-                flags.parse().map_err(|e| E::custom(e))
+                parser::from_str(flags).map_err(|e| E::custom(e))
             }
         }
 
         deserializer.deserialize_str(FlagsVisitor(Default::default()))
     } else {
         // Deserialize non-human-readable flags directly from the underlying bits
-        let bits = B::deserialize(deserializer)?;
+        let bits = B::Bits::deserialize(deserializer)?;
 
-        Ok(bits.into())
+        Ok(B::from_bits_retain(bits))
     }
 }
 

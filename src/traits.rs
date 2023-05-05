@@ -321,3 +321,7 @@ impl<B: Flags> ImplementedByBitFlagsMacro for B {}
 /// manual implementations won't break between non-breaking releases.
 #[doc(hidden)]
 pub trait ImplementedByBitFlagsMacro {}
+
+pub(crate) mod __private {
+    pub use super::{ImplementedByBitFlagsMacro, PublicFlags};
+}

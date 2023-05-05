@@ -1,3 +1,16 @@
+//! Specialized fuzzing for flags types using `arbitrary`.
+
+use crate::Flags;
+
+pub fn arbitrary<'a, B: Flags>(
+    u: &mut arbitrary::Unstructured<'a>,
+) -> arbitrary::Result<B>
+where
+    B::Bits: arbitrary::Arbitrary<'a>
+{
+    B::from_bits(u.arbitrary()?).ok_or_else(|| arbitrary::Error::IncorrectFormat)
+}
+
 #[cfg(test)]
 mod tests {
     use arbitrary::Arbitrary;
