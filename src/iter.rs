@@ -96,6 +96,11 @@ impl<B: Flags> Iterator for IterNames<B> {
     
     fn next(&mut self) -> Option<Self::Item> {
         while let Some(flag) = self.flags.get(self.idx) {
+            // Short-circuit if our state is empty
+            if self.state.is_empty() {
+                return None;
+            }
+
             self.idx += 1;
 
             let bits = flag.value().bits();
