@@ -1,4 +1,6 @@
 //! An example of implementing the `BitFlags` trait manually for a flags type.
+//!
+//! This example doesn't use any macros.
 
 use std::{fmt, str};
 

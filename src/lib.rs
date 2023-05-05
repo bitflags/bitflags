@@ -374,16 +374,16 @@
 //! }
 //! ```
 //!
-//! [`from_bits`]: BitFlags::from_bits
-//! [`from_bits_truncate`]: BitFlags::from_bits_truncate
+//! [`from_bits`]: Flags::from_bits
+//! [`from_bits_truncate`]: Flags::from_bits_truncate
 //!
-//! # The `BitFlags` trait
+//! # The `Flags` trait
 //!
-//! This library defines a `BitFlags` trait that's implemented by all generated flags types.
+//! This library defines a `Flags` trait that's implemented by all generated flags types.
 //! The trait makes it possible to work with flags types generically:
 //!
 //! ```
-//! fn count_unset_flags<F: bitflags::BitFlags>(flags: &F) -> usize {
+//! fn count_unset_flags<F: bitflags::Flags>(flags: &F) -> usize {
 //!     // Find out how many flags there are in total
 //!     let total = F::all().iter().count();
 //!
