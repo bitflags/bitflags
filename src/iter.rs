@@ -4,7 +4,7 @@ use crate::{Flags, Flag};
 ///
 /// Any bits that don't correspond to a valid flag will be yielded
 /// as a final item from the iterator.
-pub struct Iter<B: Flags> {
+pub struct Iter<B: 'static> {
     inner: IterNames<B>,
     done: bool,
 }
@@ -17,7 +17,9 @@ impl<B: Flags> Iter<B> {
             done: false,
         }
     }
-    
+}
+
+impl<B: 'static> Iter<B> {
     #[doc(hidden)]
     pub const fn __private_const_new(flags: &'static [Flag<B>], source: B, state: B) -> Self {
         Iter {
@@ -53,7 +55,7 @@ impl<B: Flags> Iterator for Iter<B> {
 /// An iterator over a set of flags and their names.
 ///
 /// Any bits that don't correspond to a valid flag will be ignored.
-pub struct IterNames<B: Flags> {
+pub struct IterNames<B: 'static> {
     flags: &'static [Flag<B>],
     idx: usize,
     source: B,
@@ -70,7 +72,9 @@ impl<B: Flags> IterNames<B> {
             source: B::from_bits_retain(flags.bits()),
         }
     }
-    
+}
+
+impl<B: 'static> IterNames<B> {
     #[doc(hidden)]
     pub const fn __private_const_new(flags: &'static [Flag<B>], source: B, state: B) -> Self {
         IterNames {
