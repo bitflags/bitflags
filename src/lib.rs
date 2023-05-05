@@ -1049,6 +1049,7 @@ mod tests {
         str,
     };
 
+    #[derive(Debug, PartialEq, Eq)]
     pub struct ManualFlags(u32);
 
     bitflags! {
@@ -1136,6 +1137,8 @@ mod tests {
         assert_eq!(Flags::A.bits(), 0b00000001);
         assert_eq!(Flags::ABC.bits(), 0b00000111);
 
+        assert_eq!(<Flags as crate::Flags>::bits(&Flags::ABC), 0b00000111);
+
         assert_eq!(AnotherSetOfFlags::empty().bits(), 0b00);
         assert_eq!(AnotherSetOfFlags::ANOTHER_FLAG.bits(), !0_i8);
 
@@ -1149,6 +1152,8 @@ mod tests {
         assert_eq!(Flags::from_bits(0b10), Some(Flags::B));
         assert_eq!(Flags::from_bits(0b11), Some(Flags::A | Flags::B));
         assert_eq!(Flags::from_bits(0b1000), None);
+
+        assert_eq!(<Flags as crate::Flags>::from_bits(0b11), Some(Flags::A | Flags::B));
 
         assert_eq!(
             AnotherSetOfFlags::from_bits(!0_i8),
@@ -1167,6 +1172,8 @@ mod tests {
         assert_eq!(Flags::from_bits_truncate(0b11), (Flags::A | Flags::B));
         assert_eq!(Flags::from_bits_truncate(0b1000), Flags::empty());
         assert_eq!(Flags::from_bits_truncate(0b1001), Flags::A);
+
+        assert_eq!(<Flags as crate::Flags>::from_bits_truncate(0b11), (Flags::A | Flags::B));
 
         assert_eq!(
             AnotherSetOfFlags::from_bits_truncate(0_i8),
@@ -1188,6 +1195,8 @@ mod tests {
         assert_eq!(Flags::from_bits_retain(0b1000), (extra | Flags::empty()));
         assert_eq!(Flags::from_bits_retain(0b1001), (extra | Flags::A));
 
+        assert_eq!(<Flags as crate::Flags>::from_bits_retain(0b11), (Flags::A | Flags::B));
+
         let extra = EmptyFlags::from_bits_retain(0b1000);
         assert_eq!(
             EmptyFlags::from_bits_retain(0b1000),
@@ -1200,6 +1209,8 @@ mod tests {
         assert!(Flags::empty().is_empty());
         assert!(!Flags::A.is_empty());
         assert!(!Flags::ABC.is_empty());
+
+        assert!(!<Flags as crate::Flags>::is_empty(&Flags::ABC));
 
         assert!(!AnotherSetOfFlags::ANOTHER_FLAG.is_empty());
 
@@ -1218,6 +1229,8 @@ mod tests {
         assert!(!(Flags::A | extra).is_all());
         assert!((Flags::ABC | extra).is_all());
 
+        assert!(<Flags as crate::Flags>::is_all(&Flags::all()));
+
         assert!(AnotherSetOfFlags::ANOTHER_FLAG.is_all());
 
         assert!(EmptyFlags::all().is_all());
@@ -1229,6 +1242,8 @@ mod tests {
         let e1 = Flags::empty();
         let e2 = Flags::empty();
         assert!(!e1.intersects(e2));
+
+        assert!(!<Flags as crate::Flags>::intersects(&e1, e2));
 
         assert!(AnotherSetOfFlags::ANOTHER_FLAG.intersects(AnotherSetOfFlags::ANOTHER_FLAG));
     }
@@ -1262,6 +1277,8 @@ mod tests {
         assert!(e2.contains(e1));
         assert!(Flags::ABC.contains(e2));
 
+        assert!(<Flags as crate::Flags>::contains(&Flags::ABC, e2));
+
         assert!(AnotherSetOfFlags::ANOTHER_FLAG.contains(AnotherSetOfFlags::ANOTHER_FLAG));
 
         assert!(EmptyFlags::empty().contains(EmptyFlags::empty()));
@@ -1274,6 +1291,11 @@ mod tests {
         e1.insert(e2);
         assert_eq!(e1, e2);
 
+        let mut e1 = Flags::A;
+        let e2 = Flags::A | Flags::B;
+        <Flags as crate::Flags>::insert(&mut e1, e2);
+        assert_eq!(e1, e2);
+
         let mut e3 = AnotherSetOfFlags::empty();
         e3.insert(AnotherSetOfFlags::ANOTHER_FLAG);
         assert_eq!(e3, AnotherSetOfFlags::ANOTHER_FLAG);
@@ -1284,6 +1306,11 @@ mod tests {
         let mut e1 = Flags::A | Flags::B;
         let e2 = Flags::A | Flags::C;
         e1.remove(e2);
+        assert_eq!(e1, Flags::B);
+
+        let mut e1 = Flags::A | Flags::B;
+        let e2 = Flags::A | Flags::C;
+        <Flags as crate::Flags>::remove(&mut e1, e2);
         assert_eq!(e1, Flags::B);
 
         let mut e3 = AnotherSetOfFlags::ANOTHER_FLAG;
@@ -1635,7 +1662,7 @@ mod tests {
     fn test_debug() {
         assert_eq!(format!("{:?}", Flags::A | Flags::B), "Flags(A | B)");
         assert_eq!(format!("{:?}", Flags::empty()), "Flags(0x0)");
-        assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C | ABC)");
+        assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C)");
 
         let extra = Flags::from_bits_retain(0xb8);
 
@@ -1919,7 +1946,7 @@ mod tests {
         assert_eq!(format!("{:?}", Flags::A), "Flags(A)");
         assert_eq!(format!("{:?}", Flags::B), "Flags(B)");
         assert_eq!(format!("{:?}", Flags::C), "Flags(C)");
-        assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C | ABC)");
+        assert_eq!(format!("{:?}", Flags::ABC), "Flags(A | B | C)");
     }
 
     #[test]

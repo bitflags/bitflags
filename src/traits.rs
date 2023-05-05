@@ -43,7 +43,7 @@ pub trait Flags: Sized + 'static {
 
     /// Returns the set containing all flags.
     fn all() -> Self {
-        Self::from_bits_retain(Self::Bits::ALL)
+        Self::from_bits_truncate(Self::Bits::ALL)
     }
 
     /// Returns the raw value of the flags currently stored.
