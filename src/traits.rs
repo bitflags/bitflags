@@ -254,6 +254,12 @@ pub trait Bits:
     const ALL: Self;
 }
 
+// Not re-exported: prevent custom `Bits` impls being used in the `bitflags!` macro,
+// or they may fail to compile based on crate features
+pub trait Primitive {}
+
+pub const fn __assert_primitive<T: Bits + Primitive>() {}
+
 macro_rules! impl_bits {
     ($($u:ty, $i:ty,)*) => {
         $(
@@ -278,6 +284,9 @@ macro_rules! impl_bits {
                     <$i>::from_str_radix(input, 16).map_err(|_| ParseError::invalid_hex_flag(input))
                 }
             }
+
+            impl Primitive for $i {}
+            impl Primitive for $u {}
         )*
     }
 }
@@ -323,5 +332,5 @@ impl<B: Flags> ImplementedByBitFlagsMacro for B {}
 pub trait ImplementedByBitFlagsMacro {}
 
 pub(crate) mod __private {
-    pub use super::{ImplementedByBitFlagsMacro, PublicFlags};
+    pub use super::{ImplementedByBitFlagsMacro, PublicFlags, __assert_primitive};
 }

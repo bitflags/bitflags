@@ -173,7 +173,7 @@ macro_rules! __impl_public_bitflags {
                             $(#[$attr $($args)*])*
                             {
                                 if bits & $PublicBitFlags::$Flag.bits() == $PublicBitFlags::$Flag.bits() {
-                                    truncated |= $PublicBitFlags::$Flag.bits()
+                                    truncated = truncated | $PublicBitFlags::$Flag.bits()
                                 }
                             }
                         );
@@ -219,15 +219,15 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn insert(f, other) {
-                    f.0 |= other.0;
+                    f.0 = f.0 | other.0;
                 }
 
                 fn remove(f, other) {
-                    f.0 &= !other.0;
+                    f.0 = f.0 & !other.0;
                 }
 
                 fn toggle(f, other) {
-                    f.0 ^= other.0;
+                    f.0 = f.0 ^ other.0;
                 }
 
                 fn set(f, other, value) {
@@ -337,7 +337,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Adds the set of flags.
             #[inline]
             fn bitor_assign(&mut self, other: Self) {
-                self.0 |= other.0;
+                self.0 = self.0 | other.0;
             }
         }
 
@@ -355,7 +355,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Toggles the set of flags.
             #[inline]
             fn bitxor_assign(&mut self, other: Self) {
-                self.0 ^= other.0
+                self.0 = self.0 ^ other.0
             }
         }
 
@@ -373,7 +373,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Disables all flags disabled in the set.
             #[inline]
             fn bitand_assign(&mut self, other: Self) {
-                self.0 &= other.0;
+                self.0 = self.0 & other.0;
             }
         }
 
@@ -391,7 +391,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Disables all flags enabled in the set.
             #[inline]
             fn sub_assign(&mut self, other: Self) {
-                self.0 &= !other.0;
+                self.0 = self.0 & !other.0;
             }
         }
 

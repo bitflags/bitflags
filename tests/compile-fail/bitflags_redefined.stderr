@@ -1,0 +1,804 @@
+error[E0428]: the name `Flags1` is defined multiple times
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ `Flags1` redefined here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- previous definition of the type `Flags1` here
+   |
+   = note: `Flags1` must be defined only once in the type namespace of this module
+   = note: this error originates in the macro `__declare_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0601]: `main` function not found in crate `$CRATE`
+  --> tests/compile-fail/bitflags_redefined.rs:14:2
+   |
+14 | }
+   |  ^ consider adding a `main` function to `$DIR/tests/compile-fail/bitflags_redefined.rs`
+
+error[E0119]: conflicting implementations of trait `Flags` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_consts` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `PublicFlags` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_internal_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `Binary` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `Octal` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `LowerHex` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `UpperHex` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `BitOr` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `BitOrAssign` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `BitXor` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `BitXorAssign` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `BitAnd` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `BitAndAssign` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `Sub` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `SubAssign` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `Not` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `Extend<Flags1>` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `FromIterator<Flags1>` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `IntoIterator` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `A`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `A`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `A`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_consts` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `empty`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `empty`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `empty`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `all`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `all`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `all`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `bits`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `bits`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `bits`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `from_bits`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `from_bits`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `from_bits`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `from_bits_truncate`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `from_bits_truncate`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `from_bits_truncate`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `from_bits_retain`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `from_bits_retain`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `from_bits_retain`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `from_name`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `from_name`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `from_name`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `is_empty`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `is_empty`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `is_empty`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `is_all`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `is_all`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `is_all`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `intersects`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `intersects`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `intersects`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `contains`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `contains`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `contains`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `insert`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `insert`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `insert`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `remove`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `remove`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `remove`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `toggle`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `toggle`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `toggle`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `set`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `set`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `set`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `intersection`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `intersection`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `intersection`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `union`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `union`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `union`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `difference`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `difference`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `difference`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `symmetric_difference`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `symmetric_difference`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `symmetric_difference`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `complement`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `complement`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `complement`
+   |
+   = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `iter`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `iter`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `iter`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0592]: duplicate definitions with name `iter_names`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ duplicate definitions for `iter_names`
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `iter_names`
+   |
+   = note: this error originates in the macro `__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)

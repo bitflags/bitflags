@@ -1,0 +1,12 @@
+error: use of deprecated trait `bitflags::BitFlags`: use the `Flags` trait instead
+ --> tests/compile-fail/bitflags_trait_deprecated.rs:3:19
+  |
+3 | pub use bitflags::BitFlags;
+  |                   ^^^^^^^^
+  |
+note: the lint level is defined here
+ --> tests/compile-fail/bitflags_trait_deprecated.rs:1:9
+  |
+1 | #![deny(warnings)]
+  |         ^^^^^^^^
+  = note: `#[deny(deprecated)]` implied by `#[deny(warnings)]`

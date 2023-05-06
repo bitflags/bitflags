@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 // From: https://github.com/bitflags/bitflags/issues/293#issuecomment-1493296383
 use core::{
     fmt::{Binary, LowerHex, Octal, UpperHex},
