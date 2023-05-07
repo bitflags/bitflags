@@ -11,7 +11,7 @@ pub struct Iter<B: 'static> {
 
 impl<B: Flags> Iter<B> {
     /// Create a new iterator over the given set of flags.
-    pub fn new(flags: &B) -> Self {
+    pub(crate) fn new(flags: &B) -> Self {
         Iter {
             inner: IterNames::new(flags),
             done: false,
@@ -64,7 +64,7 @@ pub struct IterNames<B: 'static> {
 
 impl<B: Flags> IterNames<B> {
     /// Create a new iterator over the given set of flags.
-    pub fn new(flags: &B) -> Self {
+    pub(crate) fn new(flags: &B) -> Self {
         IterNames {
             flags: B::FLAGS,
             idx: 0,
