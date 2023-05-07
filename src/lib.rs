@@ -1258,6 +1258,8 @@ mod tests {
         let e1 = Flags::empty();
         let e2 = Flags::ABC;
         assert!(!e1.intersects(e2));
+
+        assert!(!<Flags as crate::Flags>::intersects(&e1, e2));
     }
 
     #[test]
@@ -1265,6 +1267,8 @@ mod tests {
         let e1 = Flags::A;
         let e2 = Flags::B;
         assert!(!e1.intersects(e2));
+
+        assert!(!<Flags as crate::Flags>::intersects(&e1, e2));
     }
 
     #[test]
@@ -1272,6 +1276,8 @@ mod tests {
         let e1 = Flags::A;
         let e2 = Flags::A | Flags::B;
         assert!(e1.intersects(e2));
+
+        assert!(<Flags as crate::Flags>::intersects(&e1, e2));
     }
 
     #[test]
@@ -1370,6 +1376,8 @@ mod tests {
         assert_eq!(ac, Flags::C.union(Flags::A));
         assert_eq!(bc, Flags::C.union(Flags::B));
 
+        assert_eq!(ac, <Flags as crate::Flags>::union(Flags::A, Flags::C));
+
         assert_eq!(ac, Flags::A | Flags::C);
         assert_eq!(bc, Flags::B | Flags::C);
         assert_eq!(ab.union(bc), Flags::ABC);
@@ -1385,15 +1393,24 @@ mod tests {
         assert_eq!(ac.intersection(bc), Flags::C);
         assert_eq!(bc.intersection(ac), Flags::C);
 
+        assert_eq!(Flags::C, <Flags as crate::Flags>::intersection(ac, bc));
+
         assert_eq!(ac.difference(bc), ac - bc);
         assert_eq!(bc.difference(ac), bc - ac);
         assert_eq!(ac.difference(bc), Flags::A);
         assert_eq!(bc.difference(ac), Flags::B);
 
+        assert_eq!(bc, <Flags as crate::Flags>::difference(bc, Flags::A));
+
         assert_eq!(bc.complement(), !bc);
         assert_eq!(bc.complement(), Flags::A);
+
+        assert_eq!(Flags::A, <Flags as crate::Flags>::complement(bc));
+
         assert_eq!(ac.symmetric_difference(bc), Flags::A.union(Flags::B));
         assert_eq!(bc.symmetric_difference(ac), Flags::A.union(Flags::B));
+
+        assert_eq!(ab, <Flags as crate::Flags>::symmetric_difference(ac, bc));
     }
 
     #[test]
