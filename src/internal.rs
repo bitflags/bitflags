@@ -36,7 +36,11 @@ macro_rules! __impl_internal_bitflags {
             )*
         }
     ) => {
+        // NOTE: This impl is also used to prevent using bits types from non-primitive types
+        // in the `bitflags` macro. If this approach is changed, this guard will need to be
+        // retained somehow
         impl $crate::__private::PublicFlags for $PublicBitFlags {
+            type Primitive = $T;
             type Internal = $InternalBitFlags;
         }
 

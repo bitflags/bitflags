@@ -14,11 +14,11 @@ error[E0277]: the trait bound `MyInt: bitflags::traits::Primitive` is not satisf
               u128
               u16
             and $N others
-note: required by a bound in `__assert_primitive`
+note: required by a bound in `PublicFlags::Primitive`
    --> src/traits.rs
     |
-    | pub const fn __assert_primitive<T: Bits + Primitive>() {}
-    |                                           ^^^^^^^^^ required by this bound in `__assert_primitive`
+    |     type Primitive: Primitive;
+    |                     ^^^^^^^^^ required by this bound in `PublicFlags::Primitive`
 
 error[E0277]: can't compare `MyInt` with `_` in const contexts
    --> tests/compile-fail/bitflags_custom_bits.rs:126:1

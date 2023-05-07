@@ -258,8 +258,6 @@ pub trait Bits:
 // or they may fail to compile based on crate features
 pub trait Primitive {}
 
-pub const fn __assert_primitive<T: Bits + Primitive>() {}
-
 macro_rules! impl_bits {
     ($($u:ty, $i:ty,)*) => {
         $(
@@ -303,6 +301,9 @@ impl_bits! {
 /// A trait for referencing the `bitflags`-owned internal type
 /// without exposing it publicly.
 pub trait PublicFlags {
+    /// The type of the underlying storage.
+    type Primitive: Primitive;
+
     /// The type of the internal field on the generated flags type.
     type Internal;
 }
@@ -332,5 +333,5 @@ impl<B: Flags> ImplementedByBitFlagsMacro for B {}
 pub trait ImplementedByBitFlagsMacro {}
 
 pub(crate) mod __private {
-    pub use super::{ImplementedByBitFlagsMacro, PublicFlags, __assert_primitive};
+    pub use super::{ImplementedByBitFlagsMacro, PublicFlags};
 }

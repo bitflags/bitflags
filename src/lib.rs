@@ -593,10 +593,6 @@ macro_rules! bitflags {
             non_upper_case_globals
         )]
         const _: () = {
-            // Ensure the given `$T` is a "primitive", that is known to support
-            // all `bitflags` features now and into the future
-            $crate::__private::__assert_primitive::<$T>();
-
             // Declared in a "hidden" scope that can't be reached directly
             // These types don't appear in the end-user's API
             __declare_internal_bitflags! {
