@@ -1,6 +1,6 @@
-use core::ops::{BitAnd, BitOr, BitXor, Not};
+use core::{fmt, ops::{BitAnd, BitOr, BitXor, Not}};
 
-use crate::{parser::{ParseError, FromHex}, iter};
+use crate::{parser::{ParseError, ParseHex, WriteHex}, iter};
 
 /// Metadata for an individual flag.
 pub struct Flag<B> {
@@ -271,15 +271,27 @@ macro_rules! impl_bits {
                 const ALL: $i = <$u>::MAX as $i;
             }
 
-            impl FromHex for $u {
-                fn from_hex(input: &str) -> Result<Self, ParseError> {
+            impl ParseHex for $u {
+                fn parse_hex(input: &str) -> Result<Self, ParseError> {
                     <$u>::from_str_radix(input, 16).map_err(|_| ParseError::invalid_hex_flag(input))
                 }
             }
 
-            impl FromHex for $i {
-                fn from_hex(input: &str) -> Result<Self, ParseError> {
+            impl ParseHex for $i {
+                fn parse_hex(input: &str) -> Result<Self, ParseError> {
                     <$i>::from_str_radix(input, 16).map_err(|_| ParseError::invalid_hex_flag(input))
+                }
+            }
+
+            impl WriteHex for $u {
+                fn write_hex<W: fmt::Write>(&self, mut writer: W) -> fmt::Result {
+                    write!(writer, "{:x}", self)
+                }
+            }
+
+            impl WriteHex for $i {
+                fn write_hex<W: fmt::Write>(&self, mut writer: W) -> fmt::Result {
+                    write!(writer, "{:x}", self)
                 }
             }
 

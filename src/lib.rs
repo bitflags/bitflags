@@ -660,9 +660,6 @@ macro_rules! bitflags {
             non_upper_case_globals
         )]
         const _: () = {
-            // NOTE: We don't need to check `__is_primitive` here because we don't derive
-            // traits on the user's behalf
-
             __impl_public_bitflags! {
                 $BitFlags: $T {
                     $(

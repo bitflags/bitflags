@@ -28,7 +28,7 @@
 
 #![allow(clippy::let_unit_value)]
 
-use core::fmt::{self, Write, LowerHex};
+use core::fmt::{self, Write};
 
 use crate::{Flags, Bits};
 
@@ -38,7 +38,7 @@ use crate::{Flags, Bits};
 /// as a hex number.
 pub fn to_writer<B: Flags>(flags: &B, mut writer: impl Write) -> Result<(), fmt::Error>
 where
-    B::Bits: LowerHex,
+    B::Bits: WriteHex,
 {
     // A formatter for bitflags that produces text output like:
     //
@@ -67,7 +67,8 @@ where
             writer.write_str(" | ")?;
         }
 
-        write!(writer, "{:#x}", remaining)?;
+        writer.write_str("0x")?;
+        remaining.write_hex(writer)?;
     }
 
     fmt::Result::Ok(())
@@ -77,7 +78,7 @@ pub(crate) struct AsDisplay<'a, B>(pub(crate) &'a B);
 
 impl<'a, B: Flags> fmt::Display for AsDisplay<'a, B>
 where
-    B::Bits: LowerHex,
+    B::Bits: WriteHex,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         to_writer(self.0, f)
@@ -89,14 +90,12 @@ where
 /// This function will fail on unknown flags rather than ignore them.
 pub fn from_str<B: Flags>(input: &str) -> Result<B, ParseError>
 where
-    B::Bits: FromHex,
+    B::Bits: ParseHex,
 {
-    let input = input.trim();
-
     let mut parsed_flags = B::empty();
 
     // If the input is empty then return an empty set of flags
-    if input.is_empty() {
+    if input.trim().is_empty() {
         return Ok(parsed_flags);
     }
 
@@ -111,7 +110,7 @@ where
         // If the flag starts with `0x` then it's a hex number
         // Parse it directly to the underlying bits type
         let parsed_flag = if let Some(flag) = flag.strip_prefix("0x") {
-            let bits = <B::Bits>::from_hex(flag).map_err(|_| ParseError::invalid_hex_flag(flag))?;
+            let bits = <B::Bits>::parse_hex(flag).map_err(|_| ParseError::invalid_hex_flag(flag))?;
 
             B::from_bits_retain(bits)
         }
@@ -128,10 +127,16 @@ where
     Ok(parsed_flags)
 }
 
+/// Encode a value as a hex string.
+pub trait WriteHex {
+    /// Write the value as hex.
+    fn write_hex<W: fmt::Write>(&self, writer: W) -> fmt::Result;
+}
+
 /// Parse a value from a number encoded as a hex string.
-pub trait FromHex {
-    /// Perform the conversion.
-    fn from_hex(input: &str) -> Result<Self, ParseError>
+pub trait ParseHex {
+    /// Parse the value from hex.
+    fn parse_hex(input: &str) -> Result<Self, ParseError>
     where
         Self: Sized;
 }

@@ -2,6 +2,7 @@
 
 use crate::Flags;
 
+/// Get a random known flags value.
 pub fn arbitrary<'a, B: Flags>(
     u: &mut arbitrary::Unstructured<'a>,
 ) -> arbitrary::Result<B>
