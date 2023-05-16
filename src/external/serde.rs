@@ -1,7 +1,7 @@
 //! Specialized serialization for flags types using `serde`.
 
-use core::{fmt::{self, LowerHex}, str};
-use crate::{Flags, parser::{self, FromHex}};
+use core::{fmt, str};
+use crate::{Flags, parser::{self, ParseHex, WriteHex}};
 use serde::{
     de::{Error, Visitor},
     Deserialize, Deserializer, Serialize, Serializer,
@@ -13,7 +13,7 @@ pub fn serialize<B: Flags, S: Serializer>(
     serializer: S,
 ) -> Result<S::Ok, S::Error>
 where
-    B::Bits: LowerHex + Serialize,
+    B::Bits: WriteHex + Serialize,
 {
     // Serialize human-readable flags as a string like `"A | B"`
     if serializer.is_human_readable() {
@@ -34,7 +34,7 @@ pub fn deserialize<
     deserializer: D,
 ) -> Result<B, D::Error>
 where
-    B::Bits: FromHex + Deserialize<'de>,
+    B::Bits: ParseHex + Deserialize<'de>,
 {
     if deserializer.is_human_readable() {
         // Deserialize human-readable flags by parsing them from strings like `"A | B"`
@@ -42,7 +42,7 @@ where
 
         impl<'de, B: Flags> Visitor<'de> for FlagsVisitor<B>
         where
-            B::Bits: FromHex,
+            B::Bits: ParseHex,
         {
             type Value = B;
 
