@@ -1,3 +1,5 @@
+//! Iterating over set flag values.
+
 use crate::{Flags, Flag};
 
 /// An iterator over a set of flags.
