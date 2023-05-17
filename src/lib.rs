@@ -374,16 +374,16 @@
 //! }
 //! ```
 //!
-//! [`from_bits`]: BitFlags::from_bits
-//! [`from_bits_truncate`]: BitFlags::from_bits_truncate
+//! [`from_bits`]: Flags::from_bits
+//! [`from_bits_truncate`]: Flags::from_bits_truncate
 //!
-//! # The `BitFlags` trait
+//! # The `Flags` trait
 //!
-//! This library defines a `BitFlags` trait that's implemented by all generated flags types.
+//! This library defines a `Flags` trait that's implemented by all generated flags types.
 //! The trait makes it possible to work with flags types generically:
 //!
 //! ```
-//! fn count_unset_flags<F: bitflags::BitFlags>(flags: &F) -> usize {
+//! fn count_unset_flags<F: bitflags::Flags>(flags: &F) -> usize {
 //!     // Find out how many flags there are in total
 //!     let total = F::all().iter().count();
 //!
@@ -422,21 +422,28 @@
 
 #![cfg_attr(not(any(feature = "std", test)), no_std)]
 #![cfg_attr(not(test), forbid(unsafe_code))]
-
 #![doc(html_root_url = "https://docs.rs/bitflags/2.2.1")]
 
 #[doc(inline)]
-pub use traits::BitFlags;
+pub use traits::{Flags, Flag, Bits};
 
+pub mod iter;
 pub mod parser;
+
 mod traits;
 
 #[doc(hidden)]
 pub mod __private {
-    pub use crate::{external::*, traits::*};
+    pub use crate::{external::__private::*, traits::__private::*};
 
     pub use core;
 }
+
+#[allow(unused_imports)]
+pub use external::*;
+
+#[allow(deprecated)]
+pub use traits::BitFlags;
 
 /*
 How does the bitflags crate work?
@@ -563,20 +570,14 @@ macro_rules! bitflags {
         // This type appears in the end-user's API
         __declare_public_bitflags! {
             $(#[$outer])*
-            $vis struct $BitFlags;
+            $vis struct $BitFlags
         }
 
         // Workaround for: https://github.com/bitflags/bitflags/issues/320
         __impl_public_bitflags_consts! {
-            $BitFlags {
+            $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
-                    #[allow(
-                        dead_code,
-                        deprecated,
-                        unused_attributes,
-                        non_upper_case_globals
-                    )]
                     $Flag = $value;
                 )*
             }
@@ -595,16 +596,14 @@ macro_rules! bitflags {
             // Declared in a "hidden" scope that can't be reached directly
             // These types don't appear in the end-user's API
             __declare_internal_bitflags! {
-                $vis struct InternalBitFlags: $T;
-                $vis struct Iter;
-                $vis struct IterRaw;
+                $vis struct InternalBitFlags: $T
             }
 
             __impl_internal_bitflags! {
-                InternalBitFlags: $T, $BitFlags, Iter, IterRaw {
+                InternalBitFlags: $T, $BitFlags {
                     $(
                         $(#[$inner $($args)*])*
-                        $Flag;
+                        $Flag = $value;
                     )*
                 }
             }
@@ -619,8 +618,59 @@ macro_rules! bitflags {
                 }
             }
 
+            __impl_public_bitflags_forward! {
+                $BitFlags: $T, InternalBitFlags
+            }
+
+            __impl_public_bitflags_iter! {
+                $BitFlags
+            }
+        };
+
+        bitflags! {
+            $($t)*
+        }
+    };
+    (
+        impl $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )*
+        }
+
+        $($t:tt)*
+    ) => {
+        __impl_public_bitflags_consts! {
+            $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    $Flag = $value;
+                )*
+            }
+        }
+
+        #[allow(
+            dead_code,
+            deprecated,
+            unused_doc_comments,
+            unused_attributes,
+            unused_mut,
+            unused_imports,
+            non_upper_case_globals
+        )]
+        const _: () = {
             __impl_public_bitflags! {
-                $BitFlags: $T, InternalBitFlags, Iter, IterRaw;
+                $BitFlags: $T {
+                    $(
+                        $(#[$inner $($args)*])*
+                        $Flag;
+                    )*
+                }
+            }
+
+            __impl_public_bitflags_iter! {
+                $BitFlags
             }
         };
 
@@ -629,6 +679,357 @@ macro_rules! bitflags {
         }
     };
     () => {};
+}
+
+/// Implement functions on bitflags types.
+///
+/// We need to be careful about adding new methods and trait implementations here because they
+/// could conflict with items added by the end-user.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! __impl_bitflags {
+    (
+        $PublicBitFlags:ident: $T:ty {
+            fn empty() $empty:block
+            fn all() $all:block
+            fn bits($bits0:ident) $bits:block
+            fn from_bits($from_bits0:ident) $from_bits:block
+            fn from_bits_truncate($from_bits_truncate0:ident) $from_bits_truncate:block
+            fn from_bits_retain($from_bits_retain0:ident) $from_bits_retain:block
+            fn from_name($from_name0:ident) $from_name:block
+            fn is_empty($is_empty0:ident) $is_empty:block
+            fn is_all($is_all0:ident) $is_all:block
+            fn intersects($intersects0:ident, $intersects1:ident) $intersects:block
+            fn contains($contains0:ident, $contains1:ident) $contains:block
+            fn insert($insert0:ident, $insert1:ident) $insert:block
+            fn remove($remove0:ident, $remove1:ident) $remove:block
+            fn toggle($toggle0:ident, $toggle1:ident) $toggle:block
+            fn set($set0:ident, $set1:ident, $set2:ident) $set:block
+            fn intersection($intersection0:ident, $intersection1:ident) $intersection:block
+            fn union($union0:ident, $union1:ident) $union:block
+            fn difference($difference0:ident, $difference1:ident) $difference:block
+            fn symmetric_difference($symmetric_difference0:ident, $symmetric_difference1:ident) $symmetric_difference:block
+            fn complement($complement0:ident) $complement:block
+        }
+    ) => {
+        #[allow(
+            dead_code,
+            deprecated,
+            unused_attributes
+        )]
+        impl $PublicBitFlags {
+            /// Returns an empty set of flags.
+            #[inline]
+            pub const fn empty() -> Self {
+                $empty
+            }
+
+            /// Returns the set containing all flags.
+            #[inline]
+            pub const fn all() -> Self {
+                $all
+            }
+
+            /// Returns the raw value of the flags currently stored.
+            #[inline]
+            pub const fn bits(&self) -> $T {
+                let $bits0 = self;
+                $bits
+            }
+
+            /// Convert from underlying bit representation, unless that
+            /// representation contains bits that do not correspond to a flag.
+            #[inline]
+            pub const fn from_bits(bits: $T) -> $crate::__private::core::option::Option<Self> {
+                let $from_bits0 = bits;
+                $from_bits
+            }
+
+            /// Convert from underlying bit representation, dropping any bits
+            /// that do not correspond to flags.
+            #[inline]
+            pub const fn from_bits_truncate(bits: $T) -> Self {
+                let $from_bits_truncate0 = bits;
+                $from_bits_truncate
+            }
+
+            /// Convert from underlying bit representation, preserving all
+            /// bits (even those not corresponding to a defined flag).
+            #[inline]
+            pub const fn from_bits_retain(bits: $T) -> Self {
+                let $from_bits_retain0 = bits;
+                $from_bits_retain
+            }
+
+            /// Get the value for a flag from its stringified name.
+            ///
+            /// Names are _case-sensitive_, so must correspond exactly to
+            /// the identifier given to the flag.
+            #[inline]
+            pub fn from_name(name: &str) -> $crate::__private::core::option::Option<Self> {
+                let $from_name0 = name;
+                $from_name
+            }
+
+            /// Returns `true` if no flags are currently stored.
+            #[inline]
+            pub const fn is_empty(&self) -> bool {
+                let $is_empty0 = self;
+                $is_empty
+            }
+
+            /// Returns `true` if all flags are currently set.
+            #[inline]
+            pub const fn is_all(&self) -> bool {
+                let $is_all0 = self;
+                $is_all
+            }
+
+            /// Returns `true` if there are flags common to both `self` and `other`.
+            #[inline]
+            pub const fn intersects(&self, other: Self) -> bool {
+                let $intersects0 = self;
+                let $intersects1 = other;
+                $intersects
+            }
+
+            /// Returns `true` if all of the flags in `other` are contained within `self`.
+            #[inline]
+            pub const fn contains(&self, other: Self) -> bool {
+                let $contains0 = self;
+                let $contains1 = other;
+                $contains
+            }
+
+            /// Inserts the specified flags in-place.
+            #[inline]
+            pub fn insert(&mut self, other: Self) {
+                let $insert0 = self;
+                let $insert1 = other;
+                $insert
+            }
+
+            /// Removes the specified flags in-place.
+            #[inline]
+            pub fn remove(&mut self, other: Self) {
+                let $remove0 = self;
+                let $remove1 = other;
+                $remove
+            }
+
+            /// Toggles the specified flags in-place.
+            #[inline]
+            pub fn toggle(&mut self, other: Self) {
+                let $toggle0 = self;
+                let $toggle1 = other;
+                $toggle
+            }
+
+            /// Inserts or removes the specified flags depending on the passed value.
+            #[inline]
+            pub fn set(&mut self, other: Self, value: bool) {
+                let $set0 = self;
+                let $set1 = other;
+                let $set2 = value;
+                $set
+            }
+
+            /// Returns the intersection between the flags in `self` and
+            /// `other`.
+            ///
+            /// Specifically, the returned set contains only the flags which are
+            /// present in *both* `self` *and* `other`.
+            ///
+            /// This is equivalent to using the `&` operator (e.g.
+            /// [`ops::BitAnd`]), as in `flags & other`.
+            ///
+            /// [`ops::BitAnd`]: https://doc.rust-lang.org/std/ops/trait.BitAnd.html
+            #[inline]
+            #[must_use]
+            pub const fn intersection(self, other: Self) -> Self {
+                let $intersection0 = self;
+                let $intersection1 = other;
+                $intersection
+            }
+
+            /// Returns the union of between the flags in `self` and `other`.
+            ///
+            /// Specifically, the returned set contains all flags which are
+            /// present in *either* `self` *or* `other`, including any which are
+            /// present in both (see [`Self::symmetric_difference`] if that
+            /// is undesirable).
+            ///
+            /// This is equivalent to using the `|` operator (e.g.
+            /// [`ops::BitOr`]), as in `flags | other`.
+            ///
+            /// [`ops::BitOr`]: https://doc.rust-lang.org/std/ops/trait.BitOr.html
+            #[inline]
+            #[must_use]
+            pub const fn union(self, other: Self) -> Self {
+                let $union0 = self;
+                let $union1 = other;
+                $union
+            }
+
+            /// Returns the difference between the flags in `self` and `other`.
+            ///
+            /// Specifically, the returned set contains all flags present in
+            /// `self`, except for the ones present in `other`.
+            ///
+            /// It is also conceptually equivalent to the "bit-clear" operation:
+            /// `flags & !other` (and this syntax is also supported).
+            ///
+            /// This is equivalent to using the `-` operator (e.g.
+            /// [`ops::Sub`]), as in `flags - other`.
+            ///
+            /// [`ops::Sub`]: https://doc.rust-lang.org/std/ops/trait.Sub.html
+            #[inline]
+            #[must_use]
+            pub const fn difference(self, other: Self) -> Self {
+                let $difference0 = self;
+                let $difference1 = other;
+                $difference
+            }
+
+            /// Returns the [symmetric difference][sym-diff] between the flags
+            /// in `self` and `other`.
+            ///
+            /// Specifically, the returned set contains the flags present which
+            /// are present in `self` or `other`, but that are not present in
+            /// both. Equivalently, it contains the flags present in *exactly
+            /// one* of the sets `self` and `other`.
+            ///
+            /// This is equivalent to using the `^` operator (e.g.
+            /// [`ops::BitXor`]), as in `flags ^ other`.
+            ///
+            /// [sym-diff]: https://en.wikipedia.org/wiki/Symmetric_difference
+            /// [`ops::BitXor`]: https://doc.rust-lang.org/std/ops/trait.BitXor.html
+            #[inline]
+            #[must_use]
+            pub const fn symmetric_difference(self, other: Self) -> Self {
+                let $symmetric_difference0 = self;
+                let $symmetric_difference1 = other;
+                $symmetric_difference
+            }
+
+            /// Returns the complement of this set of flags.
+            ///
+            /// Specifically, the returned set contains all the flags which are
+            /// not set in `self`, but which are allowed for this type.
+            ///
+            /// Alternatively, it can be thought of as the set difference
+            /// between [`Self::all()`] and `self` (e.g. `Self::all() - self`)
+            ///
+            /// This is equivalent to using the `!` operator (e.g.
+            /// [`ops::Not`]), as in `!flags`.
+            ///
+            /// [`Self::all()`]: Self::all
+            /// [`ops::Not`]: https://doc.rust-lang.org/std/ops/trait.Not.html
+            #[inline]
+            #[must_use]
+            pub const fn complement(self) -> Self {
+                let $complement0 = self;
+                $complement
+            }
+        }
+    };
+}
+
+/// A macro that processed the input to `bitflags!` and shuffles attributes around
+/// based on whether or not they're "expression-safe".
+///
+/// This macro is a token-tree muncher that works on 2 levels:
+///
+/// For each attribute, we explicitly match on its identifier, like `cfg` to determine
+/// whether or not it should be considered expression-safe.
+///
+/// If you find yourself with an attribute that should be considered expression-safe
+/// and isn't, it can be added here.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! __bitflags_expr_safe_attrs {
+    // Entrypoint: Move all flags and all attributes into `unprocessed` lists
+    // where they'll be munched one-at-a-time
+    (
+        $(#[$inner:ident $($args:tt)*])*
+        { $e:expr }
+    ) => {
+        __bitflags_expr_safe_attrs! {
+            expr: { $e },
+            attrs: {
+                // All attributes start here
+                unprocessed: [$(#[$inner $($args)*])*],
+                // Attributes that are safe on expressions go here
+                processed: [],
+            },
+        }
+    };
+    // Process the next attribute on the current flag
+    // `cfg`: The next flag should be propagated to expressions
+    // NOTE: You can copy this rules block and replace `cfg` with
+    // your attribute name that should be considered expression-safe
+    (
+        expr: { $e:expr },
+            attrs: {
+            unprocessed: [
+                // cfg matched here
+                #[cfg $($args:tt)*]
+                $($attrs_rest:tt)*
+            ],
+            processed: [$($expr:tt)*],
+        },
+    ) => {
+        __bitflags_expr_safe_attrs! {
+            expr: { $e },
+            attrs: {
+                unprocessed: [
+                    $($attrs_rest)*
+                ],
+                processed: [
+                    $($expr)*
+                    // cfg added here
+                    #[cfg $($args)*]
+                ],
+            },
+        }
+    };
+    // Process the next attribute on the current flag
+    // `$other`: The next flag should not be propagated to expressions
+    (
+        expr: { $e:expr },
+            attrs: {
+            unprocessed: [
+                // $other matched here
+                #[$other:ident $($args:tt)*]
+                $($attrs_rest:tt)*
+            ],
+            processed: [$($expr:tt)*],
+        },
+    ) => {
+        __bitflags_expr_safe_attrs! {
+            expr: { $e },
+                attrs: {
+                unprocessed: [
+                    $($attrs_rest)*
+                ],
+                processed: [
+                    // $other not added here
+                    $($expr)*
+                ],
+            },
+        }
+    };
+    // Once all attributes on all flags are processed, generate the actual code
+    (
+        expr: { $e:expr },
+        attrs: {
+            unprocessed: [],
+            processed: [$(#[$expr:ident $($exprargs:tt)*])*],
+        },
+    ) => {
+        $(#[$expr $($exprargs)*])*
+        { $e }
+    }
 }
 
 #[macro_use]
@@ -649,6 +1050,9 @@ mod tests {
         hash::{Hash, Hasher},
         str,
     };
+
+    #[derive(Debug, PartialEq, Eq)]
+    pub struct ManualFlags(u32);
 
     bitflags! {
         #[doc = "> The first principle is that you must not fool yourself — and"]
@@ -685,6 +1089,17 @@ mod tests {
         #[derive(Clone, Copy, Default, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
         struct LongFlags: u32 {
             const LONG_A = 0b1111111111111111;
+        }
+
+        impl ManualFlags: u32 {
+            const A = 0b00000001;
+            #[doc = "<pcwalton> macros are way better at generating code than trans is"]
+            const B = 0b00000010;
+            const C = 0b00000100;
+            #[doc = "* cmr bed"]
+            #[doc = "* strcat table"]
+            #[doc = "<strcat> wait what?"]
+            const ABC = Self::A.bits() | Self::B.bits() | Self::C.bits();
         }
     }
 
@@ -724,6 +1139,8 @@ mod tests {
         assert_eq!(Flags::A.bits(), 0b00000001);
         assert_eq!(Flags::ABC.bits(), 0b00000111);
 
+        assert_eq!(<Flags as crate::Flags>::bits(&Flags::ABC), 0b00000111);
+
         assert_eq!(AnotherSetOfFlags::empty().bits(), 0b00);
         assert_eq!(AnotherSetOfFlags::ANOTHER_FLAG.bits(), !0_i8);
 
@@ -737,6 +1154,8 @@ mod tests {
         assert_eq!(Flags::from_bits(0b10), Some(Flags::B));
         assert_eq!(Flags::from_bits(0b11), Some(Flags::A | Flags::B));
         assert_eq!(Flags::from_bits(0b1000), None);
+
+        assert_eq!(<Flags as crate::Flags>::from_bits(0b11), Some(Flags::A | Flags::B));
 
         assert_eq!(
             AnotherSetOfFlags::from_bits(!0_i8),
@@ -755,6 +1174,8 @@ mod tests {
         assert_eq!(Flags::from_bits_truncate(0b11), (Flags::A | Flags::B));
         assert_eq!(Flags::from_bits_truncate(0b1000), Flags::empty());
         assert_eq!(Flags::from_bits_truncate(0b1001), Flags::A);
+
+        assert_eq!(<Flags as crate::Flags>::from_bits_truncate(0b11), (Flags::A | Flags::B));
 
         assert_eq!(
             AnotherSetOfFlags::from_bits_truncate(0_i8),
@@ -776,6 +1197,8 @@ mod tests {
         assert_eq!(Flags::from_bits_retain(0b1000), (extra | Flags::empty()));
         assert_eq!(Flags::from_bits_retain(0b1001), (extra | Flags::A));
 
+        assert_eq!(<Flags as crate::Flags>::from_bits_retain(0b11), (Flags::A | Flags::B));
+
         let extra = EmptyFlags::from_bits_retain(0b1000);
         assert_eq!(
             EmptyFlags::from_bits_retain(0b1000),
@@ -788,6 +1211,8 @@ mod tests {
         assert!(Flags::empty().is_empty());
         assert!(!Flags::A.is_empty());
         assert!(!Flags::ABC.is_empty());
+
+        assert!(!<Flags as crate::Flags>::is_empty(&Flags::ABC));
 
         assert!(!AnotherSetOfFlags::ANOTHER_FLAG.is_empty());
 
@@ -806,6 +1231,8 @@ mod tests {
         assert!(!(Flags::A | extra).is_all());
         assert!((Flags::ABC | extra).is_all());
 
+        assert!(<Flags as crate::Flags>::is_all(&Flags::all()));
+
         assert!(AnotherSetOfFlags::ANOTHER_FLAG.is_all());
 
         assert!(EmptyFlags::all().is_all());
@@ -818,6 +1245,8 @@ mod tests {
         let e2 = Flags::empty();
         assert!(!e1.intersects(e2));
 
+        assert!(!<Flags as crate::Flags>::intersects(&e1, e2));
+
         assert!(AnotherSetOfFlags::ANOTHER_FLAG.intersects(AnotherSetOfFlags::ANOTHER_FLAG));
     }
 
@@ -826,6 +1255,8 @@ mod tests {
         let e1 = Flags::empty();
         let e2 = Flags::ABC;
         assert!(!e1.intersects(e2));
+
+        assert!(!<Flags as crate::Flags>::intersects(&e1, e2));
     }
 
     #[test]
@@ -833,6 +1264,8 @@ mod tests {
         let e1 = Flags::A;
         let e2 = Flags::B;
         assert!(!e1.intersects(e2));
+
+        assert!(!<Flags as crate::Flags>::intersects(&e1, e2));
     }
 
     #[test]
@@ -840,6 +1273,8 @@ mod tests {
         let e1 = Flags::A;
         let e2 = Flags::A | Flags::B;
         assert!(e1.intersects(e2));
+
+        assert!(<Flags as crate::Flags>::intersects(&e1, e2));
     }
 
     #[test]
@@ -849,6 +1284,8 @@ mod tests {
         assert!(!e1.contains(e2));
         assert!(e2.contains(e1));
         assert!(Flags::ABC.contains(e2));
+
+        assert!(<Flags as crate::Flags>::contains(&Flags::ABC, e2));
 
         assert!(AnotherSetOfFlags::ANOTHER_FLAG.contains(AnotherSetOfFlags::ANOTHER_FLAG));
 
@@ -862,6 +1299,11 @@ mod tests {
         e1.insert(e2);
         assert_eq!(e1, e2);
 
+        let mut e1 = Flags::A;
+        let e2 = Flags::A | Flags::B;
+        <Flags as crate::Flags>::insert(&mut e1, e2);
+        assert_eq!(e1, e2);
+
         let mut e3 = AnotherSetOfFlags::empty();
         e3.insert(AnotherSetOfFlags::ANOTHER_FLAG);
         assert_eq!(e3, AnotherSetOfFlags::ANOTHER_FLAG);
@@ -872,6 +1314,11 @@ mod tests {
         let mut e1 = Flags::A | Flags::B;
         let e2 = Flags::A | Flags::C;
         e1.remove(e2);
+        assert_eq!(e1, Flags::B);
+
+        let mut e1 = Flags::A | Flags::B;
+        let e2 = Flags::A | Flags::C;
+        <Flags as crate::Flags>::remove(&mut e1, e2);
         assert_eq!(e1, Flags::B);
 
         let mut e3 = AnotherSetOfFlags::ANOTHER_FLAG;
@@ -926,6 +1373,8 @@ mod tests {
         assert_eq!(ac, Flags::C.union(Flags::A));
         assert_eq!(bc, Flags::C.union(Flags::B));
 
+        assert_eq!(ac, <Flags as crate::Flags>::union(Flags::A, Flags::C));
+
         assert_eq!(ac, Flags::A | Flags::C);
         assert_eq!(bc, Flags::B | Flags::C);
         assert_eq!(ab.union(bc), Flags::ABC);
@@ -941,15 +1390,24 @@ mod tests {
         assert_eq!(ac.intersection(bc), Flags::C);
         assert_eq!(bc.intersection(ac), Flags::C);
 
+        assert_eq!(Flags::C, <Flags as crate::Flags>::intersection(ac, bc));
+
         assert_eq!(ac.difference(bc), ac - bc);
         assert_eq!(bc.difference(ac), bc - ac);
         assert_eq!(ac.difference(bc), Flags::A);
         assert_eq!(bc.difference(ac), Flags::B);
 
+        assert_eq!(bc, <Flags as crate::Flags>::difference(bc, Flags::A));
+
         assert_eq!(bc.complement(), !bc);
         assert_eq!(bc.complement(), Flags::A);
+
+        assert_eq!(Flags::A, <Flags as crate::Flags>::complement(bc));
+
         assert_eq!(ac.symmetric_difference(bc), Flags::A.union(Flags::B));
         assert_eq!(bc.symmetric_difference(ac), Flags::A.union(Flags::B));
+
+        assert_eq!(ab, <Flags as crate::Flags>::symmetric_difference(ac, bc));
     }
 
     #[test]
@@ -1286,7 +1744,6 @@ mod tests {
 
         parse_case(FmtFlags::empty(), "");
         parse_case(FmtFlags::empty(), " \r\n\t");
-        parse_case(FmtFlags::empty(), "0x0");
         parse_case(FmtFlags::empty(), "0x0");
 
         parse_case(FmtFlags::고양이, "고양이");

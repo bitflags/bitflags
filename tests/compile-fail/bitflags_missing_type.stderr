@@ -1,0 +1,17 @@
+error: no rules expected the token `{`
+ --> tests/compile-fail/bitflags_missing_type.rs:5:23
+  |
+5 |     pub struct Flags1 {
+  |                       ^ no rules expected this token in macro call
+  |
+note: while trying to match `:`
+ --> src/lib.rs
+  |
+  |         $vis:vis struct $BitFlags:ident: $T:ty {
+  |                                        ^
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/compile-fail/bitflags_missing_type.rs:8:2
+  |
+8 | }
+  |  ^ consider adding a `main` function to `$DIR/tests/compile-fail/bitflags_missing_type.rs`

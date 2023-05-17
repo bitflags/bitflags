@@ -1,0 +1,17 @@
+error: no rules expected the token `;`
+ --> tests/compile-fail/bitflags_missing_value.rs:6:16
+  |
+6 |         const A;
+  |                ^ no rules expected this token in macro call
+  |
+note: while trying to match `=`
+ --> src/lib.rs
+  |
+  |                 const $Flag:ident = $value:expr;
+  |                                   ^
+
+error[E0601]: `main` function not found in crate `$CRATE`
+ --> tests/compile-fail/bitflags_missing_value.rs:8:2
+  |
+8 | }
+  |  ^ consider adding a `main` function to `$DIR/tests/compile-fail/bitflags_missing_value.rs`

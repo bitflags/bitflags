@@ -1,0 +1,31 @@
+error[E0437]: type `Bits` is not a member of trait `BitFlags`
+ --> tests/compile-fail/bitflags_trait_custom.rs:6:5
+  |
+6 |     type Bits = u32;
+  |     ^^^^^^^^^^^^^^^^ not a member of trait `BitFlags`
+
+warning: use of deprecated trait `bitflags::BitFlags`: use the `Flags` trait instead
+ --> tests/compile-fail/bitflags_trait_custom.rs:1:15
+  |
+1 | use bitflags::BitFlags;
+  |               ^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated trait `bitflags::BitFlags`: use the `Flags` trait instead
+ --> tests/compile-fail/bitflags_trait_custom.rs:5:6
+  |
+5 | impl BitFlags for BootlegFlags {
+  |      ^^^^^^^^
+
+error[E0277]: the trait bound `BootlegFlags: Flags` is not satisfied
+ --> tests/compile-fail/bitflags_trait_custom.rs:5:19
+  |
+5 | impl BitFlags for BootlegFlags {
+  |                   ^^^^^^^^^^^^ the trait `Flags` is not implemented for `BootlegFlags`
+  |
+note: required by a bound in `BitFlags`
+ --> src/traits.rs
+  |
+  | pub trait BitFlags: ImplementedByBitFlagsMacro + Flags {
+  |                                                  ^^^^^ required by this bound in `BitFlags`

@@ -1,11 +1,11 @@
 error[E0603]: struct `Flags2` is private
-  --> tests/compile-fail/visibility/private_flags.rs:17:22
+  --> tests/compile-fail/access_outside_visibility.rs:17:22
    |
 17 |     let _ = example::Flags2::FLAG_B;
    |                      ^^^^^^ private struct
    |
 note: the struct `Flags2` is defined here
-  --> tests/compile-fail/visibility/private_flags.rs:4:5
+  --> tests/compile-fail/access_outside_visibility.rs:4:5
    |
 4  | /     bitflags! {
 5  | |         pub struct Flags1: u32 {
@@ -15,4 +15,4 @@ note: the struct `Flags2` is defined here
 11 | |         }
 12 | |     }
    | |_____^
-   = note: this error originates in the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+   = note: this error originates in the macro `__declare_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)

@@ -19,12 +19,17 @@ use std::{
     },
 };
 
-use bitflags::bitflags;
+use bitflags::{bitflags, Bits, parser::{ParseError, FromHex}};
 
 // Ideally we'd actually want this to work, but currently need something like `num`'s `Zero`
 // With some design work it could be made possible
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 struct MyInt(u8);
+
+impl Bits for MyInt {
+    const EMPTY: Self = MyInt(u8::MIN);
+    const ALL: Self = MyInt(u8::MAX);
+}
 
 impl BitAnd for MyInt {
     type Output = Self;
@@ -68,6 +73,14 @@ impl BitXorAssign for MyInt {
     }
 }
 
+impl Not for MyInt {
+    type Output = MyInt;
+
+    fn not(self) -> Self {
+        MyInt(!self.0)
+    }
+}
+
 impl Debug for MyInt {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         Debug::fmt(&self.0, f)
@@ -104,11 +117,9 @@ impl Binary for MyInt {
     }
 }
 
-impl Not for MyInt {
-    type Output = MyInt;
-
-    fn not(self) -> Self {
-        MyInt(!self.0)
+impl FromHex for MyInt {
+    fn from_hex(input: &str) -> Result<Self, ParseError> {
+        Ok(MyInt(u8::from_str_radix(input, 16).map_err(|_| ParseError::invalid_hex_flag(input))?))
     }
 }
 

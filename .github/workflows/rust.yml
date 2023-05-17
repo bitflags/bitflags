@@ -10,40 +10,21 @@ permissions:
 
 jobs:
   check:
-    name: "Tests / OS: ${{ matrix.os }} - ${{ matrix.channel }}-${{ matrix.rust_target }}"
-    runs-on: ${{ matrix.os }}
+    name: "Tests"
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        exclude:
-        - os: macos-10.15
-          rust_target: x86_64-gnu
-        - os: macos-10.15
-          rust_target: x86_64-msvc
-        - os: windows-2019
-          rust_target: x86_64-apple-darwin
-        - os: ubuntu-20.04
-          rust_target: x86_64-msvc
-        - os: ubuntu-20.04
-          rust_target: x86_64-apple-darwin
         channel:
         - stable
         - beta
         - nightly
-        os:
-        - macos-10.15
-        - windows-2019
-        - ubuntu-20.04
-        rust_target:
-        - x86_64-gnu
-        - x86_64-msvc
-        - x86_64-apple-darwin
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
 
     - name: Install Rust Toolchain
-      run: rustup default ${{ matrix.channel }}-${{ matrix.rust_target }}
+      run: rustup default ${{ matrix.channel }}
 
     - name: Install cargo-hack
       run: cargo install cargo-hack
@@ -86,6 +67,19 @@ jobs:
           rustup update $msrv
           cd ./tests/smoke-test
           cargo +$msrv build
+
+  mips:
+    name: Tests / MIPS (Big Endian)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+
+      - name: Install Cross
+        run: cargo install cross
+
+      - name: Default features
+        run: cross test --target mips-unknown-linux-gnu
 
   embedded:
     name: Build (embedded)
