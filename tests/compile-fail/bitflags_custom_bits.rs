@@ -19,7 +19,7 @@ use std::{
     },
 };
 
-use bitflags::{bitflags, Bits, parser::{ParseError, ParseHex}};
+use bitflags::{bitflags, Bits, parser::{ParseError, WriteHex, ParseHex}};
 
 // Ideally we'd actually want this to work, but currently need something like `num`'s `Zero`
 // With some design work it could be made possible
@@ -120,6 +120,12 @@ impl Binary for MyInt {
 impl ParseHex for MyInt {
     fn parse_hex(input: &str) -> Result<Self, ParseError> {
         Ok(MyInt(u8::from_str_radix(input, 16).map_err(|_| ParseError::invalid_hex_flag(input))?))
+    }
+}
+
+impl WriteHex for MyInt {
+    fn write_hex<W: fmt::Write>(&self, writer: W) -> fmt::Result {
+        LowerHex::fmt(&self.0, writer)
     }
 }
 
