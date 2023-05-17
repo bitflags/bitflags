@@ -81,6 +81,21 @@ jobs:
       - name: Default features
         run: cross test --target mips-unknown-linux-gnu
 
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+
+      - name: Install Clippy
+        run: rustup component add clippy --toolchain beta
+
+      - name: Default features
+        run: |
+          cd ./tests/smoke-test
+          cargo +beta clippy
+
   embedded:
     name: Build (embedded)
     runs-on: ubuntu-latest
