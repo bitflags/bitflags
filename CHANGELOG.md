@@ -1,3 +1,10 @@
+# 2.3.1
+
+## What's Changed
+* Fix Self in flags value expressions by @KodrAus in https://github.com/bitflags/bitflags/pull/355
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.3.0...2.3.1
+
 # 2.3.0
 
 ## What's Changed
