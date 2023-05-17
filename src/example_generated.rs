@@ -39,7 +39,7 @@ __impl_public_bitflags_forward! {
 }
 
 __impl_public_bitflags_iter! {
-    Flags
+    Flags: u32, Flags
 }
 
 __impl_public_bitflags_consts! {

@@ -57,7 +57,7 @@ macro_rules! __impl_public_bitflags_forward {
                     Self($InternalBitFlags::from_bits_retain(bits))
                 }
 
-                fn from_name(name){
+                fn from_name(name) {
                     match $InternalBitFlags::from_name(name) {
                         $crate::__private::core::option::Option::Some(bits) => $crate::__private::core::option::Option::Some(Self(bits)),
                         $crate::__private::core::option::Option::None => $crate::__private::core::option::Option::None,
@@ -130,7 +130,7 @@ macro_rules! __impl_public_bitflags_forward {
 #[doc(hidden)]
 macro_rules! __impl_public_bitflags {
     (
-        $PublicBitFlags:ident: $T:ty {
+        $BitFlags:ident: $T:ty, $PublicBitFlags:ident {
             $(
                 $(#[$attr:ident $($args:tt)*])*
                 $Flag:ident;
@@ -138,7 +138,7 @@ macro_rules! __impl_public_bitflags {
         }
     ) => {
         __impl_bitflags! {
-            $PublicBitFlags: $T {
+            $BitFlags: $T {
                 fn empty() {
                     Self(<$T as $crate::Bits>::EMPTY)
                 }
@@ -260,7 +260,7 @@ macro_rules! __impl_public_bitflags {
             }
         }
 
-        __impl_public_bitflags_ops!($PublicBitFlags);
+        __impl_public_bitflags_ops!($BitFlags);
     };
 }
 
@@ -268,8 +268,8 @@ macro_rules! __impl_public_bitflags {
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
 macro_rules! __impl_public_bitflags_iter {
-    ($PublicBitFlags:ident) => {
-        impl $PublicBitFlags {
+    ($BitFlags:ident: $T:ty, $PublicBitFlags:ident) => {
+        impl $BitFlags {
             /// Iterate over enabled flag values.
             #[inline]
             pub const fn iter(&self) -> $crate::iter::Iter<$PublicBitFlags> {
@@ -283,8 +283,8 @@ macro_rules! __impl_public_bitflags_iter {
             }
         }
 
-        impl $crate::__private::core::iter::IntoIterator for $PublicBitFlags {
-            type Item = Self;
+        impl $crate::__private::core::iter::IntoIterator for $BitFlags {
+            type Item = $PublicBitFlags;
             type IntoIter = $crate::iter::Iter<$PublicBitFlags>;
 
             fn into_iter(self) -> Self::IntoIter {

@@ -98,7 +98,7 @@ macro_rules! __impl_internal_bitflags {
         // The internal flags type offers a similar API to the public one
 
         __impl_public_bitflags! {
-            $InternalBitFlags: $T {
+            $InternalBitFlags: $T, $PublicBitFlags {
                 $(
                     $(#[$attr $($args)*])*
                     $Flag;
@@ -106,19 +106,8 @@ macro_rules! __impl_internal_bitflags {
             }
         }
 
-        __impl_public_bitflags_consts! {
-            $InternalBitFlags: $T {
-                $(
-                    $(#[$attr $($args)*])*
-                    #[allow(
-                        dead_code,
-                        deprecated,
-                        unused_attributes,
-                        non_upper_case_globals
-                    )]
-                    $Flag = $value;
-                )*
-            }
+        __impl_public_bitflags_iter! {
+            $InternalBitFlags: $T, $PublicBitFlags
         }
 
         impl $InternalBitFlags {
@@ -126,18 +115,6 @@ macro_rules! __impl_internal_bitflags {
             #[inline]
             pub fn bits_mut(&mut self) -> &mut $T {
                 &mut self.0
-            }
-
-            /// Iterate over enabled flag values.
-            #[inline]
-            pub const fn iter(&self) -> $crate::iter::Iter<$PublicBitFlags> {
-                $crate::iter::Iter::__private_const_new(<$PublicBitFlags as $crate::Flags>::FLAGS, $PublicBitFlags::from_bits_retain(self.0), $PublicBitFlags::from_bits_retain(self.0))
-            }
-
-            /// Iterate over enabled flag values with their stringified names.
-            #[inline]
-            pub const fn iter_names(&self) -> $crate::iter::IterNames<$PublicBitFlags> {
-                $crate::iter::IterNames::__private_const_new(<$PublicBitFlags as $crate::Flags>::FLAGS, $PublicBitFlags::from_bits_retain(self.0), $PublicBitFlags::from_bits_retain(self.0))
             }
         }
     };

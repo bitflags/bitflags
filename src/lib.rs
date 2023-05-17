@@ -590,7 +590,8 @@ macro_rules! bitflags {
             unused_attributes,
             unused_mut,
             unused_imports,
-            non_upper_case_globals
+            non_upper_case_globals,
+            clippy::assign_op_pattern
         )]
         const _: () = {
             // Declared in a "hidden" scope that can't be reached directly
@@ -610,7 +611,7 @@ macro_rules! bitflags {
 
             // This is where new library trait implementations can be added
             __impl_external_bitflags! {
-                InternalBitFlags: $T {
+                InternalBitFlags: $T, $BitFlags {
                     $(
                         $(#[$inner $($args)*])*
                         $Flag;
@@ -623,7 +624,7 @@ macro_rules! bitflags {
             }
 
             __impl_public_bitflags_iter! {
-                $BitFlags
+                $BitFlags: $T, $BitFlags
             }
         };
 
@@ -657,11 +658,12 @@ macro_rules! bitflags {
             unused_attributes,
             unused_mut,
             unused_imports,
-            non_upper_case_globals
+            non_upper_case_globals,
+            clippy::assign_op_pattern
         )]
         const _: () = {
             __impl_public_bitflags! {
-                $BitFlags: $T {
+                $BitFlags: $T, $BitFlags {
                     $(
                         $(#[$inner $($args)*])*
                         $Flag;
@@ -670,7 +672,7 @@ macro_rules! bitflags {
             }
 
             __impl_public_bitflags_iter! {
-                $BitFlags
+                $BitFlags: $T, $BitFlags
             }
         };
 

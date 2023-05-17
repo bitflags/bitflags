@@ -1,3 +1,5 @@
+#![deny(warnings)]
+
 use bitflags::bitflags;
 
 bitflags! {
