@@ -20,6 +20,38 @@ note: required by a bound in `PublicFlags::Primitive`
     |     type Primitive: Primitive;
     |                     ^^^^^^^^^ required by this bound in `PublicFlags::Primitive`
 
+error[E0277]: the trait bound `MyInt: WriteHex` is not satisfied
+   --> tests/compile-fail/bitflags_custom_bits.rs:126:1
+    |
+126 | / bitflags! {
+127 | |     struct Flags128: MyInt {
+128 | |         const A = MyInt(0b0000_0001u8);
+129 | |         const B = MyInt(0b0000_0010u8);
+130 | |         const C = MyInt(0b0000_0100u8);
+131 | |     }
+132 | | }
+    | | ^
+    | | |
+    | |_the trait `WriteHex` is not implemented for `MyInt`
+    |   required by a bound introduced by this call
+    |
+    = help: the following other types implement trait `WriteHex`:
+              i128
+              i16
+              i32
+              i64
+              i8
+              isize
+              u128
+              u16
+            and $N others
+note: required by a bound in `to_writer`
+   --> src/parser.rs
+    |
+    |     B::Bits: WriteHex,
+    |              ^^^^^^^^ required by this bound in `to_writer`
+    = note: this error originates in the macro `__impl_internal_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
 error[E0277]: can't compare `MyInt` with `_` in const contexts
    --> tests/compile-fail/bitflags_custom_bits.rs:126:1
     |
