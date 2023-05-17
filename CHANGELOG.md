@@ -1,3 +1,10 @@
+# 2.3.0
+
+## What's Changed
+* Support ejecting flags types from the bitflags macro by @KodrAus in https://github.com/bitflags/bitflags/pull/351
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.2.1...2.3.0
+
 # 2.2.1
 
 ## What's Changed
