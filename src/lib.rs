@@ -1745,7 +1745,6 @@ mod tests {
         parse_case(FmtFlags::empty(), "");
         parse_case(FmtFlags::empty(), " \r\n\t");
         parse_case(FmtFlags::empty(), "0x0");
-        parse_case(FmtFlags::empty(), "0x0");
 
         parse_case(FmtFlags::고양이, "고양이");
         parse_case(FmtFlags::고양이, "  고양이  ");

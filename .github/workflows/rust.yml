@@ -68,6 +68,19 @@ jobs:
           cd ./tests/smoke-test
           cargo +$msrv build
 
+  mips:
+    name: Tests / MIPS (Big Endian)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+
+      - name: Install Cross
+        run: cargo install cross
+
+      - name: Default features
+        run: cross test --target mips-unknown-linux-gnu
+
   embedded:
     name: Build (embedded)
     runs-on: ubuntu-latest

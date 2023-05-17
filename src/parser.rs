@@ -127,7 +127,7 @@ where
     Ok(parsed_flags)
 }
 
-/// Encode a value as a hex string.
+/// Encode a value as a hex number.
 pub trait WriteHex {
     /// Write the value as hex.
     fn write_hex<W: fmt::Write>(&self, writer: W) -> fmt::Result;
