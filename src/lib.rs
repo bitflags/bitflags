@@ -281,7 +281,7 @@
 //! use bitflags::bitflags;
 //! use std::{fmt, str};
 //!
-//! bitflags::bitflags! {
+//! bitflags! {
 //!     pub struct Flags: u32 {
 //!         const A = 1;
 //!         const B = 2;
