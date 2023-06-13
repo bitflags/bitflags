@@ -1,3 +1,13 @@
+# 2.3.2
+
+## What's Changed
+* [doc] [src/lib.rs]  delete redundant path prefix by @OccupyMars2025 in https://github.com/bitflags/bitflags/pull/361
+
+## New Contributors
+* @OccupyMars2025 made their first contribution in https://github.com/bitflags/bitflags/pull/361
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.3.1...2.3.2
+
 # 2.3.1
 
 ## What's Changed
