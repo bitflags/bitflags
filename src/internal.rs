@@ -106,6 +106,10 @@ macro_rules! __impl_internal_bitflags {
             }
         }
 
+        __impl_public_bitflags_ops! {
+            $InternalBitFlags
+        }
+
         __impl_public_bitflags_iter! {
             $InternalBitFlags: $T, $PublicBitFlags
         }

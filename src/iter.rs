@@ -1,6 +1,6 @@
 //! Iterating over set flag values.
 
-use crate::{Flags, Flag};
+use crate::{Flag, Flags};
 
 /// An iterator over a set of flags.
 ///
@@ -33,13 +33,13 @@ impl<B: 'static> Iter<B> {
 
 impl<B: Flags> Iterator for Iter<B> {
     type Item = B;
-    
+
     fn next(&mut self) -> Option<Self::Item> {
         match self.inner.next() {
             Some((_, flag)) => Some(flag),
             None if !self.done => {
                 self.done = true;
-                
+
                 // After iterating through valid names, if there are any bits left over
                 // then return one final value that includes them. This makes `into_iter`
                 // and `from_iter` roundtrip
@@ -99,7 +99,7 @@ impl<B: 'static> IterNames<B> {
 
 impl<B: Flags> Iterator for IterNames<B> {
     type Item = (&'static str, B);
-    
+
     fn next(&mut self) -> Option<Self::Item> {
         while let Some(flag) = self.flags.get(self.idx) {
             // Short-circuit if our state is empty
@@ -127,7 +127,7 @@ impl<B: Flags> Iterator for IterNames<B> {
                 return Some((flag.name(), B::from_bits_retain(bits)));
             }
         }
-        
+
         None
     }
 }

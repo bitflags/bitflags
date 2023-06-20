@@ -30,7 +30,7 @@
 
 use core::fmt::{self, Write};
 
-use crate::{Flags, Bits};
+use crate::{Bits, Flags};
 
 /// Write a set of flags to a writer.
 ///
@@ -110,7 +110,8 @@ where
         // If the flag starts with `0x` then it's a hex number
         // Parse it directly to the underlying bits type
         let parsed_flag = if let Some(flag) = flag.strip_prefix("0x") {
-            let bits = <B::Bits>::parse_hex(flag).map_err(|_| ParseError::invalid_hex_flag(flag))?;
+            let bits =
+                <B::Bits>::parse_hex(flag).map_err(|_| ParseError::invalid_hex_flag(flag))?;
 
             B::from_bits_retain(bits)
         }

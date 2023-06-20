@@ -1,0 +1,3 @@
+/*
+FromIterator trait
+ */

@@ -1,6 +1,12 @@
-use core::{fmt, ops::{BitAnd, BitOr, BitXor, Not}};
+use core::{
+    fmt,
+    ops::{BitAnd, BitOr, BitXor, Not},
+};
 
-use crate::{parser::{ParseError, ParseHex, WriteHex}, iter};
+use crate::{
+    iter,
+    parser::{ParseError, ParseHex, WriteHex},
+};
 
 /// Metadata for an individual flag.
 pub struct Flag<B> {
@@ -97,7 +103,7 @@ pub trait Flags: Sized + 'static {
     fn from_name(name: &str) -> Option<Self> {
         for flag in Self::FLAGS {
             if flag.name() == name {
-                return Some(Self::from_bits_retain(flag.value().bits()))
+                return Some(Self::from_bits_retain(flag.value().bits()));
             }
         }
 

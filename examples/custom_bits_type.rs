@@ -1,6 +1,6 @@
 use std::ops::{BitAnd, BitOr, BitXor, Not};
 
-use bitflags::{Flags, Flag, Bits};
+use bitflags::{Bits, Flag, Flags};
 
 // Define a custom container that can be used in flags types
 // Note custom bits types can't be used in `bitflags!`
@@ -25,7 +25,11 @@ impl BitAnd for CustomBits {
     type Output = Self;
 
     fn bitand(self, other: Self) -> Self {
-        CustomBits([self.0[0] & other.0[0], self.0[1] & other.0[1], self.0[2] & other.0[2]])
+        CustomBits([
+            self.0[0] & other.0[0],
+            self.0[1] & other.0[1],
+            self.0[2] & other.0[2],
+        ])
     }
 }
 
@@ -33,7 +37,11 @@ impl BitOr for CustomBits {
     type Output = Self;
 
     fn bitor(self, other: Self) -> Self {
-        CustomBits([self.0[0] | other.0[0], self.0[1] | other.0[1], self.0[2] | other.0[2]])
+        CustomBits([
+            self.0[0] | other.0[0],
+            self.0[1] | other.0[1],
+            self.0[2] | other.0[2],
+        ])
     }
 }
 
@@ -41,7 +49,11 @@ impl BitXor for CustomBits {
     type Output = Self;
 
     fn bitxor(self, other: Self) -> Self {
-        CustomBits([self.0[0] & other.0[0], self.0[1] & other.0[1], self.0[2] & other.0[2]])
+        CustomBits([
+            self.0[0] & other.0[0],
+            self.0[1] & other.0[1],
+            self.0[2] & other.0[2],
+        ])
     }
 }
 

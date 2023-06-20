@@ -1,17 +1,17 @@
 //! Specialized serialization for flags types using `serde`.
 
+use crate::{
+    parser::{self, ParseHex, WriteHex},
+    Flags,
+};
 use core::{fmt, str};
-use crate::{Flags, parser::{self, ParseHex, WriteHex}};
 use serde::{
     de::{Error, Visitor},
     Deserialize, Deserializer, Serialize, Serializer,
 };
 
 /// Serialize a set of flags as a human-readable string or their underlying bits.
-pub fn serialize<B: Flags, S: Serializer>(
-    flags: &B,
-    serializer: S,
-) -> Result<S::Ok, S::Error>
+pub fn serialize<B: Flags, S: Serializer>(flags: &B, serializer: S) -> Result<S::Ok, S::Error>
 where
     B::Bits: WriteHex + Serialize,
 {
@@ -26,13 +26,7 @@ where
 }
 
 /// Deserialize a set of flags from a human-readable string or their underlying bits.
-pub fn deserialize<
-    'de,
-    B: Flags,
-    D: Deserializer<'de>,
->(
-    deserializer: D,
-) -> Result<B, D::Error>
+pub fn deserialize<'de, B: Flags, D: Deserializer<'de>>(deserializer: D) -> Result<B, D::Error>
 where
     B::Bits: ParseHex + Deserialize<'de>,
 {

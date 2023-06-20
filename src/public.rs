@@ -117,8 +117,6 @@ macro_rules! __impl_public_bitflags_forward {
                 }
             }
         }
-
-        __impl_public_bitflags_ops!($PublicBitFlags);
     };
 }
 
@@ -259,8 +257,6 @@ macro_rules! __impl_public_bitflags {
                 }
             }
         }
-
-        __impl_public_bitflags_ops!($BitFlags);
     };
 }
 
@@ -273,13 +269,21 @@ macro_rules! __impl_public_bitflags_iter {
             /// Iterate over enabled flag values.
             #[inline]
             pub const fn iter(&self) -> $crate::iter::Iter<$PublicBitFlags> {
-                $crate::iter::Iter::__private_const_new(<$PublicBitFlags as $crate::Flags>::FLAGS, $PublicBitFlags::from_bits_retain(self.bits()), $PublicBitFlags::from_bits_retain(self.bits()))
+                $crate::iter::Iter::__private_const_new(
+                    <$PublicBitFlags as $crate::Flags>::FLAGS,
+                    $PublicBitFlags::from_bits_retain(self.bits()),
+                    $PublicBitFlags::from_bits_retain(self.bits()),
+                )
             }
 
             /// Iterate over enabled flag values with their stringified names.
             #[inline]
             pub const fn iter_names(&self) -> $crate::iter::IterNames<$PublicBitFlags> {
-                $crate::iter::IterNames::__private_const_new(<$PublicBitFlags as $crate::Flags>::FLAGS, $PublicBitFlags::from_bits_retain(self.bits()), $PublicBitFlags::from_bits_retain(self.bits()))
+                $crate::iter::IterNames::__private_const_new(
+                    <$PublicBitFlags as $crate::Flags>::FLAGS,
+                    $PublicBitFlags::from_bits_retain(self.bits()),
+                    $PublicBitFlags::from_bits_retain(self.bits()),
+                )
             }
         }
 
@@ -300,25 +304,37 @@ macro_rules! __impl_public_bitflags_iter {
 macro_rules! __impl_public_bitflags_ops {
     ($PublicBitFlags:ident) => {
         impl $crate::__private::core::fmt::Binary for $PublicBitFlags {
-            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+            fn fmt(
+                &self,
+                f: &mut $crate::__private::core::fmt::Formatter,
+            ) -> $crate::__private::core::fmt::Result {
                 $crate::__private::core::fmt::Binary::fmt(&self.0, f)
             }
         }
 
         impl $crate::__private::core::fmt::Octal for $PublicBitFlags {
-            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+            fn fmt(
+                &self,
+                f: &mut $crate::__private::core::fmt::Formatter,
+            ) -> $crate::__private::core::fmt::Result {
                 $crate::__private::core::fmt::Octal::fmt(&self.0, f)
             }
         }
 
         impl $crate::__private::core::fmt::LowerHex for $PublicBitFlags {
-            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+            fn fmt(
+                &self,
+                f: &mut $crate::__private::core::fmt::Formatter,
+            ) -> $crate::__private::core::fmt::Result {
                 $crate::__private::core::fmt::LowerHex::fmt(&self.0, f)
             }
         }
 
         impl $crate::__private::core::fmt::UpperHex for $PublicBitFlags {
-            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+            fn fmt(
+                &self,
+                f: &mut $crate::__private::core::fmt::Formatter,
+            ) -> $crate::__private::core::fmt::Result {
                 $crate::__private::core::fmt::UpperHex::fmt(&self.0, f)
             }
         }
@@ -406,7 +422,10 @@ macro_rules! __impl_public_bitflags_ops {
         }
 
         impl $crate::__private::core::iter::Extend<$PublicBitFlags> for $PublicBitFlags {
-            fn extend<T: $crate::__private::core::iter::IntoIterator<Item=Self>>(&mut self, iterator: T) {
+            fn extend<T: $crate::__private::core::iter::IntoIterator<Item = Self>>(
+                &mut self,
+                iterator: T,
+            ) {
                 for item in iterator {
                     self.insert(item)
                 }
@@ -414,7 +433,9 @@ macro_rules! __impl_public_bitflags_ops {
         }
 
         impl $crate::__private::core::iter::FromIterator<$PublicBitFlags> for $PublicBitFlags {
-            fn from_iter<T: $crate::__private::core::iter::IntoIterator<Item=Self>>(iterator: T) -> Self {
+            fn from_iter<T: $crate::__private::core::iter::IntoIterator<Item = Self>>(
+                iterator: T,
+            ) -> Self {
                 use $crate::__private::core::iter::Extend;
 
                 let mut result = Self::empty();
