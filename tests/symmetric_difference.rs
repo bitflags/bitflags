@@ -1,4 +1,0 @@
-/*
-bitxor
-bitxor_assign
- */

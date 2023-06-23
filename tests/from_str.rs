@@ -1,3 +1,0 @@
-/*
-parser::from_str
- */

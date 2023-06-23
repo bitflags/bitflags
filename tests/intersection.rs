@@ -1,4 +1,0 @@
-/*
-bitand
-bitand_assign
- */

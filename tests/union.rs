@@ -1,4 +1,0 @@
-/*
-bitor
-bitor_assign
- */

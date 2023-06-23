@@ -6,3 +6,7 @@ LowerHex
 UpperHex
 Binary
  */
+#[test]
+fn cases() {
+    todo!()
+}

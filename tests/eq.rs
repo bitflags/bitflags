@@ -1,3 +1,0 @@
-/*
-Equality and ordering
- */
