@@ -2,10 +2,27 @@ use super::*;
 
 use crate::Flags;
 
-fn case<T: Flags + Copy>(value: T, inputs: &[(T, bool)], mut inherent: impl FnMut(&T, T) -> bool) {
+#[track_caller]
+fn case<T: Flags + std::fmt::Debug + Copy>(
+    value: T,
+    inputs: &[(T, bool)],
+    mut inherent: impl FnMut(&T, T) -> bool,
+) {
     for (input, expected) in inputs {
-        assert_eq!(*expected, inherent(&value, *input));
-        assert_eq!(*expected, value.contains(*input));
+        assert_eq!(
+            *expected,
+            inherent(&value, *input),
+            "{:?}.contains({:?})",
+            value,
+            input
+        );
+        assert_eq!(
+            *expected,
+            Flags::contains(&value, *input),
+            "Flags::contains({:?}, {:?})",
+            value,
+            input
+        );
     }
 }
 

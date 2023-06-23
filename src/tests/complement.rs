@@ -2,16 +2,22 @@ use super::*;
 
 use crate::Flags;
 
-fn case<T: Flags + std::ops::Not<Output = T> + Copy>(
+#[track_caller]
+fn case<T: Flags + std::fmt::Debug + std::ops::Not<Output = T> + Copy>(
     expected: T::Bits,
     value: T,
     inherent: impl FnOnce(T) -> T,
 ) where
     T::Bits: std::fmt::Debug + PartialEq,
 {
-    assert_eq!(expected, inherent(value).bits());
-    assert_eq!(expected, Flags::complement(value).bits());
-    assert_eq!(expected, (!value).bits());
+    assert_eq!(expected, inherent(value).bits(), "{:?}.complement()", value);
+    assert_eq!(
+        expected,
+        Flags::complement(value).bits(),
+        "Flags::complement({:?})",
+        value
+    );
+    assert_eq!(expected, (!value).bits(), "!{:?}", value);
 }
 
 #[test]
