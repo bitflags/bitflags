@@ -1,6 +1,26 @@
+#![allow(unused_attributes)]
 #![no_std]
 
 use bitflags::bitflags;
+
+bitflags! {
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+    pub struct TestFlags: u8 {
+        const A = 1;
+        const B = 1 << 1;
+        const C = 1 << 2;
+
+        const ABC = Self::A.bits() | Self::B.bits() | Self::C.bits();
+    }
+
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+    pub struct TestZero: u8 {
+        const ZERO = 0;
+    }
+
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+    pub struct TestEmpty: u8 {}
+}
 
 bitflags! {
     pub struct I8: i8 {
