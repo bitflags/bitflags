@@ -4,7 +4,25 @@ use crate::Flags;
 
 #[test]
 fn cases() {
-    todo!()
+    case(
+        TestFlags::empty(),
+        &[
+            (TestFlags::A, 1),
+            (TestFlags::all(), 1 | 1 << 1 | 1 << 2),
+            (TestFlags::empty(), 0),
+            (TestFlags::from_bits_retain(1 << 3), 1 << 3),
+        ],
+        TestFlags::union,
+    );
+
+    case(
+        TestFlags::A | TestFlags::C,
+        &[
+            (TestFlags::A | TestFlags::B, 1 | 1 << 1 | 1 << 2),
+            (TestFlags::A, 1 | 1 << 2),
+        ],
+        TestFlags::union,
+    );
 }
 
 #[track_caller]

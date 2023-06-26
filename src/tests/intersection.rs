@@ -4,7 +4,33 @@ use crate::Flags;
 
 #[test]
 fn cases() {
-    todo!()
+    case(
+        TestFlags::empty(),
+        &[(TestFlags::empty(), 0), (TestFlags::all(), 0)],
+        TestFlags::intersection,
+    );
+
+    case(
+        TestFlags::all(),
+        &[
+            (TestFlags::all(), 1 | 1 << 1 | 1 << 2),
+            (TestFlags::A, 1),
+            (TestFlags::from_bits_retain(1 << 3), 0),
+        ],
+        TestFlags::intersection,
+    );
+
+    case(
+        TestFlags::from_bits_retain(1 << 3),
+        &[(TestFlags::from_bits_retain(1 << 3), 1 << 3)],
+        TestFlags::intersection,
+    );
+
+    case(
+        TestOverlapping::AB,
+        &[(TestOverlapping::BC, 1 << 1)],
+        TestOverlapping::intersection,
+    );
 }
 
 #[track_caller]
