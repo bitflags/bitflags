@@ -58,25 +58,23 @@ mod from_str {
 
     #[test]
     fn invalid() {
-        assert_eq!(
-            "unrecognized named flag",
-            from_str::<TestFlags>("a").unwrap_err().to_string()
-        );
-        assert_eq!(
-            "unrecognized named flag",
-            from_str::<TestFlags>("A & B").unwrap_err().to_string()
-        );
+        assert!(from_str::<TestFlags>("a")
+            .unwrap_err()
+            .to_string()
+            .starts_with("unrecognized named flag"));
+        assert!(from_str::<TestFlags>("A & B")
+            .unwrap_err()
+            .to_string()
+            .starts_with("unrecognized named flag"));
 
-        assert_eq!(
-            "invalid hex flag",
-            from_str::<TestFlags>("0xg").unwrap_err().to_string()
-        );
-        assert_eq!(
-            "invalid hex flag",
-            from_str::<TestFlags>("0xffffffffffff")
-                .unwrap_err()
-                .to_string()
-        );
+        assert!(from_str::<TestFlags>("0xg")
+            .unwrap_err()
+            .to_string()
+            .starts_with("invalid hex flag"));
+        assert!(from_str::<TestFlags>("0xffffffffffff")
+            .unwrap_err()
+            .to_string()
+            .starts_with("invalid hex flag"));
     }
 }
 

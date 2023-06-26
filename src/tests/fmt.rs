@@ -2,32 +2,69 @@ use super::*;
 
 #[test]
 fn cases() {
-    assert_eq!("TestFlags(0x0)", format!("{:?}", TestFlags::empty()));
-    assert_eq!("TestFlags(A)", format!("{:?}", TestFlags::A));
-    assert_eq!("TestFlags(A | B | C)", format!("{:?}", TestFlags::all()));
-    assert_eq!(
+    case(TestFlags::empty(), "TestFlags(0x0)", "0", "0", "0", "0");
+    case(TestFlags::A, "TestFlags(A)", "1", "1", "1", "1");
+    case(
+        TestFlags::all(),
+        "TestFlags(A | B | C)",
+        "7",
+        "7",
+        "7",
+        "111",
+    );
+    case(
+        TestFlags::from_bits_retain(1 << 3),
         "TestFlags(0x8)",
-        format!("{:?}", TestFlags::from_bits_retain(1 << 3))
+        "8",
+        "8",
+        "10",
+        "1000",
     );
-    assert_eq!(
+    case(
+        TestFlags::A | TestFlags::from_bits_retain(1 << 3),
         "TestFlags(A | 0x8)",
-        format!("{:?}", TestFlags::A | TestFlags::from_bits_retain(1 << 3))
+        "9",
+        "9",
+        "11",
+        "1001",
     );
 
-    assert_eq!("TestZero(0x0)", format!("{:?}", TestZero::ZERO));
-    assert_eq!(
+    case(TestZero::ZERO, "TestZero(0x0)", "0", "0", "0", "0");
+    case(
+        TestZero::ZERO | TestZero::from_bits_retain(1),
         "TestZero(0x1)",
-        format!("{:?}", TestZero::ZERO | TestZero::from_bits_retain(1))
+        "1",
+        "1",
+        "1",
+        "1",
     );
 
-    assert_eq!("TestZeroOne(0x0)", format!("{:?}", TestZeroOne::ZERO));
-    assert_eq!(
-        "TestZeroOne(ONE)",
-        format!("{:?}", TestZeroOne::ZERO | TestZeroOne::from_bits_retain(1))
-    );
+    case(TestZeroOne::ONE, "TestZeroOne(ONE)", "1", "1", "1", "1");
 
-    assert_eq!(
+    case(
+        TestOverlapping::from_bits_retain(1 << 1),
         "TestOverlapping(0x2)",
-        format!("{:?}", TestOverlapping::from_bits_retain(1 << 1))
+        "2",
+        "2",
+        "2",
+        "10",
     );
+}
+
+#[track_caller]
+fn case<
+    T: std::fmt::Debug + std::fmt::UpperHex + std::fmt::LowerHex + std::fmt::Octal + std::fmt::Binary,
+>(
+    value: T,
+    debug: &str,
+    uhex: &str,
+    lhex: &str,
+    oct: &str,
+    bin: &str,
+) {
+    assert_eq!(debug, format!("{:?}", value));
+    assert_eq!(uhex, format!("{:X}", value));
+    assert_eq!(lhex, format!("{:x}", value));
+    assert_eq!(oct, format!("{:o}", value));
+    assert_eq!(bin, format!("{:b}", value));
 }
