@@ -19,9 +19,9 @@ fn cases() {
     case(0, TestFlags::empty(), TestFlags::bits);
 
     case(1, TestFlags::A, TestFlags::bits);
-
     case(1 | 1 << 1 | 1 << 2, TestFlags::ABC, TestFlags::bits);
 
+    case(!0, TestFlags::from_bits_retain(u8::MAX), TestFlags::bits);
     case(1 << 3, TestFlags::from_bits_retain(1 << 3), TestFlags::bits);
 
     case(1 << 3, TestZero::from_bits_retain(1 << 3), TestZero::bits);
