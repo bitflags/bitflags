@@ -93,7 +93,7 @@ mod iter {
 
         case(&[1, 1 << 1, 1 << 2], TestFlags::ABC, TestFlags::iter);
         case(
-            &[1, 1 << 1, 1 << 2, 1 | 1 << 1 | 1 << 2, 1 << 3],
+            &[1, 1 << 1, 1 << 2, 1 << 3],
             TestFlags::ABC | TestFlags::from_bits_retain(1 << 3),
             TestFlags::iter,
         );
@@ -159,12 +159,7 @@ mod iter_names {
             TestFlags::iter_names,
         );
         case(
-            &[
-                ("A", 1),
-                ("B", 1 << 1),
-                ("C", 1 << 2),
-                ("ABC", 1 | 1 << 1 | 1 << 2),
-            ],
+            &[("A", 1), ("B", 1 << 1), ("C", 1 << 2)],
             TestFlags::ABC | TestFlags::from_bits_retain(1 << 3),
             TestFlags::iter_names,
         );
@@ -183,7 +178,7 @@ mod iter_names {
             TestOverlappingFull::iter_names,
         );
         case(
-            &[("A", 1), ("B", 1), ("C", 1), ("D", 1 << 1)],
+            &[("A", 1), ("D", 1 << 1)],
             TestOverlappingFull::A | TestOverlappingFull::D,
             TestOverlappingFull::iter_names,
         );

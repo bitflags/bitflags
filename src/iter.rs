@@ -111,19 +111,17 @@ impl<B: Flags> Iterator for IterNames<B> {
 
             let bits = flag.value().bits();
 
-            // TODO: Try another state value; `|` the bits into it, and don't yield unless they change the value of the output; this would avoid composite flags
-
-            // NOTE: We check whether the flag exists in self, but remove it from
-            // a different value. This ensure that overlapping flags are handled
-            // properly. Take the following example:
+            // If the flag is set in the original source _and_ it has bits that haven't
+            // been covered by a previous flag yet then yield it. These conditions cover
+            // two cases for multi-bit flags:
             //
-            // const A: 0b00000001;
-            // const B: 0b00000101;
-            //
-            // Given the bits 0b00000101, both A and B are set. But if we removed A
-            // as we encountered it we'd be left with 0b00000100, which doesn't
-            // correspond to a valid flag on its own.
-            if self.source.contains(B::from_bits_retain(bits)) {
+            // 1. When flags partially overlap, such as `0b00000001` and `0b00000101`, we'll
+            // yield both flags.
+            // 2. When flags fully overlap, such as in convenience flags that are a shorthand for others,
+            // we won't yield both flags.
+            if self.source.contains(B::from_bits_retain(bits))
+                && self.remaining.intersects(B::from_bits_retain(bits))
+            {
                 self.remaining.remove(B::from_bits_retain(bits));
 
                 return Some((flag.name(), B::from_bits_retain(bits)));

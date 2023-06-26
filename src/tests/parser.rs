@@ -110,7 +110,7 @@ mod to_writer {
 
         assert_eq!("A", write(TestOverlappingFull::C));
         assert_eq!(
-            "A | B | C | D",
+            "A | D",
             write(TestOverlappingFull::C | TestOverlappingFull::D)
         );
     }
