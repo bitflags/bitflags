@@ -50,6 +50,24 @@ bitflags! {
     }
 
     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+    pub struct TestZeroOne: u8 {
+        /// 0
+        const ZERO = 0;
+
+        /// 1
+        const ONE = 1;
+    }
+
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+    pub struct TestUnicode: u8 {
+        /// 1
+        const 一 = 1;
+
+        /// 2
+        const 二 = 1 << 1;
+    }
+
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
     pub struct TestEmpty: u8 {}
 
     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]

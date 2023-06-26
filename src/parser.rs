@@ -48,10 +48,15 @@ where
     // followed by a hex number of any remaining bits that are set
     // but don't correspond to any flags.
 
-    // Iterate over the valid flags
+    // Iterate over known flag values
     let mut first = true;
     let mut iter = flags.iter_names();
-    for (name, _) in &mut iter {
+    for (name, f) in &mut iter {
+        // Ignore any zero-valued flags
+        if f.is_empty() {
+            continue;
+        }
+
         if !first {
             writer.write_str(" | ")?;
         }
