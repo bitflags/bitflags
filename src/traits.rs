@@ -149,6 +149,8 @@ pub trait Flags: Sized + 'static {
     }
 
     /// Inserts the specified flags in-place.
+    ///
+    /// This method is equivalent to `union`.
     fn insert(&mut self, other: Self)
     where
         Self: Sized,
@@ -157,6 +159,8 @@ pub trait Flags: Sized + 'static {
     }
 
     /// Removes the specified flags in-place.
+    ///
+    /// This method is equivalent to `difference`.
     fn remove(&mut self, other: Self)
     where
         Self: Sized,
@@ -165,6 +169,8 @@ pub trait Flags: Sized + 'static {
     }
 
     /// Toggles the specified flags in-place.
+    ///
+    /// This method is equivalent to `symmetric_difference`.
     fn toggle(&mut self, other: Self)
     where
         Self: Sized,
@@ -184,57 +190,32 @@ pub trait Flags: Sized + 'static {
         }
     }
 
-    /// Returns the intersection between the flags in `self` and
-    /// `other`.
-    ///
-    /// Specifically, the returned set contains only the flags which are
-    /// present in *both* `self` *and* `other`.
+    /// Returns the intersection between the flags in `self` and `other`.
     #[must_use]
     fn intersection(self, other: Self) -> Self {
         Self::from_bits_retain(self.bits() & other.bits())
     }
 
     /// Returns the union of between the flags in `self` and `other`.
-    ///
-    /// Specifically, the returned set contains all flags which are
-    /// present in *either* `self` *or* `other`, including any which are
-    /// present in both (see [`Self::symmetric_difference`] if that
-    /// is undesirable).
     #[must_use]
     fn union(self, other: Self) -> Self {
         Self::from_bits_retain(self.bits() | other.bits())
     }
 
     /// Returns the difference between the flags in `self` and `other`.
-    ///
-    /// Specifically, the returned set contains all flags present in
-    /// `self`, except for the ones present in `other`.
-    ///
-    /// It is also conceptually equivalent to the "bit-clear" operation:
-    /// `flags & !other` (and this syntax is also supported).
     #[must_use]
     fn difference(self, other: Self) -> Self {
         Self::from_bits_retain(self.bits() & !other.bits())
     }
 
-    /// Returns the [symmetric difference][sym-diff] between the flags
+    /// Returns the symmetric difference between the flags
     /// in `self` and `other`.
-    ///
-    /// Specifically, the returned set contains the flags present which
-    /// are present in `self` or `other`, but that are not present in
-    /// both. Equivalently, it contains the flags present in *exactly
-    /// one* of the sets `self` and `other`.
-    ///
-    /// [sym-diff]: https://en.wikipedia.org/wiki/Symmetric_difference
     #[must_use]
     fn symmetric_difference(self, other: Self) -> Self {
         Self::from_bits_retain(self.bits() ^ other.bits())
     }
 
     /// Returns the complement of this set of flags.
-    ///
-    /// Specifically, the returned set contains all the flags which are
-    /// not set in `self`, but which are allowed for this type.
     #[must_use]
     fn complement(self) -> Self {
         Self::from_bits_truncate(!self.bits())

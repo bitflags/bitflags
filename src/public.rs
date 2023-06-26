@@ -201,31 +201,33 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn is_empty(f) {
-                    f.0 == Self::empty().0
+                    f.bits() == <$T as $crate::Bits>::EMPTY
                 }
 
                 fn is_all(f) {
-                    Self::all().0 | f.0 == f.0
+                    // NOTE: We check against `Self::all` here, not `Self::Bits::ALL`
+                    // because the set of all flags may not use all bits
+                    Self::all().bits() | f.bits() == f.bits()
                 }
 
                 fn intersects(f, other) {
-                    !(Self(f.0 & other.0)).is_empty()
+                    f.bits() & other.bits() != <$T as $crate::Bits>::EMPTY
                 }
 
                 fn contains(f, other) {
-                    (f.0 & other.0) == other.0
+                    f.bits() & other.bits() == other.bits()
                 }
 
                 fn insert(f, other) {
-                    f.0 = f.0 | other.0;
+                    *f = Self::from_bits_retain(f.bits() | other.bits());
                 }
 
                 fn remove(f, other) {
-                    f.0 = f.0 & !other.0;
+                    *f = Self::from_bits_retain(f.bits() & !other.bits());
                 }
 
                 fn toggle(f, other) {
-                    f.0 = f.0 ^ other.0;
+                    *f = Self::from_bits_retain(f.bits() ^ other.bits());
                 }
 
                 fn set(f, other, value) {
@@ -237,23 +239,23 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn intersection(f, other) {
-                    Self(f.0 & other.0)
+                    Self::from_bits_retain(f.bits() & other.bits())
                 }
 
                 fn union(f, other) {
-                    Self(f.0 | other.0)
+                    Self::from_bits_retain(f.bits() | other.bits())
                 }
 
                 fn difference(f, other) {
-                    Self(f.0 & !other.0)
+                    Self::from_bits_retain(f.bits() & !other.bits())
                 }
 
                 fn symmetric_difference(f, other) {
-                    Self(f.0 ^ other.0)
+                    Self::from_bits_retain(f.bits() ^ other.bits())
                 }
 
                 fn complement(f) {
-                    Self::from_bits_truncate(!f.0)
+                    Self::from_bits_truncate(!f.bits())
                 }
             }
         }
@@ -353,7 +355,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Adds the set of flags.
             #[inline]
             fn bitor_assign(&mut self, other: Self) {
-                self.0 = self.0 | other.0;
+                *self = Self::from_bits_retain(self.bits()).union(other);
             }
         }
 
@@ -371,7 +373,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Toggles the set of flags.
             #[inline]
             fn bitxor_assign(&mut self, other: Self) {
-                self.0 = self.0 ^ other.0
+                *self = Self::from_bits_retain(self.bits()).symmetric_difference(other);
             }
         }
 
@@ -389,7 +391,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Disables all flags disabled in the set.
             #[inline]
             fn bitand_assign(&mut self, other: Self) {
-                self.0 = self.0 & other.0;
+                *self = Self::from_bits_retain(self.bits()).intersection(other);
             }
         }
 
@@ -407,7 +409,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Disables all flags enabled in the set.
             #[inline]
             fn sub_assign(&mut self, other: Self) {
-                self.0 = self.0 & !other.0;
+                *self = Self::from_bits_retain(self.bits()).difference(other);
             }
         }
 

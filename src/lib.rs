@@ -808,6 +808,8 @@ macro_rules! __impl_bitflags {
             }
 
             /// Inserts the specified flags in-place.
+            ///
+            /// This method is equivalent to `union`.
             #[inline]
             pub fn insert(&mut self, other: Self) {
                 let $insert0 = self;
@@ -816,6 +818,8 @@ macro_rules! __impl_bitflags {
             }
 
             /// Removes the specified flags in-place.
+            ///
+            /// This method is equivalent to `difference`.
             #[inline]
             pub fn remove(&mut self, other: Self) {
                 let $remove0 = self;
@@ -824,6 +828,8 @@ macro_rules! __impl_bitflags {
             }
 
             /// Toggles the specified flags in-place.
+            ///
+            /// This method is equivalent to `symmetric_difference`.
             #[inline]
             pub fn toggle(&mut self, other: Self) {
                 let $toggle0 = self;
@@ -843,13 +849,8 @@ macro_rules! __impl_bitflags {
             /// Returns the intersection between the flags in `self` and
             /// `other`.
             ///
-            /// Specifically, the returned set contains only the flags which are
-            /// present in *both* `self` *and* `other`.
-            ///
-            /// This is equivalent to using the `&` operator (e.g.
-            /// [`ops::BitAnd`]), as in `flags & other`.
-            ///
-            /// [`ops::BitAnd`]: https://doc.rust-lang.org/std/ops/trait.BitAnd.html
+            /// Calculating `self` bitwise and (`&`) other, including
+            /// any bits that don't correspond to a defined flag.
             #[inline]
             #[must_use]
             pub const fn intersection(self, other: Self) -> Self {
@@ -860,15 +861,8 @@ macro_rules! __impl_bitflags {
 
             /// Returns the union of between the flags in `self` and `other`.
             ///
-            /// Specifically, the returned set contains all flags which are
-            /// present in *either* `self` *or* `other`, including any which are
-            /// present in both (see [`Self::symmetric_difference`] if that
-            /// is undesirable).
-            ///
-            /// This is equivalent to using the `|` operator (e.g.
-            /// [`ops::BitOr`]), as in `flags | other`.
-            ///
-            /// [`ops::BitOr`]: https://doc.rust-lang.org/std/ops/trait.BitOr.html
+            /// Calculates `self` bitwise or (`|`) `other`, including
+            /// any bits that don't correspond to a defined flag.
             #[inline]
             #[must_use]
             pub const fn union(self, other: Self) -> Self {
@@ -879,16 +873,8 @@ macro_rules! __impl_bitflags {
 
             /// Returns the difference between the flags in `self` and `other`.
             ///
-            /// Specifically, the returned set contains all flags present in
-            /// `self`, except for the ones present in `other`.
-            ///
-            /// It is also conceptually equivalent to the "bit-clear" operation:
-            /// `flags & !other` (and this syntax is also supported).
-            ///
-            /// This is equivalent to using the `-` operator (e.g.
-            /// [`ops::Sub`]), as in `flags - other`.
-            ///
-            /// [`ops::Sub`]: https://doc.rust-lang.org/std/ops/trait.Sub.html
+            /// Calculates `self` bitwise and (`&!`) the bitwise negation of `other`,
+            /// including any bits that don't correspond to a defined flag.
             #[inline]
             #[must_use]
             pub const fn difference(self, other: Self) -> Self {
@@ -897,19 +883,11 @@ macro_rules! __impl_bitflags {
                 $difference
             }
 
-            /// Returns the [symmetric difference][sym-diff] between the flags
+            /// Returns the symmetric difference between the flags
             /// in `self` and `other`.
             ///
-            /// Specifically, the returned set contains the flags present which
-            /// are present in `self` or `other`, but that are not present in
-            /// both. Equivalently, it contains the flags present in *exactly
-            /// one* of the sets `self` and `other`.
-            ///
-            /// This is equivalent to using the `^` operator (e.g.
-            /// [`ops::BitXor`]), as in `flags ^ other`.
-            ///
-            /// [sym-diff]: https://en.wikipedia.org/wiki/Symmetric_difference
-            /// [`ops::BitXor`]: https://doc.rust-lang.org/std/ops/trait.BitXor.html
+            /// Calculates `self` bitwise exclusive or (`^`) `other`,
+            /// including any bits that don't correspond to a defined flag.
             #[inline]
             #[must_use]
             pub const fn symmetric_difference(self, other: Self) -> Self {
@@ -920,17 +898,8 @@ macro_rules! __impl_bitflags {
 
             /// Returns the complement of this set of flags.
             ///
-            /// Specifically, the returned set contains all the flags which are
-            /// not set in `self`, but which are allowed for this type.
-            ///
-            /// Alternatively, it can be thought of as the set difference
-            /// between [`Self::all()`] and `self` (e.g. `Self::all() - self`)
-            ///
-            /// This is equivalent to using the `!` operator (e.g.
-            /// [`ops::Not`]), as in `!flags`.
-            ///
-            /// [`Self::all()`]: Self::all
-            /// [`ops::Not`]: https://doc.rust-lang.org/std/ops/trait.Not.html
+            /// Calculates the bitwise negation (`!`) of `self`,
+            /// **unsetting** any bits that don't correspond to a defined flag.
             #[inline]
             #[must_use]
             pub const fn complement(self) -> Self {

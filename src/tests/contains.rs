@@ -47,7 +47,9 @@ fn cases() {
             (TestFlags::A, true),
             (TestFlags::B, false),
             (TestFlags::C, false),
+            (TestFlags::ABC, false),
             (TestFlags::from_bits_retain(1 << 3), false),
+            (TestFlags::from_bits_retain(1 | (1 << 3)), false),
         ],
         TestFlags::contains,
     );
@@ -59,6 +61,7 @@ fn cases() {
             (TestFlags::A, true),
             (TestFlags::B, true),
             (TestFlags::C, true),
+            (TestFlags::ABC, true),
             (TestFlags::from_bits_retain(1 << 3), false),
         ],
         TestFlags::contains,
@@ -80,5 +83,15 @@ fn cases() {
         TestZero::ZERO,
         &[(TestZero::ZERO, true)],
         TestZero::contains,
+    );
+
+    case(
+        TestOverlapping::AB,
+        &[
+            (TestOverlapping::AB, true),
+            (TestOverlapping::BC, false),
+            (TestOverlapping::from_bits_retain(1 << 1), true),
+        ],
+        TestOverlapping::contains,
     );
 }
