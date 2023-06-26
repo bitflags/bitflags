@@ -2,30 +2,6 @@ use super::*;
 
 use crate::Flags;
 
-#[track_caller]
-fn case<T: Flags + std::fmt::Debug + Copy>(
-    value: T,
-    inputs: &[(T, bool)],
-    mut inherent: impl FnMut(&T, T) -> bool,
-) {
-    for (input, expected) in inputs {
-        assert_eq!(
-            *expected,
-            inherent(&value, *input),
-            "{:?}.contains({:?})",
-            value,
-            input
-        );
-        assert_eq!(
-            *expected,
-            Flags::contains(&value, *input),
-            "Flags::contains({:?}, {:?})",
-            value,
-            input
-        );
-    }
-}
-
 #[test]
 fn cases() {
     case(
@@ -94,4 +70,28 @@ fn cases() {
         ],
         TestOverlapping::contains,
     );
+}
+
+#[track_caller]
+fn case<T: Flags + std::fmt::Debug + Copy>(
+    value: T,
+    inputs: &[(T, bool)],
+    mut inherent: impl FnMut(&T, T) -> bool,
+) {
+    for (input, expected) in inputs {
+        assert_eq!(
+            *expected,
+            inherent(&value, *input),
+            "{:?}.contains({:?})",
+            value,
+            input
+        );
+        assert_eq!(
+            *expected,
+            Flags::contains(&value, *input),
+            "Flags::contains({:?}, {:?})",
+            value,
+            input
+        );
+    }
 }

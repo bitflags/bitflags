@@ -51,34 +51,6 @@ mod collect {
 mod iter {
     use super::*;
 
-    #[track_caller]
-    fn case<T: Flags + std::fmt::Debug + IntoIterator<Item = T> + Copy>(
-        expected: &[T::Bits],
-        value: T,
-        inherent: impl FnOnce(&T) -> crate::iter::Iter<T>,
-    ) where
-        T::Bits: std::fmt::Debug + PartialEq,
-    {
-        assert_eq!(
-            expected,
-            inherent(&value).map(|f| f.bits()).collect::<Vec<_>>(),
-            "{:?}.iter()",
-            value
-        );
-        assert_eq!(
-            expected,
-            Flags::iter(&value).map(|f| f.bits()).collect::<Vec<_>>(),
-            "Flags::iter({:?})",
-            value
-        );
-        assert_eq!(
-            expected,
-            value.into_iter().map(|f| f.bits()).collect::<Vec<_>>(),
-            "{:?}.into_iter()",
-            value
-        );
-    }
-
     #[test]
     fn cases() {
         case(&[], TestFlags::empty(), TestFlags::iter);
@@ -106,36 +78,38 @@ mod iter {
 
         case(&[], TestZero::ZERO, TestZero::iter);
     }
-}
-
-mod iter_names {
-    use super::*;
 
     #[track_caller]
-    fn case<T: Flags + std::fmt::Debug>(
-        expected: &[(&'static str, T::Bits)],
+    fn case<T: Flags + std::fmt::Debug + IntoIterator<Item = T> + Copy>(
+        expected: &[T::Bits],
         value: T,
-        inherent: impl FnOnce(&T) -> crate::iter::IterNames<T>,
+        inherent: impl FnOnce(&T) -> crate::iter::Iter<T>,
     ) where
         T::Bits: std::fmt::Debug + PartialEq,
     {
         assert_eq!(
             expected,
-            inherent(&value)
-                .map(|(n, f)| (n, f.bits()))
-                .collect::<Vec<_>>(),
-            "{:?}.iter_names()",
+            inherent(&value).map(|f| f.bits()).collect::<Vec<_>>(),
+            "{:?}.iter()",
             value
         );
         assert_eq!(
             expected,
-            Flags::iter_names(&value)
-                .map(|(n, f)| (n, f.bits()))
-                .collect::<Vec<_>>(),
-            "Flags::iter_names({:?})",
+            Flags::iter(&value).map(|f| f.bits()).collect::<Vec<_>>(),
+            "Flags::iter({:?})",
+            value
+        );
+        assert_eq!(
+            expected,
+            value.into_iter().map(|f| f.bits()).collect::<Vec<_>>(),
+            "{:?}.into_iter()",
             value
         );
     }
+}
+
+mod iter_names {
+    use super::*;
 
     #[test]
     fn cases() {
@@ -181,6 +155,32 @@ mod iter_names {
             &[("A", 1), ("D", 1 << 1)],
             TestOverlappingFull::A | TestOverlappingFull::D,
             TestOverlappingFull::iter_names,
+        );
+    }
+
+    #[track_caller]
+    fn case<T: Flags + std::fmt::Debug>(
+        expected: &[(&'static str, T::Bits)],
+        value: T,
+        inherent: impl FnOnce(&T) -> crate::iter::IterNames<T>,
+    ) where
+        T::Bits: std::fmt::Debug + PartialEq,
+    {
+        assert_eq!(
+            expected,
+            inherent(&value)
+                .map(|(n, f)| (n, f.bits()))
+                .collect::<Vec<_>>(),
+            "{:?}.iter_names()",
+            value
+        );
+        assert_eq!(
+            expected,
+            Flags::iter_names(&value)
+                .map(|(n, f)| (n, f.bits()))
+                .collect::<Vec<_>>(),
+            "Flags::iter_names({:?})",
+            value
         );
     }
 }

@@ -83,16 +83,6 @@ mod from_str {
 mod to_writer {
     use super::*;
 
-    fn write<F: Flags>(value: F) -> String
-    where
-        F::Bits: crate::parser::WriteHex,
-    {
-        let mut s = String::new();
-
-        to_writer(&value, &mut s).unwrap();
-        s
-    }
-
     #[test]
     fn cases() {
         assert_eq!("", write(TestFlags::empty()));
@@ -113,5 +103,15 @@ mod to_writer {
             "A | D",
             write(TestOverlappingFull::C | TestOverlappingFull::D)
         );
+    }
+
+    fn write<F: Flags>(value: F) -> String
+    where
+        F::Bits: crate::parser::WriteHex,
+    {
+        let mut s = String::new();
+
+        to_writer(&value, &mut s).unwrap();
+        s
     }
 }

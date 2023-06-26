@@ -2,18 +2,6 @@ use super::*;
 
 use crate::Flags;
 
-#[track_caller]
-fn case<T: Flags + std::fmt::Debug>(
-    expected: T::Bits,
-    value: T,
-    inherent: impl FnOnce(&T) -> T::Bits,
-) where
-    T::Bits: std::fmt::Debug + PartialEq,
-{
-    assert_eq!(expected, inherent(&value), "{:?}.bits()", value);
-    assert_eq!(expected, Flags::bits(&value), "Flags::bits({:?})", value);
-}
-
 #[test]
 fn cases() {
     case(0, TestFlags::empty(), TestFlags::bits);
@@ -27,4 +15,16 @@ fn cases() {
     case(1 << 3, TestZero::from_bits_retain(1 << 3), TestZero::bits);
 
     case(1 << 3, TestEmpty::from_bits_retain(1 << 3), TestEmpty::bits);
+}
+
+#[track_caller]
+fn case<T: Flags + std::fmt::Debug>(
+    expected: T::Bits,
+    value: T,
+    inherent: impl FnOnce(&T) -> T::Bits,
+) where
+    T::Bits: std::fmt::Debug + PartialEq,
+{
+    assert_eq!(expected, inherent(&value), "{:?}.bits()", value);
+    assert_eq!(expected, Flags::bits(&value), "Flags::bits({:?})", value);
 }

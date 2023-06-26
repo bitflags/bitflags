@@ -2,6 +2,11 @@ use super::*;
 
 use crate::Flags;
 
+#[test]
+fn cases() {
+    todo!()
+}
+
 #[track_caller]
 fn case<T: Flags + std::fmt::Debug + std::ops::BitAnd<Output = T> + std::ops::BitAndAssign + Copy>(
     value: T,
@@ -45,9 +50,4 @@ fn case<T: Flags + std::fmt::Debug + std::ops::BitAnd<Output = T> + std::ops::Bi
             input,
         );
     }
-}
-
-#[test]
-fn cases() {
-    todo!()
 }

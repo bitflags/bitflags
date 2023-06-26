@@ -20,9 +20,7 @@ mod is_empty;
 mod iter;
 mod parser;
 mod remove;
-mod set;
 mod symmetric_difference;
-mod toggle;
 mod union;
 
 bitflags! {

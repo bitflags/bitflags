@@ -2,24 +2,6 @@ use super::*;
 
 use crate::Flags;
 
-#[track_caller]
-fn case<T: Flags + std::fmt::Debug + std::ops::Not<Output = T> + Copy>(
-    expected: T::Bits,
-    value: T,
-    inherent: impl FnOnce(T) -> T,
-) where
-    T::Bits: std::fmt::Debug + PartialEq,
-{
-    assert_eq!(expected, inherent(value).bits(), "{:?}.complement()", value);
-    assert_eq!(
-        expected,
-        Flags::complement(value).bits(),
-        "Flags::complement({:?})",
-        value
-    );
-    assert_eq!(expected, (!value).bits(), "!{:?}", value);
-}
-
 #[test]
 fn cases() {
     case(0, TestFlags::all(), TestFlags::complement);
@@ -49,4 +31,22 @@ fn cases() {
 
     // Complement doesn't detect overlapping bits in multi-bit flags
     case(0, TestOverlapping::AB, TestOverlapping::complement);
+}
+
+#[track_caller]
+fn case<T: Flags + std::fmt::Debug + std::ops::Not<Output = T> + Copy>(
+    expected: T::Bits,
+    value: T,
+    inherent: impl FnOnce(T) -> T,
+) where
+    T::Bits: std::fmt::Debug + PartialEq,
+{
+    assert_eq!(expected, inherent(value).bits(), "{:?}.complement()", value);
+    assert_eq!(
+        expected,
+        Flags::complement(value).bits(),
+        "Flags::complement({:?})",
+        value
+    );
+    assert_eq!(expected, (!value).bits(), "!{:?}", value);
 }

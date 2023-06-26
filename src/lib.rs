@@ -876,6 +876,11 @@ macro_rules! __impl_bitflags {
             ///
             /// Calculates `self` bitwise and (`&!`) the bitwise negation of `other`,
             /// including any bits that don't correspond to a defined flag.
+            ///
+            /// This method is _not_ equivalent to `a & !b` when there are bits set that
+            /// don't correspond to a defined flag. The `!` operator will unset any
+            /// bits that don't correspond to a flag, so they'll always be unset by `a &! b`,
+            /// but respected by `a.difference(b)`.
             #[inline]
             #[must_use]
             pub const fn difference(self, other: Self) -> Self {
