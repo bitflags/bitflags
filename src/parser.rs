@@ -51,12 +51,7 @@ where
     // Iterate over known flag values
     let mut first = true;
     let mut iter = flags.iter_names();
-    for (name, f) in &mut iter {
-        // Ignore any zero-valued flags
-        if f.is_empty() {
-            continue;
-        }
-
+    for (name, _) in &mut iter {
         if !first {
             writer.write_str(" | ")?;
         }
