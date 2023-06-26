@@ -23,9 +23,9 @@ impl<B: Flags> Iter<B> {
 
 impl<B: 'static> Iter<B> {
     #[doc(hidden)]
-    pub const fn __private_const_new(flags: &'static [Flag<B>], source: B, state: B) -> Self {
+    pub const fn __private_const_new(flags: &'static [Flag<B>], source: B, remaining: B) -> Self {
         Iter {
-            inner: IterNames::__private_const_new(flags, source, state),
+            inner: IterNames::__private_const_new(flags, source, remaining),
             done: false,
         }
     }
@@ -44,7 +44,7 @@ impl<B: Flags> Iterator for Iter<B> {
                 // then return one final value that includes them. This makes `into_iter`
                 // and `from_iter` roundtrip
                 if !self.inner.remaining().is_empty() {
-                    Some(B::from_bits_retain(self.inner.state.bits()))
+                    Some(B::from_bits_retain(self.inner.remaining.bits()))
                 } else {
                     None
                 }
@@ -61,7 +61,7 @@ pub struct IterNames<B: 'static> {
     flags: &'static [Flag<B>],
     idx: usize,
     source: B,
-    state: B,
+    remaining: B,
 }
 
 impl<B: Flags> IterNames<B> {
@@ -70,7 +70,7 @@ impl<B: Flags> IterNames<B> {
         IterNames {
             flags: B::FLAGS,
             idx: 0,
-            state: B::from_bits_retain(flags.bits()),
+            remaining: B::from_bits_retain(flags.bits()),
             source: B::from_bits_retain(flags.bits()),
         }
     }
@@ -78,11 +78,11 @@ impl<B: Flags> IterNames<B> {
 
 impl<B: 'static> IterNames<B> {
     #[doc(hidden)]
-    pub const fn __private_const_new(flags: &'static [Flag<B>], source: B, state: B) -> Self {
+    pub const fn __private_const_new(flags: &'static [Flag<B>], source: B, remaining: B) -> Self {
         IterNames {
             flags,
             idx: 0,
-            state,
+            remaining,
             source,
         }
     }
@@ -93,7 +93,7 @@ impl<B: 'static> IterNames<B> {
     /// check whether or not there are any bits that didn't correspond
     /// to a valid flag remaining.
     pub fn remaining(&self) -> &B {
-        &self.state
+        &self.remaining
     }
 }
 
@@ -103,13 +103,15 @@ impl<B: Flags> Iterator for IterNames<B> {
     fn next(&mut self) -> Option<Self::Item> {
         while let Some(flag) = self.flags.get(self.idx) {
             // Short-circuit if our state is empty
-            if self.state.is_empty() {
+            if self.remaining.is_empty() {
                 return None;
             }
 
             self.idx += 1;
 
             let bits = flag.value().bits();
+
+            // TODO: Try another state value; `|` the bits into it, and don't yield unless they change the value of the output; this would avoid composite flags
 
             // NOTE: We check whether the flag exists in self, but remove it from
             // a different value. This ensure that overlapping flags are handled
@@ -122,7 +124,7 @@ impl<B: Flags> Iterator for IterNames<B> {
             // as we encountered it we'd be left with 0b00000100, which doesn't
             // correspond to a valid flag on its own.
             if self.source.contains(B::from_bits_retain(bits)) {
-                self.state.remove(B::from_bits_retain(bits));
+                self.remaining.remove(B::from_bits_retain(bits));
 
                 return Some((flag.name(), B::from_bits_retain(bits)));
             }

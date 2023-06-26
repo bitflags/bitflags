@@ -11,16 +11,14 @@ mod fmt;
 mod from_bits;
 mod from_bits_retain;
 mod from_bits_truncate;
-mod from_iter;
 mod from_name;
-mod from_str;
 mod insert;
 mod intersection;
 mod intersects;
 mod is_all;
 mod is_empty;
 mod iter;
-mod iter_names;
+mod parser;
 mod remove;
 mod set;
 mod symmetric_difference;
@@ -41,6 +39,21 @@ bitflags! {
 
         /// 1 | (1 << 1) | (1 << 2)
         const ABC = Self::A.bits() | Self::B.bits() | Self::C.bits();
+    }
+
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+    pub struct TestFlagsInvert: u8 {
+        /// 1 | (1 << 1) | (1 << 2)
+        const ABC = Self::A.bits() | Self::B.bits() | Self::C.bits();
+
+        /// 1
+        const A = 1;
+
+        /// 1 << 1
+        const B = 1 << 1;
+
+        /// 1 << 2
+        const C = 1 << 2;
     }
 
     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
@@ -77,5 +90,20 @@ bitflags! {
 
         /// (1 << 1) | (1 << 2)
         const BC = (1 << 1) | (1 << 2);
+    }
+
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+    pub struct TestOverlappingFull: u8 {
+        /// 1
+        const A = 1;
+
+        /// 1
+        const B = 1;
+
+        /// 1
+        const C = 1;
+
+        /// 2
+        const D = 1 << 1;
     }
 }
