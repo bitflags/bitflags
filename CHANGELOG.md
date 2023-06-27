@@ -1,3 +1,30 @@
+# 2.3.3
+
+## Changes to `-=`
+
+The `-=` operator was incorrectly changed to truncate bits that didn't correspond to valid flags in `2.3.0`. This has
+been fixed up so it once again behaves the same as `-` and `difference`.
+
+## Changes to `!`
+
+The `!` operator previously called `Self::from_bits_truncate`, which would truncate any bits that only partially
+overlapped with a valid flag. It will now use `bits & Self::all().bits()`, so any bits that overlap any bits
+specified by any flag will be respected. This is unlikely to have any practical implications, but enables defining
+a flag like `const ALL = !0` as a way to signal that any bit pattern is a known set of flags.
+
+## Changes to formatting
+
+Zero-valued flags will never be printed. You'll either get `0x0` for empty flags using debug formatting, or the
+set of flags with zero-valued flags omitted for others.
+
+Composite flags will no longer be redundantly printed if there are extra bits to print at the end that don't correspond
+to a valid flag.
+
+## What's Changed
+* Fix up incorrect sub assign behavior and other cleanups by @KodrAus in https://github.com/bitflags/bitflags/pull/366
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.3.2...2.3.3
+
 # 2.3.2
 
 ## What's Changed

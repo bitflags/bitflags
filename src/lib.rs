@@ -423,7 +423,7 @@
 #![cfg_attr(not(any(feature = "std", test)), no_std)]
 #![cfg_attr(not(test), forbid(unsafe_code))]
 #![cfg_attr(test, allow(mixed_script_confusables))]
-#![doc(html_root_url = "https://docs.rs/bitflags/2.3.2")]
+#![doc(html_root_url = "https://docs.rs/bitflags/2.3.3")]
 
 #[doc(inline)]
 pub use traits::{Bits, Flag, Flags};
