@@ -1,8 +1,6 @@
 [package]
 name = "bitflags"
-# NB: When modifying, also modify:
-#   1. html_root_url in lib.rs
-#   2. number in readme (for breaking changes)
+# NB: When modifying, also modify the number in readme (for breaking changes)
 version = "2.3.3"
 edition = "2021"
 rust-version = "1.56.0"
