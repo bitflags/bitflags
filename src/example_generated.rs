@@ -38,6 +38,10 @@ __impl_public_bitflags_forward! {
     Flags: u32, Field0
 }
 
+__impl_public_bitflags_ops! {
+    Flags
+}
+
 __impl_public_bitflags_iter! {
     Flags: u32, Flags
 }

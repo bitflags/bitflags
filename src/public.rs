@@ -117,8 +117,6 @@ macro_rules! __impl_public_bitflags_forward {
                 }
             }
         }
-
-        __impl_public_bitflags_ops!($PublicBitFlags);
     };
 }
 
@@ -203,31 +201,33 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn is_empty(f) {
-                    f.0 == Self::empty().0
+                    f.bits() == <$T as $crate::Bits>::EMPTY
                 }
 
                 fn is_all(f) {
-                    Self::all().0 | f.0 == f.0
+                    // NOTE: We check against `Self::all` here, not `Self::Bits::ALL`
+                    // because the set of all flags may not use all bits
+                    Self::all().bits() | f.bits() == f.bits()
                 }
 
                 fn intersects(f, other) {
-                    !(Self(f.0 & other.0)).is_empty()
+                    f.bits() & other.bits() != <$T as $crate::Bits>::EMPTY
                 }
 
                 fn contains(f, other) {
-                    (f.0 & other.0) == other.0
+                    f.bits() & other.bits() == other.bits()
                 }
 
                 fn insert(f, other) {
-                    f.0 = f.0 | other.0;
+                    *f = Self::from_bits_retain(f.bits() | other.bits());
                 }
 
                 fn remove(f, other) {
-                    f.0 = f.0 & !other.0;
+                    *f = Self::from_bits_retain(f.bits() & !other.bits());
                 }
 
                 fn toggle(f, other) {
-                    f.0 = f.0 ^ other.0;
+                    *f = Self::from_bits_retain(f.bits() ^ other.bits());
                 }
 
                 fn set(f, other, value) {
@@ -239,28 +239,26 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn intersection(f, other) {
-                    Self(f.0 & other.0)
+                    Self::from_bits_retain(f.bits() & other.bits())
                 }
 
                 fn union(f, other) {
-                    Self(f.0 | other.0)
+                    Self::from_bits_retain(f.bits() | other.bits())
                 }
 
                 fn difference(f, other) {
-                    Self(f.0 & !other.0)
+                    Self::from_bits_retain(f.bits() & !other.bits())
                 }
 
                 fn symmetric_difference(f, other) {
-                    Self(f.0 ^ other.0)
+                    Self::from_bits_retain(f.bits() ^ other.bits())
                 }
 
                 fn complement(f) {
-                    Self::from_bits_truncate(!f.0)
+                    Self::from_bits_truncate(!f.bits())
                 }
             }
         }
-
-        __impl_public_bitflags_ops!($BitFlags);
     };
 }
 
@@ -273,13 +271,21 @@ macro_rules! __impl_public_bitflags_iter {
             /// Iterate over enabled flag values.
             #[inline]
             pub const fn iter(&self) -> $crate::iter::Iter<$PublicBitFlags> {
-                $crate::iter::Iter::__private_const_new(<$PublicBitFlags as $crate::Flags>::FLAGS, $PublicBitFlags::from_bits_retain(self.bits()), $PublicBitFlags::from_bits_retain(self.bits()))
+                $crate::iter::Iter::__private_const_new(
+                    <$PublicBitFlags as $crate::Flags>::FLAGS,
+                    $PublicBitFlags::from_bits_retain(self.bits()),
+                    $PublicBitFlags::from_bits_retain(self.bits()),
+                )
             }
 
             /// Iterate over enabled flag values with their stringified names.
             #[inline]
             pub const fn iter_names(&self) -> $crate::iter::IterNames<$PublicBitFlags> {
-                $crate::iter::IterNames::__private_const_new(<$PublicBitFlags as $crate::Flags>::FLAGS, $PublicBitFlags::from_bits_retain(self.bits()), $PublicBitFlags::from_bits_retain(self.bits()))
+                $crate::iter::IterNames::__private_const_new(
+                    <$PublicBitFlags as $crate::Flags>::FLAGS,
+                    $PublicBitFlags::from_bits_retain(self.bits()),
+                    $PublicBitFlags::from_bits_retain(self.bits()),
+                )
             }
         }
 
@@ -300,25 +306,37 @@ macro_rules! __impl_public_bitflags_iter {
 macro_rules! __impl_public_bitflags_ops {
     ($PublicBitFlags:ident) => {
         impl $crate::__private::core::fmt::Binary for $PublicBitFlags {
-            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+            fn fmt(
+                &self,
+                f: &mut $crate::__private::core::fmt::Formatter,
+            ) -> $crate::__private::core::fmt::Result {
                 $crate::__private::core::fmt::Binary::fmt(&self.0, f)
             }
         }
 
         impl $crate::__private::core::fmt::Octal for $PublicBitFlags {
-            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+            fn fmt(
+                &self,
+                f: &mut $crate::__private::core::fmt::Formatter,
+            ) -> $crate::__private::core::fmt::Result {
                 $crate::__private::core::fmt::Octal::fmt(&self.0, f)
             }
         }
 
         impl $crate::__private::core::fmt::LowerHex for $PublicBitFlags {
-            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+            fn fmt(
+                &self,
+                f: &mut $crate::__private::core::fmt::Formatter,
+            ) -> $crate::__private::core::fmt::Result {
                 $crate::__private::core::fmt::LowerHex::fmt(&self.0, f)
             }
         }
 
         impl $crate::__private::core::fmt::UpperHex for $PublicBitFlags {
-            fn fmt(&self, f: &mut $crate::__private::core::fmt::Formatter) -> $crate::__private::core::fmt::Result {
+            fn fmt(
+                &self,
+                f: &mut $crate::__private::core::fmt::Formatter,
+            ) -> $crate::__private::core::fmt::Result {
                 $crate::__private::core::fmt::UpperHex::fmt(&self.0, f)
             }
         }
@@ -337,7 +355,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Adds the set of flags.
             #[inline]
             fn bitor_assign(&mut self, other: Self) {
-                self.0 = self.0 | other.0;
+                *self = Self::from_bits_retain(self.bits()).union(other);
             }
         }
 
@@ -355,7 +373,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Toggles the set of flags.
             #[inline]
             fn bitxor_assign(&mut self, other: Self) {
-                self.0 = self.0 ^ other.0
+                *self = Self::from_bits_retain(self.bits()).symmetric_difference(other);
             }
         }
 
@@ -373,7 +391,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Disables all flags disabled in the set.
             #[inline]
             fn bitand_assign(&mut self, other: Self) {
-                self.0 = self.0 & other.0;
+                *self = Self::from_bits_retain(self.bits()).intersection(other);
             }
         }
 
@@ -391,7 +409,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Disables all flags enabled in the set.
             #[inline]
             fn sub_assign(&mut self, other: Self) {
-                self.0 = self.0 & !other.0;
+                *self = Self::from_bits_retain(self.bits()).difference(other);
             }
         }
 
@@ -406,7 +424,10 @@ macro_rules! __impl_public_bitflags_ops {
         }
 
         impl $crate::__private::core::iter::Extend<$PublicBitFlags> for $PublicBitFlags {
-            fn extend<T: $crate::__private::core::iter::IntoIterator<Item=Self>>(&mut self, iterator: T) {
+            fn extend<T: $crate::__private::core::iter::IntoIterator<Item = Self>>(
+                &mut self,
+                iterator: T,
+            ) {
                 for item in iterator {
                     self.insert(item)
                 }
@@ -414,7 +435,9 @@ macro_rules! __impl_public_bitflags_ops {
         }
 
         impl $crate::__private::core::iter::FromIterator<$PublicBitFlags> for $PublicBitFlags {
-            fn from_iter<T: $crate::__private::core::iter::IntoIterator<Item=Self>>(iterator: T) -> Self {
+            fn from_iter<T: $crate::__private::core::iter::IntoIterator<Item = Self>>(
+                iterator: T,
+            ) -> Self {
                 use $crate::__private::core::iter::Extend;
 
                 let mut result = Self::empty();

@@ -4,7 +4,7 @@
 
 use std::{fmt, str};
 
-use bitflags::{Flags, Flag};
+use bitflags::{Flag, Flags};
 
 // First: Define your flags type. It just needs to be `Sized + 'static`.
 pub struct ManualFlags(u32);
@@ -54,5 +54,8 @@ impl fmt::Display for ManualFlags {
 }
 
 fn main() {
-    println!("{}", ManualFlags::A.union(ManualFlags::B).union(ManualFlags::C));
+    println!(
+        "{}",
+        ManualFlags::A.union(ManualFlags::B).union(ManualFlags::C)
+    );
 }

@@ -56,7 +56,7 @@ macro_rules! __impl_internal_bitflags {
                 if self.is_empty() {
                     // If no flags are set then write an empty hex flag to avoid
                     // writing an empty string. In some contexts, like serialization,
-                    // an empty string is preferrable, but it may be unexpected in
+                    // an empty string is preferable, but it may be unexpected in
                     // others for a format not to produce any output.
                     //
                     // We can remove this `0x0` and remain compatible with `FromStr`,
@@ -104,6 +104,10 @@ macro_rules! __impl_internal_bitflags {
                     $Flag;
                 )*
             }
+        }
+
+        __impl_public_bitflags_ops! {
+            $InternalBitFlags
         }
 
         __impl_public_bitflags_iter! {

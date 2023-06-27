@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use bytemuck::{Pod, Zeroable};
-    
+
     bitflags! {
         #[derive(Pod, Zeroable, Clone, Copy)]
         #[repr(transparent)]
