@@ -79,6 +79,11 @@ pub mod bytemuck_support;
 #[cfg(feature = "bytemuck")]
 pub use bytemuck;
 
+#[cfg(feature = "binrw")]
+pub mod binrw_support;
+#[cfg(feature = "binrw")]
+pub use binrw;
+
 /// Implements traits from external libraries for the internal bitflags type.
 #[macro_export(local_inner_macros)]
 #[doc(hidden)]
@@ -114,6 +119,15 @@ macro_rules! __impl_external_bitflags {
         }
 
         __impl_external_bitflags_bytemuck! {
+            $InternalBitFlags: $T {
+                $(
+                    $(#[$attr $($args)*])*
+                    $Flag;
+                )*
+            }
+        }
+
+        __impl_external_bitflags_binrw! {
             $InternalBitFlags: $T {
                 $(
                     $(#[$attr $($args)*])*
@@ -249,6 +263,69 @@ macro_rules! __impl_external_bitflags_bytemuck {
 #[doc(hidden)]
 #[cfg(not(feature = "bytemuck"))]
 macro_rules! __impl_external_bitflags_bytemuck {
+    (
+        $InternalBitFlags:ident: $T:ty {
+            $(
+                $(#[$attr:ident $($args:tt)*])*
+                    $Flag:ident;
+                )*
+        }
+    ) => {};
+}
+
+/// Implement `BinRead` and `BinWrite` for the internal bitflags type.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+#[cfg(feature = "binrw")]
+macro_rules! __impl_external_bitflags_binrw {
+    (
+        $InternalBitFlags:ident: $T:ty {
+            $(
+                $(#[$attr:ident $($args:tt)*])*
+                    $Flag:ident;
+                )*
+        }
+    ) => {
+        // SAFETY: $InternalBitFlags is guaranteed to have the same ABI as $T,
+        // and $T implements Pod
+        impl $crate::__private::binrw::BinRead for $InternalBitFlags
+        where
+            $T: $crate::__private::binrw::BinRead,
+        {
+            type Args<'a> = <$T as $crate::__private::binrw::BinRead>::Args<'a>;
+            fn read_options<
+                R: $crate::__private::binrw::io::Read + $crate::__private::binrw::io::Seek,
+            >(
+                reader: &mut R,
+                endian: $crate::__private::binrw::Endian,
+                args: Self::Args<'_>,
+            ) -> Result<Self, binrw::Error> {
+                <$T>::read_options(reader, endian, args)
+                    .map(|bits| Self::from_bits(bits).unwrap_or(Self::empty()))
+            }
+        }
+
+        // SAFETY: $InternalBitFlags is guaranteed to have the same ABI as $T,
+        // and $T implements Zeroable
+        /*impl $crate::__private::binrw::BinWrite for $InternalBitFlags where
+            $T: $crate::__private::binrw::BinWrite
+        {
+            fn write_options<W: Write + Seek>(
+                &self,
+                writer: &mut W,
+                endian: Endian,
+                args: Self::Args<'_>,
+            ) -> BinResult<()> {
+                $T.write_options(writer, )
+            }
+        }*/
+    };
+}
+
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+#[cfg(not(feature = "binrw"))]
+macro_rules! __impl_external_bitflags_binrw {
     (
         $InternalBitFlags:ident: $T:ty {
             $(
