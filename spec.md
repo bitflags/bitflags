@@ -9,7 +9,7 @@ You can use `bitflags` to:
 
 You can't use `bitflags` to:
 
-- guarantee only bits corresponding to defined flags will ever be set.
+- guarantee only bits corresponding to defined flags will ever be set. `bitflags` is a light wrapper over an integer type, not a language feature pollyfill.
 
 ## Definitions
 
@@ -125,16 +125,24 @@ If the flags type is normal then the result is normalized. If the flags type is 
 
 > The intersection of a source flags value with the negation of a target flags value (`&!`), truncating the result.
 
+### Iteration
+
+> Yield a set of name and flags value pairs from a source flags value, where the result of unioning all yielded flags values together will lossily normalize the source.
+
+Each yielded flags value sets exactly the bits of a defined flag and is paired with its name. If the source is normalized then the result of unioning all yielded flags values together will exactly reproduce the source. If the source is not normalized then any bits that aren't in the set of any contained flag will not be yielded.
+
 ### Formatting
 
 Flags values can be formatted and parsed using the following *whitespace-insensitive*, *case-sensitive* grammar:
 
 - _Flags:_ (_Flag_)`|`*
-- _Flag:_ _Name_ | _HexNumber_
+- _Flag:_ _Name_ | _Hex Number_
 - _Name:_ The name of any defined flag
-- _HexNumber_: `0x`([0-9a-fA-F])*
+- _Hex Number_: `0x`([0-9a-fA-F])*
 
-If a source flags value is formatted and then parsed the result will exactly reproduce the source.
+Flags values are formatted by iterating over defined flags in a source flags value. If the source is not normalized then any bits not in the set of any contained flag will format as a hex number.
+
+Parsing a formatted flags value will exactly reproduce it.
 
 ## Implementation
 
