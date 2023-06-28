@@ -1,6 +1,6 @@
 # Bitflags
 
-`bitflags` generates flags enums with well-defined semantics and ergonimic end-user APIs.
+`bitflags` generates flags enums with well-defined semantics and ergonomic end-user APIs.
 
 You can use `bitflags` to:
 
