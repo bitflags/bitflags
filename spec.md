@@ -9,8 +9,8 @@ You can use `bitflags` to:
 
 You can't use `bitflags` to:
 
-- guarantee only bits corresponding to defined flags will ever be set. `bitflags` is a light wrapper over an integer type, not a language feature pollyfill.
-- define bitfields. It only generates types where bits correspond to flags and set functions over them.
+- guarantee only bits corresponding to defined flags will ever be set. `bitflags` is a light wrapper over an integer type with additional semantics. It's not a native language feature.
+- define bitfields. `bitflags` only generates types where set bits denote the presence of some combination of flags.
 
 ## Definitions
 
@@ -409,11 +409,11 @@ The following are examples of the difference between two flags values:
 
 ### Iteration
 
-Yield a set of flags values contained in a source flags value, where all set bits in the source are set in the yielded flags values.
+Yield a set of flags values contained in a source flags value, where the result of unioning the yielded flags values will be the truncated source.
 
 ----
 
-The result of unioning all yielded flags values will be the truncated source. Any unknown bits that are present in the source are still yielded.
+Any unknown bits that are present in the source may still be yielded.
 
 Each yielded flags value should set exactly the bits of a defined flag contained in the source. Any bits that aren't in the set of any contained flag should be yielded together as a final flags value.
 
@@ -457,6 +457,13 @@ It may also yield any combination of flags values
 0b0000_1000
 ```
 
+Unknown bits aren't required to be yielded:
+
+```rust
+0b0000_0001
+0b0000_0010
+```
+
 ### Formatting
 
 Flags values can be formatted and parsed using the following *whitespace-insensitive*, *case-sensitive* grammar:
@@ -468,7 +475,7 @@ Flags values can be formatted and parsed using the following *whitespace-insensi
 
 Flags values can be formatted by iterating over them. Any yielded flags value that sets exactly the bits of a defined flag may be formatted with its name. Any yielded flags value that doesn't set exactly the bits of a defined flag will be formatted as a hex number.
 
-Parsing a formatted flags value will exactly reproduce it.
+The result of parsing a formatted flags value will be the truncated source.
 
 ----
 
