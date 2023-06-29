@@ -413,9 +413,7 @@ Yield a set of flags values contained in a source flags value, where the result 
 
 ----
 
-Any unknown bits that are present in the source may still be yielded.
-
-Each yielded flags value should set exactly the bits of a defined flag contained in the source. Any bits that aren't in the set of any contained flag should be yielded together as a final flags value.
+To be most useful, each yielded flags value should set exactly the bits of a defined flag contained in the source. Any bits that aren't in the set of any contained flag should be yielded together as a final flags value. Unknown bits that are present in the source should still be yielded to avoid possible confusion, but are not required.
 
 ----
 
@@ -473,9 +471,9 @@ Flags values can be formatted and parsed using the following *whitespace-insensi
 - _Name:_ The name of any defined flag
 - _Hex Number_: `0x`([0-9a-fA-F])*
 
-Flags values can be formatted by iterating over them. Any yielded flags value that sets exactly the bits of a defined flag may be formatted with its name. Any yielded flags value that doesn't set exactly the bits of a defined flag will be formatted as a hex number.
+Flags values can be formatted by iterating over them. Any yielded flags value that sets exactly the bits of a defined flag should be formatted with its name. Any yielded flags value that doesn't set exactly the bits of a defined flag must be formatted as a hex number.
 
-The result of parsing a formatted flags value will be the truncated source.
+The result of parsing a formatted flags value will be the truncated source. An empty formatted flags value is zero.
 
 ----
 
@@ -498,7 +496,10 @@ The following are examples of how flags values can be formatted:
 0b0000_0010 = "0x2"
 0b0000_0011 = "A | B"
 0b1000_0000 = "0x80"
+0b1000_0000 = "0x0"
+0b1000_0000 = ""
 0b1111_1111 = "A | B | 0xfc"
+0b1111_1111 = "A | B"
 ```
 
 ## Implementation
