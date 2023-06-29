@@ -129,10 +129,6 @@ A flags type that defines no zero-bit flags and all known bits are in at least o
 
 ----
 
-A flags type may still be normal if it defines multi-bit flags so long as each of its bits is also in a defined single-bit flag.
-
-----
-
 The following are all normal flags types:
 
 ```rust
@@ -157,8 +153,6 @@ struct NotNormalB {
 }
 ```
 
-----
-
 In cases where flags are defined by an external source, a flags type can define a single flag with all bits set:
 
 ```rust
@@ -179,10 +173,6 @@ Whether all bits in a flags value are unset.
 
 ----
 
-If any known or unknown bits are set then the flags value is considered not empty.
-
-----
-
 The following flags value is empty:
 
 ```rust
@@ -199,10 +189,6 @@ The following flags values are not empty:
 #### All
 
 Whether all defined flags are contained in a flags value.
-
-----
-
-Unknown bits don't affect whether a flags value is all. It's not a strict equality condition like empty.
 
 ----
 
@@ -227,9 +213,7 @@ the following flags values all satisfy all:
 
 Whether all set bits in a source flags value are also set in a target flags value.
 
-----
-
-If the tatget is empty then the source will always contain it. A flag is contained in a flags value if all bits in the flag are set in the flags value.
+A flag is contained in a flags value if all bits in the flag are set in the flags value.
 
 ----
 
@@ -259,9 +243,7 @@ but the following flags values are not contained:
 
 Whether any set bits in a source flags value are also set in a target flags value.
 
-----
-
-An empty flags value never intersects any other flags value. A flag intersects a flags value if any bits in the flag are set in the flags value.
+A flag intersects a flags value if any bits in the flag are set in the flags value.
 
 ----
 
@@ -292,10 +274,6 @@ Whether all set bits in a flags value are known bits and all defined flags that 
 
 ----
 
-A consequence of zero-bit flags always being contained but never intersected means a flags type that defines one can never be normalized.
-
-----
-
 Given the flags type:
 
 ```rust
@@ -323,6 +301,8 @@ but the following flags values are not normalized:
 0b0000_1000
 ```
 
+A consequence of zero-bit flags always being contained but never intersected means a flags type that defines one can never be normalized.
+
 ### Operations
 
 Examples in this section all use the given flags type:
@@ -341,9 +321,7 @@ The definition of this flags type has implications on the results of most operat
 
 Unset all unknown bits in a flags value.
 
-----
-
-If the flags type is normal then the result is normalized. If the flags type is not normal then truncating doesn't guarantee a normalized result; only one with no unknown bits set. This allows truncation to be implemented efficiently.
+If the flags type is normal then the result is normalized.
 
 ----
 
@@ -429,9 +407,9 @@ The following are examples of the difference between two flags values:
 
 ### Iteration
 
-Yield a set of name and flags value pairs from a source flags value, where the result of unioning all yielded flags values together 
+Yield a set of name and flags value pairs from a source flags value, where the result of unioning all yielded flags values together will lossily normalize the source.
 
-----will lossily normalize the source.
+----
 
 Each yielded flags value sets exactly the bits of a defined flag and is paired with its name. If the source is normalized then the result of unioning all yielded flags values together will exactly reproduce the source. If the source is not normalized then any bits that aren't in the set of any contained flag will not be yielded.
 
