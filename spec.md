@@ -29,8 +29,6 @@ Bits types are typically fixed-width unsigned integers, like `u32`, but may be m
 
 A value at a specific location within a bits type that may be set or unset.
 
-----
-
 ### Flag
 
 A uniquely named set of bits in a bits type.
@@ -80,8 +78,6 @@ const B = 0b1111_1111;
 ### Flags type
 
 A set of defined flags over a specific bits type.
-
-----
 
 #### Known bit
 
@@ -176,8 +172,6 @@ This flags type is not normal, but guarantees no bits will ever be truncated.
 ### Flags value
 
 An instance of a flags type using its bits type for storage.
-
-----
 
 #### Empty
 
