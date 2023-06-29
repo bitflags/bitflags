@@ -19,23 +19,29 @@ Examples use `bitflags` syntax with `u8` as the bits type.
 
 ### Bits type
 
-> A type that stores a fixed number bits.
+A type that stores a fixed number bits.
+
+----
 
 Bits types are typically fixed-width unsigned integers, like `u32`, but may be more exotic.
 
 #### Bit
 
-> A value at a specific location within a bits type that may be set or unset.
+A value at a specific location within a bits type that may be set or unset.
+
+----
 
 ### Flag
 
-> A uniquely named set of bits in a bits type.
+A uniquely named set of bits in a bits type.
+
+----
 
 Names must be unique, but bits are not required to be exclusive to a flag. Bits are not required to be contiguous.
 
 #### Zero-bit flag
 
-> A flag with a set of zero bits.
+A flag with a set of zero bits.
 
 ----
 
@@ -47,7 +53,7 @@ const ZERO = 0b0000_0000;
 
 #### Single-bit flag
 
-> A flag with a set of one bit.
+A flag with a set of one bit.
 
 ----
 
@@ -60,7 +66,7 @@ const B = 0b0000_0010;
 
 #### Multi-bit flag
 
-> A flag with a set of more than one bit.
+A flag with a set of more than one bit.
 
 ----
 
@@ -73,11 +79,13 @@ const B = 0b1111_1111;
 
 ### Flags type
 
-> A set of defined flags over a specific bits type.
+A set of defined flags over a specific bits type.
+
+----
 
 #### Known bit
 
-> A bit in any defined flag.
+A bit in any defined flag.
 
 ----
 
@@ -99,7 +107,7 @@ the known bits are:
 
 #### Unknown bit
 
-> A bit not in any defined flag.
+A bit not in any defined flag.
 
 ----
 
@@ -121,7 +129,9 @@ the unknown bits are:
 
 #### Normal
 
-> A flags type that defines no zero-bit flags and all known bits are in at least one corresponding single-bit flag.
+A flags type that defines no zero-bit flags and all known bits are in at least one corresponding single-bit flag.
+
+----
 
 A flags type may still be normal if it defines multi-bit flags so long as each of its bits is also in a defined single-bit flag.
 
@@ -165,11 +175,15 @@ This flags type is not normal, but guarantees no bits will ever be truncated.
 
 ### Flags value
 
-> An instance of a flags type using its bits type for storage.
+An instance of a flags type using its bits type for storage.
+
+----
 
 #### Empty
 
-> Whether all bits in a flags value are unset.
+Whether all bits in a flags value are unset.
+
+----
 
 If any known or unknown bits are set then the flags value is considered not empty.
 
@@ -190,7 +204,9 @@ The following flags values are not empty:
 
 #### All
 
-> Whether all defined flags are contained in a flags value.
+Whether all defined flags are contained in a flags value.
+
+----
 
 Unknown bits don't affect whether a flags value is all. It's not a strict equality condition like empty.
 
@@ -215,7 +231,9 @@ the following flags values all satisfy all:
 
 #### Contains
 
-> Whether all set bits in a source flags value are also set in a target flags value.
+Whether all set bits in a source flags value are also set in a target flags value.
+
+----
 
 If the tatget is empty then the source will always contain it. A flag is contained in a flags value if all bits in the flag are set in the flags value.
 
@@ -245,7 +263,9 @@ but the following flags values are not contained:
 
 #### Intersects
 
-> Whether any set bits in a source flags value are also set in a target flags value.
+Whether any set bits in a source flags value are also set in a target flags value.
+
+----
 
 An empty flags value never intersects any other flags value. A flag intersects a flags value if any bits in the flag are set in the flags value.
 
@@ -274,7 +294,9 @@ but the following flags values do not intersect:
 
 #### Normalized
 
-> Whether all set bits in a flags value are known bits and all defined flags that intersect are also contained.
+Whether all set bits in a flags value are known bits and all defined flags that intersect are also contained.
+
+----
 
 A consequence of zero-bit flags always being contained but never intersected means a flags type that defines one can never be normalized.
 
@@ -323,7 +345,9 @@ The definition of this flags type has implications on the results of most operat
 
 #### Truncate
 
-> Unset all unknown bits in a flags value.
+Unset all unknown bits in a flags value.
+
+----
 
 If the flags type is normal then the result is normalized. If the flags type is not normal then truncating doesn't guarantee a normalized result; only one with no unknown bits set. This allows truncation to be implemented efficiently.
 
@@ -343,7 +367,7 @@ the result of truncation will be:
 
 #### Union
 
-> The bitwise or (`|`) of the bits in two flags values, truncating the result.
+The bitwise or (`|`) of the bits in two flags values, truncating the result.
 
 ----
 
@@ -356,7 +380,7 @@ The following are examples of the result of unioning flags values:
 
 #### Intersection
 
-> The bitwise and (`&`) of the bits in two flags values, truncating the result.
+The bitwise and (`&`) of the bits in two flags values, truncating the result.
 
 ----
 
@@ -369,7 +393,7 @@ The following are examples of the result of intersecting flags values:
 
 #### Symmetric difference
 
-> The bitwise exclusive-or (`^`) of the bits in two flags values, truncating the result.
+The bitwise exclusive-or (`^`) of the bits in two flags values, truncating the result.
 
 ----
 
@@ -383,7 +407,7 @@ The following are examples of the symmetric difference between two flags values:
 
 #### Complement
 
-> The bitwise negation (`!`) of the bits in a flags value, truncating the result.
+The bitwise negation (`!`) of the bits in a flags value, truncating the result.
 
 ----
 
@@ -397,7 +421,7 @@ The following are examples of the complement of a flags value:
 
 #### Difference
 
-> The intersection of a source flags value with the negation of a target flags value (`&!`), truncating the result.
+The intersection of a source flags value with the negation of a target flags value (`&!`), truncating the result.
 
 ----
 
@@ -411,7 +435,9 @@ The following are examples of the difference between two flags values:
 
 ### Iteration
 
-> Yield a set of name and flags value pairs from a source flags value, where the result of unioning all yielded flags values together will lossily normalize the source.
+Yield a set of name and flags value pairs from a source flags value, where the result of unioning all yielded flags values together 
+
+----will lossily normalize the source.
 
 Each yielded flags value sets exactly the bits of a defined flag and is paired with its name. If the source is normalized then the result of unioning all yielded flags values together will exactly reproduce the source. If the source is not normalized then any bits that aren't in the set of any contained flag will not be yielded.
 
