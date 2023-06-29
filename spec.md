@@ -306,8 +306,6 @@ A consequence of zero-bit flags always being contained but never intersected mea
 
 ### Operations
 
-A flags type must implement the operations in this section.
-
 Examples in this section all use the given flags type:
 
 ```rust
@@ -364,6 +362,7 @@ The following are examples of the result of intersecting flags values:
 ```rust
 0b0000_0001 & 0b0000_0010 = 0b0000_0000
 0b1111_1100 & 0b1111_0111 = 0b0000_0100
+0b1111_1111 & 0b1111_1111 = 0b0000_1111
 ```
 
 #### Symmetric difference
@@ -410,11 +409,53 @@ The following are examples of the difference between two flags values:
 
 ### Iteration
 
-Yield a set of flags values from a source flags value, where the result of unioning all yielded flags values together will exactly reproduce the source.
+Yield a set of flags values contained in a source flags value, where all set bits in the source are set in the yielded flags values.
 
 ----
 
+The result of unioning all yielded flags values will be the truncated source. Any unknown bits that are present in the source are still yielded.
+
 Each yielded flags value should set exactly the bits of a defined flag contained in the source. Any bits that aren't in the set of any contained flag should be yielded together as a final flags value.
+
+----
+
+Given the following flags type:
+
+```rust
+struct Flags {
+    const A  = 0b0000_0001;
+    const B  = 0b0000_0010;
+    const AB = 0b0000_0011;
+}
+```
+
+and the following flags value:
+
+```rust
+0b0000_1111
+```
+
+When iterated it may yield a flags value for `A` and `B`, with a final flags value of the remaining bits:
+
+```rust
+0b0000_0001
+0b0000_0010
+0b0000_1100
+```
+
+It may also yield a flags value for `AB`, with a final flags value of the remaining bits:
+
+```rust
+0b0000_0011
+0b0000_1100
+```
+
+It may also yield any combination of flags values
+
+```rust
+0b0000_0111
+0b0000_1000
+```
 
 ### Formatting
 
