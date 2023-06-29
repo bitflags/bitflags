@@ -10,6 +10,7 @@ You can use `bitflags` to:
 You can't use `bitflags` to:
 
 - guarantee only bits corresponding to defined flags will ever be set. `bitflags` is a light wrapper over an integer type, not a language feature pollyfill.
+- define bitfields. It only generates types where bits correspond to flags and set functions over them.
 
 ## Definitions
 
@@ -305,6 +306,8 @@ A consequence of zero-bit flags always being contained but never intersected mea
 
 ### Operations
 
+A flags type must implement the operations in this section.
+
 Examples in this section all use the given flags type:
 
 ```rust
@@ -407,11 +410,11 @@ The following are examples of the difference between two flags values:
 
 ### Iteration
 
-Yield a set of name and flags value pairs from a source flags value, where the result of unioning all yielded flags values together will lossily normalize the source.
+Yield a set of flags values from a source flags value, where the result of unioning all yielded flags values together will exactly reproduce the source.
 
 ----
 
-Each yielded flags value sets exactly the bits of a defined flag and is paired with its name. If the source is normalized then the result of unioning all yielded flags values together will exactly reproduce the source. If the source is not normalized then any bits that aren't in the set of any contained flag will not be yielded.
+Each yielded flags value should set exactly the bits of a defined flag contained in the source. Any bits that aren't in the set of any contained flag should be yielded together as a final flags value.
 
 ### Formatting
 
@@ -422,7 +425,7 @@ Flags values can be formatted and parsed using the following *whitespace-insensi
 - _Name:_ The name of any defined flag
 - _Hex Number_: `0x`([0-9a-fA-F])*
 
-Flags values are formatted by iterating over defined flags in a source flags value. If the source is not normalized then any bits not in the set of any contained flag will format as a hex number.
+Flags values can be formatted by iterating over them. Any yielded flags value that sets exactly the bits of a defined flag may be formatted with its name. Any yielded flags value that doesn't set exactly the bits of a defined flag will be formatted as a hex number.
 
 Parsing a formatted flags value will exactly reproduce it.
 
@@ -442,13 +445,17 @@ The following are examples of how flags values can be formatted:
 
 ```rust
 0b0000_0001 = "A"
+0b0000_0001 = "0x1"
 0b0000_0010 = "B"
+0b0000_0010 = "0x2"
 0b0000_0011 = "A | B"
 0b1000_0000 = "0x80"
 0b1111_1111 = "A | B | 0xfc"
 ```
 
 ## Implementation
+
+> This section is just here to link the spec to what's implemented; it should be removed in favor of regular doc comments.
 
 The specification is implemented through the `Flags` trait. An implementor of the `Flags` trait is a flags type. An instance of the implementor is a flags value.
 
