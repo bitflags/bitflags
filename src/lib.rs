@@ -560,7 +560,7 @@ macro_rules! bitflags {
         $vis:vis struct $BitFlags:ident: $T:ty {
             $(
                 $(#[$inner:ident $($args:tt)*])*
-                const $Flag:ident = $value:expr;
+                const $Flag:tt = $value:expr;
             )*
         }
 
@@ -578,7 +578,7 @@ macro_rules! bitflags {
             $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
-                    $Flag = $value;
+                    const $Flag = $value;
                 )*
             }
         }
@@ -604,7 +604,7 @@ macro_rules! bitflags {
                 InternalBitFlags: $T, $BitFlags {
                     $(
                         $(#[$inner $($args)*])*
-                        $Flag = $value;
+                        const $Flag = $value;
                     )*
                 }
             }
@@ -614,7 +614,7 @@ macro_rules! bitflags {
                 InternalBitFlags: $T, $BitFlags {
                     $(
                         $(#[$inner $($args)*])*
-                        $Flag;
+                        const $Flag;
                     )*
                 }
             }
@@ -640,7 +640,7 @@ macro_rules! bitflags {
         impl $BitFlags:ident: $T:ty {
             $(
                 $(#[$inner:ident $($args:tt)*])*
-                const $Flag:ident = $value:expr;
+                const $Flag:tt = $value:expr;
             )*
         }
 
@@ -650,7 +650,7 @@ macro_rules! bitflags {
             $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
-                    $Flag = $value;
+                    const $Flag = $value;
                 )*
             }
         }
@@ -670,7 +670,7 @@ macro_rules! bitflags {
                 $BitFlags: $T, $BitFlags {
                     $(
                         $(#[$inner $($args)*])*
-                        $Flag;
+                        const $Flag = $value;
                     )*
                 }
             }
@@ -1010,6 +1010,30 @@ macro_rules! __bitflags_expr_safe_attrs {
         $(#[$expr $($exprargs)*])*
         { $e }
     }
+}
+
+/// Implement a flag, which may be a wildcard `_`.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! __bitflags_flag {
+    (
+        {
+            name: _,
+            named: { $($named:tt)* },
+            unnamed: { $($unnamed:tt)* },
+        }
+    ) => {
+        $($unnamed)*
+    };
+    (
+        {
+            name: $Flag:ident,
+            named: { $($named:tt)* },
+            unnamed: { $($unnamed:tt)* },
+        }
+    ) => {
+        $($named)*
+    };
 }
 
 #[macro_use]

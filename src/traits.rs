@@ -49,7 +49,13 @@ pub trait Flags: Sized + 'static {
 
     /// Returns the set containing all flags.
     fn all() -> Self {
-        Self::from_bits_truncate(Self::Bits::ALL)
+        let mut truncated = Self::Bits::EMPTY;
+
+        for flag in Self::FLAGS.iter() {
+            truncated = truncated | flag.value().bits();
+        }
+
+        Self::from_bits_retain(truncated)
     }
 
     /// Returns the raw value of the flags currently stored.
@@ -78,21 +84,7 @@ pub trait Flags: Sized + 'static {
     ///
     /// [multi-bit flag]: index.html#multi-bit-flags
     fn from_bits_truncate(bits: Self::Bits) -> Self {
-        if bits == Self::Bits::EMPTY {
-            return Self::empty();
-        }
-
-        let mut truncated = Self::Bits::EMPTY;
-
-        for flag in Self::FLAGS.iter() {
-            let flag = flag.value();
-
-            if bits & flag.bits() == flag.bits() {
-                truncated = truncated | flag.bits();
-            }
-        }
-
-        Self::from_bits_retain(truncated)
+        Self::from_bits_retain(bits & Self::all().bits())
     }
 
     /// Convert from underlying bit representation, preserving all
@@ -101,6 +93,10 @@ pub trait Flags: Sized + 'static {
 
     /// Get the flag for a particular name.
     fn from_name(name: &str) -> Option<Self> {
+        if name.is_empty() {
+            return None;
+        }
+
         for flag in Self::FLAGS {
             if flag.name() == name {
                 return Some(Self::from_bits_retain(flag.value().bits()));
@@ -155,7 +151,7 @@ pub trait Flags: Sized + 'static {
     where
         Self: Sized,
     {
-        *self = Self::from_bits_retain(self.bits() | other.bits());
+        *self = Self::from_bits_retain(self.bits()).union(other);
     }
 
     /// Removes the specified flags in-place.
@@ -165,7 +161,7 @@ pub trait Flags: Sized + 'static {
     where
         Self: Sized,
     {
-        *self = Self::from_bits_retain(self.bits() & !other.bits());
+        *self = Self::from_bits_retain(self.bits()).difference(other);
     }
 
     /// Toggles the specified flags in-place.
@@ -175,7 +171,7 @@ pub trait Flags: Sized + 'static {
     where
         Self: Sized,
     {
-        *self = Self::from_bits_retain(self.bits() ^ other.bits());
+        *self = Self::from_bits_retain(self.bits()).symmetric_difference(other);
     }
 
     /// Inserts or removes the specified flags depending on the passed value.
@@ -193,26 +189,26 @@ pub trait Flags: Sized + 'static {
     /// Returns the intersection between the flags in `self` and `other`.
     #[must_use]
     fn intersection(self, other: Self) -> Self {
-        Self::from_bits_retain(self.bits() & other.bits())
+        Self::from_bits_truncate(self.bits() & other.bits())
     }
 
     /// Returns the union of between the flags in `self` and `other`.
     #[must_use]
     fn union(self, other: Self) -> Self {
-        Self::from_bits_retain(self.bits() | other.bits())
+        Self::from_bits_truncate(self.bits() | other.bits())
     }
 
     /// Returns the difference between the flags in `self` and `other`.
     #[must_use]
     fn difference(self, other: Self) -> Self {
-        Self::from_bits_retain(self.bits() & !other.bits())
+        Self::from_bits_truncate(self.bits() & !other.bits())
     }
 
     /// Returns the symmetric difference between the flags
     /// in `self` and `other`.
     #[must_use]
     fn symmetric_difference(self, other: Self) -> Self {
-        Self::from_bits_retain(self.bits() ^ other.bits())
+        Self::from_bits_truncate(self.bits() ^ other.bits())
     }
 
     /// Returns the complement of this set of flags.

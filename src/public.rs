@@ -130,8 +130,8 @@ macro_rules! __impl_public_bitflags {
     (
         $BitFlags:ident: $T:ty, $PublicBitFlags:ident {
             $(
-                $(#[$attr:ident $($args:tt)*])*
-                $Flag:ident;
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:tt = $value:expr;
             )*
         }
     ) => {
@@ -142,7 +142,20 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn all() {
-                    Self::from_bits_truncate(<$T as $crate::Bits>::ALL)
+                    let mut truncated = <$T as $crate::Bits>::EMPTY;
+                    let mut i = 0;
+
+                    $(
+                        __bitflags_expr_safe_attrs!(
+                            $(#[$inner $($args)*])*
+                            {{
+                                truncated = truncated | <$PublicBitFlags as $crate::Flags>::FLAGS[i].value().bits();
+                                i +=1 ;
+                            }}
+                        );
+                    )*
+
+                    Self::from_bits_retain(truncated)
                 }
 
                 fn bits(f) {
@@ -160,24 +173,7 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn from_bits_truncate(bits) {
-                    if bits == <$T as $crate::Bits>::EMPTY {
-                        return Self(bits)
-                    }
-
-                    let mut truncated = <$T as $crate::Bits>::EMPTY;
-
-                    $(
-                        __bitflags_expr_safe_attrs!(
-                            $(#[$attr $($args)*])*
-                            {
-                                if bits & $PublicBitFlags::$Flag.bits() == $PublicBitFlags::$Flag.bits() {
-                                    truncated = truncated | $PublicBitFlags::$Flag.bits()
-                                }
-                            }
-                        );
-                    )*
-
-                    Self(truncated)
+                    Self(bits & Self::all().bits())
                 }
 
                 fn from_bits_retain(bits) {
@@ -186,14 +182,20 @@ macro_rules! __impl_public_bitflags {
 
                 fn from_name(name) {
                     $(
-                        __bitflags_expr_safe_attrs!(
-                            $(#[$attr $($args)*])*
-                            {
-                                if name == $crate::__private::core::stringify!($Flag) {
-                                    return $crate::__private::core::option::Option::Some(Self($PublicBitFlags::$Flag.bits()));
-                                }
-                            }
-                        );
+                        __bitflags_flag!({
+                            name: $Flag,
+                            named: {
+                                __bitflags_expr_safe_attrs!(
+                                    $(#[$inner $($args)*])*
+                                    {
+                                        if name == $crate::__private::core::stringify!($Flag) {
+                                            return $crate::__private::core::option::Option::Some(Self($PublicBitFlags::$Flag.bits()));
+                                        }
+                                    }
+                                );
+                            },
+                            unnamed: {},
+                        });
                     )*
 
                     let _ = name;
@@ -219,15 +221,15 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn insert(f, other) {
-                    *f = Self::from_bits_retain(f.bits() | other.bits());
+                    *f = Self::from_bits_retain(f.bits()).union(other);
                 }
 
                 fn remove(f, other) {
-                    *f = Self::from_bits_retain(f.bits() & !other.bits());
+                    *f = Self::from_bits_retain(f.bits()).difference(other);
                 }
 
                 fn toggle(f, other) {
-                    *f = Self::from_bits_retain(f.bits() ^ other.bits());
+                    *f = Self::from_bits_retain(f.bits()).symmetric_difference(other);
                 }
 
                 fn set(f, other, value) {
@@ -239,19 +241,19 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn intersection(f, other) {
-                    Self::from_bits_retain(f.bits() & other.bits())
+                    Self::from_bits_truncate(f.bits() & other.bits())
                 }
 
                 fn union(f, other) {
-                    Self::from_bits_retain(f.bits() | other.bits())
+                    Self::from_bits_truncate(f.bits() | other.bits())
                 }
 
                 fn difference(f, other) {
-                    Self::from_bits_retain(f.bits() & !other.bits())
+                    Self::from_bits_truncate(f.bits() & !other.bits())
                 }
 
                 fn symmetric_difference(f, other) {
-                    Self::from_bits_retain(f.bits() ^ other.bits())
+                    Self::from_bits_truncate(f.bits() ^ other.bits())
                 }
 
                 fn complement(f) {
@@ -355,7 +357,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Adds the set of flags.
             #[inline]
             fn bitor_assign(&mut self, other: Self) {
-                *self = Self::from_bits_retain(self.bits()).union(other);
+                self.insert(other);
             }
         }
 
@@ -373,7 +375,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Toggles the set of flags.
             #[inline]
             fn bitxor_assign(&mut self, other: Self) {
-                *self = Self::from_bits_retain(self.bits()).symmetric_difference(other);
+                self.toggle(other);
             }
         }
 
@@ -409,7 +411,7 @@ macro_rules! __impl_public_bitflags_ops {
             /// Disables all flags enabled in the set.
             #[inline]
             fn sub_assign(&mut self, other: Self) {
-                *self = Self::from_bits_retain(self.bits()).difference(other);
+                self.remove(other);
             }
         }
 
@@ -455,35 +457,58 @@ macro_rules! __impl_public_bitflags_consts {
     (
         $PublicBitFlags:ident: $T:ty {
             $(
-                $(#[$attr:ident $($args:tt)*])*
-                $Flag:ident = $value:expr;
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:tt = $value:expr;
             )*
         }
     ) => {
         impl $PublicBitFlags {
             $(
-                $(#[$attr $($args)*])*
-                #[allow(
-                    deprecated,
-                    non_upper_case_globals,
-                )]
-                pub const $Flag: Self = Self::from_bits_retain($value);
+                __bitflags_flag!({
+                    name: $Flag,
+                    named: {
+                        $(#[$inner $($args)*])*
+                        #[allow(
+                            deprecated,
+                            non_upper_case_globals,
+                        )]
+                        pub const $Flag: Self = Self::from_bits_retain($value);
+                    },
+                    unnamed: {},
+                });
             )*
         }
 
         impl $crate::Flags for $PublicBitFlags {
             const FLAGS: &'static [$crate::Flag<$PublicBitFlags>] = &[
                 $(
-                    __bitflags_expr_safe_attrs!(
-                        $(#[$attr $($args)*])*
-                        {
-                            #[allow(
-                                deprecated,
-                                non_upper_case_globals,
-                            )]
-                            $crate::Flag::new($crate::__private::core::stringify!($Flag), $PublicBitFlags::$Flag)
-                        }
-                    ),
+                    __bitflags_flag!({
+                        name: $Flag,
+                        named: {
+                            __bitflags_expr_safe_attrs!(
+                                $(#[$inner $($args)*])*
+                                {
+                                    #[allow(
+                                        deprecated,
+                                        non_upper_case_globals,
+                                    )]
+                                    $crate::Flag::new($crate::__private::core::stringify!($Flag), $PublicBitFlags::$Flag)
+                                }
+                            )
+                        },
+                        unnamed: {
+                            __bitflags_expr_safe_attrs!(
+                                $(#[$inner $($args)*])*
+                                {
+                                    #[allow(
+                                        deprecated,
+                                        non_upper_case_globals,
+                                    )]
+                                    $crate::Flag::new("", $PublicBitFlags::from_bits_retain($value))
+                                }
+                            )
+                        },
+                    }),
                 )*
             ];
 
