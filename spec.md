@@ -9,7 +9,7 @@ You can use `bitflags` to:
 
 You can't use `bitflags` to:
 
-- guarantee only bits corresponding to defined flags will ever be set. `bitflags` is a light wrapper over an integer type with additional semantics. It's not a native language feature.
+- guarantee only bits corresponding to defined flags will ever be set. `bitflags` allows access to the underlying bits type so arbitrary bits may be set.
 - define bitfields. `bitflags` only generates types where set bits denote the presence of some combination of flags.
 
 ## Definitions
@@ -32,11 +32,35 @@ A value at a specific location within a bits type that may be set or unset.
 
 ### Flag
 
-A uniquely named set of bits in a bits type.
+A set of bits in a bits type that may have a unique name.
 
 ----
 
-Names must be unique, but bits are not required to be exclusive to a flag. Bits are not required to be contiguous.
+Bits are not required to be exclusive to a flag. Bits are not required to be contiguous.
+
+#### Named flag
+
+A flag with a name.
+
+----
+
+The following is a named flag, where the name is `A`:
+
+```rust
+const A = 0b0000_0001;
+```
+
+#### Unnamed flag
+
+A flag without a name.
+
+----
+
+The following is an unnamed flag:
+
+```rust
+const _ = 0b0000_0001;
+```
 
 #### Zero-bit flag
 
@@ -158,7 +182,7 @@ In cases where flags are defined by an external source, a flags type can define 
 
 ```rust
 struct External {
-    const ALL = 0b1111_1111;
+    const _ = 0b1111_1111;
 }
 ```
 
@@ -409,11 +433,11 @@ The following are examples of the difference between two flags values:
 
 ### Iteration
 
-Yield a set of flags values contained in a source flags value, where the result of unioning the yielded flags values will be the truncated source.
+Yield a set of flags values contained in a source flags value, where all set bits in the yielded flags values will exactly correspond to all set bits in the source.
 
 ----
 
-To be most useful, each yielded flags value should set exactly the bits of a defined flag contained in the source. Any bits that aren't in the set of any contained flag should be yielded together as a final flags value. Unknown bits that are present in the source should still be yielded to avoid possible confusion, but are not required.
+To be most useful, each yielded flags value should set exactly the bits of a defined flag contained in the source. Any bits that aren't in the set of any contained flag should be yielded together as a final flags value.
 
 ----
 
@@ -448,18 +472,11 @@ It may also yield a flags value for `AB`, with a final flags value of the remain
 0b0000_1100
 ```
 
-It may also yield any combination of flags values
+It may also yield any combination of flags values:
 
 ```rust
 0b0000_0111
 0b0000_1000
-```
-
-Unknown bits aren't required to be yielded:
-
-```rust
-0b0000_0001
-0b0000_0010
 ```
 
 ### Formatting
@@ -471,7 +488,7 @@ Flags values can be formatted and parsed using the following *whitespace-insensi
 - _Name:_ The name of any defined flag
 - _Hex Number_: `0x`([0-9a-fA-F])*
 
-Flags values can be formatted by iterating over them. Any yielded flags value that sets exactly the bits of a defined flag should be formatted with its name. Any yielded flags value that doesn't set exactly the bits of a defined flag must be formatted as a hex number.
+Flags values can be formatted by iterating over them. Flags values may be truncated before formatting. Any yielded flags value that sets exactly the bits of a defined flag with a name should be formatted as that name. Any yielded flags value that doesn't set exactly the bits of a defined flag with a name must be formatted as a hex number.
 
 The result of parsing a formatted flags value will be the truncated source. An empty formatted flags value is zero.
 
