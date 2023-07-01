@@ -293,7 +293,7 @@ struct Flags {
 }
 ```
 
-The definition of this flags type has implications on the results of most operations.
+The definition of this flags type has implications on the results of other examples in this section.
 
 #### Truncate
 
@@ -384,11 +384,15 @@ The following are examples of the difference between two flags values:
 
 ### Iteration
 
-Yield exactly the bits of a source flags value in a set of contained flags values.
+Yield the known bits of a source flags value in a set of contained flags values.
 
 ----
 
-To be most useful, each yielded flags value should set exactly the bits of a defined flag contained in the source. Any bits that aren't in the set of any contained flag should be yielded together as a final flags value.
+Unknown bits will not be yielded.
+
+The result of unioning all flags values yielded from an iterated source flags value will be the truncated source.
+
+To be most useful, each yielded flags value should set exactly the bits of a defined flag contained in the source. Any known bits that aren't in the set of any contained flag should be yielded together as a final flags value.
 
 ----
 
@@ -408,40 +412,53 @@ and the following flags value:
 0b0000_1111
 ```
 
-When iterated it may yield a flags value for `A` and `B`, with a final flags value of the remaining bits:
+When iterated it may yield a flags value for `A` and `B`:
 
 ```rust
 0b0000_0001
 0b0000_0010
-0b0000_1100
 ```
 
-It may also yield a flags value for `AB`, with a final flags value of the remaining bits:
+It may also yield a flags value for `AB`:
 
 ```rust
 0b0000_0011
-0b0000_1100
 ```
 
-It may also yield any combination of flags values:
+The unknown bits `0b0000_1100` will not be yielded.
+
+----
+
+Given the following flags type:
 
 ```rust
-0b0000_0111
-0b0000_1000
+struct Flags {
+    const A = 0b0000_0011;
+}
 ```
+
+and the following flags value:
+
+```rust
+0b0000_0001
+```
+
+When iterated it will still yield a flags value for the known bit `0b0000_0001` even though it doesn't contain a flag.
 
 ### Formatting
 
-Flags values can be formatted and parsed using the following *whitespace-insensitive*, *case-sensitive* grammar:
+Format and parse the known bits of a flags value as text using the following *whitespace-insensitive*, *case-sensitive* grammar:
 
 - _Flags:_ (_Flag_)`|`*
 - _Flag:_ _Name_ | _Hex Number_
 - _Name:_ The name of any defined flag
 - _Hex Number_: `0x`([0-9a-fA-F])*
 
-Flags values can be formatted by iterating over them with each yielded flags value can be formatted as a _Flag_. Any yielded flags value that sets exactly the bits of a defined flag with a name should be formatted as a _Name_. Any yielded flags value that doesn't set exactly the bits of a defined flag with a name must be formatted as a _Hex Number_.
+Unknown bits will not be formatted.
 
-Parsing and formatting roundtrips, including any unknown bits. Flags values may be truncating before formatting. An empty formatted flags value is zero.
+Flags values can be formatted as _Flags_ by iterating over them, formatting each yielded flags value as a _Flag_. Any yielded flags value that sets exactly the bits of a defined flag with a name should be formatted as a _Name_. Otherwise it must be formatted as a _Hex Number_.
+
+The result of parsing a formatted source flags value will be the truncated source. Text that is empty or whitespace is an empty flags value.
 
 ----
 
@@ -465,12 +482,29 @@ The following are examples of how flags values can be formatted:
 0b0000_0010 = "B"
 0b0000_0010 = "0x2"
 0b0000_0011 = "A | B"
-0b1000_0000 = "0x80"
 0b1000_0000 = "0x0"
 0b1000_0000 = ""
-0b1111_1111 = "A | B | 0xfc"
+0b1111_1111 = "A | B"
 0b1111_1111 = "A | B"
 ```
+
+----
+
+Given the following flags type:
+
+```rust
+struct Flags {
+    const A = 0b0000_0011;
+}
+```
+
+and the following flags value:
+
+```rust
+0b0000_0001
+```
+
+The result of formatting the flags value must be the hex number `0x1`, because `0b0000_0001` doesn't contain the flag `A`.
 
 ## Implementation
 
