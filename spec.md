@@ -20,23 +20,15 @@ Examples use `bitflags` syntax with `u8` as the bits type.
 
 ### Bits type
 
-A type that can hold a fixed number bits.
+A type that defines a fixed number of bits at specific locations.
 
 ----
 
-Bits types are typically fixed-width unsigned integers, like `u32`, but may be more exotic.
-
-### Bit
-
-A value at a specific index that may be set or unset.
-
-----
-
-The bits type `u8` holds 8 bits; bit-0 through bit-7.
+Bits types are typically fixed-width unsigned integers like `u8`, which is a bits type that defines 8 bits; bit-0 through bit-7.
 
 ### Bits value
 
-An instance of a bits type.
+An instance of a bits type where each bit may be set (`1`) or unset (`0`).
 
 ----
 
@@ -216,7 +208,9 @@ This flags type is not normal, but guarantees no bits will ever be truncated.
 
 ### Flags value
 
-An instance of a flags type with bits from its specific bits value.
+An instance of a flags type using its specific bits value for storage.
+
+The flags value of a flag is one where each of its bits is set, and all others are unset.
 
 #### Contains
 
