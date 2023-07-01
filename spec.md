@@ -20,15 +20,41 @@ Examples use `bitflags` syntax with `u8` as the bits type.
 
 ### Bits type
 
-A type that stores a fixed number bits.
+A type that can hold a fixed number bits.
 
 ----
 
 Bits types are typically fixed-width unsigned integers, like `u32`, but may be more exotic.
 
-#### Bit
+### Bit
 
-A value at a specific location within a bits type that may be set or unset.
+A value at a specific index that may be set or unset.
+
+----
+
+The bits type `u8` holds 8 bits; bit-0 through bit-7.
+
+### Bits value
+
+An instance of a bits type.
+
+----
+
+Some examples of bits values for the bits type `u8` are:
+
+```rust
+0b0000_0000
+0b1111_1111
+0b1010_0101
+```
+
+#### Equality
+
+Two bits values are equal if their bits are in the same configuration; set bits in one are set in the other, and unset bits in one are unset in the other.
+
+#### Operations
+
+Bits values define the bitwise operators and (`&`), or (`|`), exclusive-or (`^`), and negation (`!`) that apply to each of their bits.
 
 ### Flag
 
@@ -190,7 +216,66 @@ This flags type is not normal, but guarantees no bits will ever be truncated.
 
 ### Flags value
 
-An instance of a flags type using its bits type for storage.
+An instance of a flags type with bits from its specific bits value.
+
+#### Contains
+
+Whether all set bits in a source flags value are also set in a target flags value.
+
+A flag is contained in a source flags value if all bits in the flag are set in the source.
+
+----
+
+Given the flags value:
+
+```rust
+0b0000_0011
+```
+
+the following flags values are contained:
+
+```rust
+0b0000_0000
+0b0000_0010
+0b0000_0001
+0b0000_0011
+```
+
+but the following flags values are not contained:
+
+```rust
+0b0000_1000
+0b0000_0110
+```
+
+#### Intersects
+
+Whether any set bits in a source flags value are also set in a target flags value.
+
+A flag intersects a source flags value if any bits in the flag are set in the source.
+
+----
+
+Given the flags value:
+
+```rust
+0b0000_0011
+```
+
+the following flags intersect:
+
+```rust
+0b0000_0010
+0b0000_0001
+0b1111_1111
+```
+
+but the following flags values do not intersect:
+
+```rust
+0b0000_0000
+0b1111_0000
+```
 
 #### Empty
 
@@ -234,68 +319,9 @@ the following flags values all satisfy all:
 0b1111_1111
 ```
 
-#### Contains
-
-Whether all set bits in a source flags value are also set in a target flags value.
-
-A flag is contained in a flags value if all bits in the flag are set in the flags value.
-
-----
-
-Given the flags value:
-
-```rust
-0b0000_0011
-```
-
-the following flags values are contained:
-
-```rust
-0b0000_0000
-0b0000_0010
-0b0000_0001
-0b0000_0011
-```
-
-but the following flags values are not contained:
-
-```rust
-0b0000_1000
-0b0000_0110
-```
-
-#### Intersects
-
-Whether any set bits in a source flags value are also set in a target flags value.
-
-A flag intersects a flags value if any bits in the flag are set in the flags value.
-
-----
-
-Given the flags value:
-
-```rust
-0b0000_0011
-```
-
-the following flags intersect:
-
-```rust
-0b0000_0010
-0b0000_0001
-0b1111_1111
-```
-
-but the following flags values do not intersect:
-
-```rust
-0b0000_0000
-0b1111_0000
-```
-
 #### Normalized
 
-Whether all set bits in a flags value are known bits and all defined flags that intersect are also contained.
+Whether all set bits in a flags value are known bits and all defined flags that intersect it are also contained.
 
 ----
 
@@ -419,7 +445,7 @@ The following are examples of the complement of a flags value:
 
 #### Difference
 
-The intersection of a source flags value with the negation of a target flags value (`&!`), truncating the result.
+The intersection of a source flags value with the complement of a target flags value (`&!`), truncating the result.
 
 ----
 
@@ -433,7 +459,7 @@ The following are examples of the difference between two flags values:
 
 ### Iteration
 
-Yield a set of flags values contained in a source flags value, where all set bits in the yielded flags values will exactly correspond to all set bits in the source.
+Yield a set of flags values contained in a source flags value, where the result of bitwise or'ing the bits of all yielded flags values will exactly reproduce the source.
 
 ----
 
@@ -488,9 +514,15 @@ Flags values can be formatted and parsed using the following *whitespace-insensi
 - _Name:_ The name of any defined flag
 - _Hex Number_: `0x`([0-9a-fA-F])*
 
-Flags values can be formatted by iterating over them. Flags values may be truncated before formatting. Any yielded flags value that sets exactly the bits of a defined flag with a name should be formatted as that name. Any yielded flags value that doesn't set exactly the bits of a defined flag with a name must be formatted as a hex number.
+Flags values can be formatted by iterating over them.
 
-The result of parsing a formatted flags value will be the truncated source. An empty formatted flags value is zero.
+Flags values may be truncated before formatting so any unknown bits are not formatted.
+
+Any yielded flags value that sets exactly the bits of a defined flag with a name should be formatted as that name. Any yielded flags value that doesn't set exactly the bits of a defined flag with a name must be formatted as a hex number.
+
+The result of parsing a formatted flags value is the truncated source.
+
+An empty formatted flags value is zero.
 
 ----
 
@@ -507,6 +539,8 @@ struct Flags {
 The following are examples of how flags values can be formatted:
 
 ```rust
+0b0000_0000 = ""
+0b0000_0000 = "0x0"
 0b0000_0001 = "A"
 0b0000_0001 = "0x1"
 0b0000_0010 = "B"
@@ -547,7 +581,7 @@ Defines the set of flags.
 fn bits(&self) -> Self::Bits;
 ```
 
-Get the value of the underlying bits type.
+Get the the bits value.
 
 The result won't be truncated.
 
@@ -577,7 +611,7 @@ fn from_bits_retain(bits: Self::Bits) -> Self;
 
 Get a flags value with exactly the bits in `bits` set.
 
-Prefer `from_bits_truncate` where possible; this method is necessary as a building block, but not intended for end-users. If `bits` has any unknown bits set then they'll be truncated by any operations on the returned flags type.
+Prefer `from_bits_truncate` where possible. If `bits` has any unknown bits set then they'll be truncated by any operations on the returned flags type.
 
 ### `fn from_name`
 
@@ -587,7 +621,9 @@ fn from_name(name: &str) -> Option<Self>;
 
 Get a flags value with the bits for a defined flag with the given name set.
 
-If there is a flag defined with `name` this function will return `Some`, otherwise it will return `None`. Names are case-sensitive.
+If `name` is non-empty and there is a flag defined with `name` this function will return `Some`, otherwise it will return `None`. Names are case-sensitive.
+
+Unnamed flags won't be produced through this method.
 
 ### `fn empty`
 
@@ -730,6 +766,30 @@ fn complement(self) -> Self;
 Calculates the complement of the bits in `self`.
 
 The result will be truncated.
+
+### `fn truncation`
+
+```rust
+fn truncation(self) -> Self;
+```
+
+Truncates `self`, unsetting all unknown bits.
+
+### `fn truncate`
+
+```rust
+fn truncate(&mut self);
+```
+
+Truncates `self`, unsetting all unknown bits.
+
+### `fn has_unknown_bits`
+
+```rust
+fn has_unknown_bits(&self) -> bool;
+```
+
+Whether any unknown bits are set in `self`.
 
 ### `fn iter`
 
