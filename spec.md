@@ -384,15 +384,15 @@ The following are examples of the difference between two flags values:
 
 ### Iteration
 
-Yield the known bits of a source flags value in a set of contained flags values.
+Yield all bits of a source flags value in a set of contained flags values.
 
 ----
 
-Unknown bits will not be yielded.
-
-The result of unioning all flags values yielded from an iterated source flags value will be the truncated source.
-
 To be most useful, each yielded flags value should set exactly the bits of a defined flag contained in the source. Any known bits that aren't in the set of any contained flag should be yielded together as a final flags value.
+
+----
+
+Unknown bits must be yielded, but since union is truncating the result of unioning all yielded flags values will be the truncated source.
 
 ----
 
@@ -412,20 +412,20 @@ and the following flags value:
 0b0000_1111
 ```
 
-When iterated it may yield a flags value for `A` and `B`:
+When iterated it may yield a flags value for `A` and `B`, then a final flag with the unknown bits:
 
 ```rust
 0b0000_0001
 0b0000_0010
+0b0000_1100
 ```
 
-It may also yield a flags value for `AB`:
+It may also yield a flags value for `AB`, then a final flag with the unknown bits:
 
 ```rust
 0b0000_0011
+0b0000_1100
 ```
-
-The unknown bits `0b0000_1100` will not be yielded.
 
 ----
 
@@ -447,18 +447,19 @@ When iterated it will still yield a flags value for the known bit `0b0000_0001` 
 
 ### Formatting
 
-Format and parse the known bits of a flags value as text using the following *whitespace-insensitive*, *case-sensitive* grammar:
+Format and parse a flags value as text using the following grammar:
 
-- _Flags:_ (_Flag_)`|`*
+- _Flags:_ (_Whitespace_ _Flag_ _Whitespace_)`|`*
 - _Flag:_ _Name_ | _Hex Number_
 - _Name:_ The name of any defined flag
 - _Hex Number_: `0x`([0-9a-fA-F])*
-
-Unknown bits will not be formatted.
+- _Whitespace_: (\s)*
 
 Flags values can be formatted as _Flags_ by iterating over them, formatting each yielded flags value as a _Flag_. Any yielded flags value that sets exactly the bits of a defined flag with a name should be formatted as a _Name_. Otherwise it must be formatted as a _Hex Number_.
 
-The result of parsing a formatted source flags value will be the truncated source. Text that is empty or whitespace is an empty flags value.
+The result of parsing a formatted source flags value will be the original source. If a _Name_ doesn't correspond to the name of any defined flag then parsing will fail. If a formatted hex number includes unknown bits then those bits will be set in the parsed result. Parsing does not truncate.
+
+Text that is empty or whitespace is an empty flags value.
 
 ----
 
@@ -482,10 +483,10 @@ The following are examples of how flags values can be formatted:
 0b0000_0010 = "B"
 0b0000_0010 = "0x2"
 0b0000_0011 = "A | B"
-0b1000_0000 = "0x0"
-0b1000_0000 = ""
-0b1111_1111 = "A | B"
-0b1111_1111 = "A | B"
+0b0000_0011 = "AB"
+0b1000_0000 = "0x80"
+0b1111_1111 = "A | B | 0xfc"
+0b1111_1111 = "0xff"
 ```
 
 ----
