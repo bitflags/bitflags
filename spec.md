@@ -24,7 +24,7 @@ A type that defines a fixed number of bits at specific locations.
 
 ----
 
-Bits types are typically fixed-width unsigned integers like `u8`, which is a bits type that defines 8 bits; bit-0 through bit-7.
+Bits types are typically fixed-width unsigned integers. For example, `u8` is a bits type that defines 8 bits; bit-0 through bit-7.
 
 ### Bits value
 
@@ -55,6 +55,18 @@ A set of bits in a bits type that may have a unique name.
 ----
 
 Bits are not required to be exclusive to a flag. Bits are not required to be contiguous.
+
+The following is a flag for `u8` with the name `A` that includes bit-0:
+
+```rust
+const A = 0b0000_0001;
+```
+
+The following is a flag for `u8` with the name `B` that includes bit-0, and bit-5:
+
+```rust
+const B = 0b0010_0001;
+```
 
 #### Named flag
 
@@ -166,46 +178,6 @@ the unknown bits are:
 0b1111_1000
 ```
 
-#### Normal
-
-A flags type that defines no zero-bit flags and all known bits are in at least one corresponding single-bit flag.
-
-----
-
-The following are all normal flags types:
-
-```rust
-struct NormalA {
-    const A  = 0b0000_0001;
-    const B  = 0b0000_0010;
-    const AB = 0b0000_0011;
-}
-
-struct NormalB {}
-```
-
-The following are all not normal flags types:
-
-```rust
-struct NotNormalA {
-    const A = 0b0000_0011;
-}
-
-struct NotNormalB {
-    const A = 0b0000_0000;
-}
-```
-
-In cases where flags are defined by an external source, a flags type can define a single flag with all bits set:
-
-```rust
-struct External {
-    const _ = 0b1111_1111;
-}
-```
-
-This flags type is not normal, but guarantees no bits will ever be truncated.
-
 ### Flags value
 
 An instance of a flags type using its specific bits value for storage.
@@ -215,8 +187,6 @@ The flags value of a flag is one where each of its bits is set, and all others a
 #### Contains
 
 Whether all set bits in a source flags value are also set in a target flags value.
-
-A flag is contained in a source flags value if all bits in the flag are set in the source.
 
 ----
 
@@ -245,8 +215,6 @@ but the following flags values are not contained:
 #### Intersects
 
 Whether any set bits in a source flags value are also set in a target flags value.
-
-A flag intersects a source flags value if any bits in the flag are set in the source.
 
 ----
 
@@ -313,41 +281,6 @@ the following flags values all satisfy all:
 0b1111_1111
 ```
 
-#### Normalized
-
-Whether all set bits in a flags value are known bits and all defined flags that intersect it are also contained.
-
-----
-
-Given the flags type:
-
-```rust
-struct Flags {
-    const A = 0b0000_0001;
-    const B = 0b0000_0010;
-    const C = 0b0000_1100;
-}
-```
-
-the following flags values are normalized:
-
-```rust
-0b0000_0000
-0b0000_0001
-0b0000_0010
-0b0000_1100
-0b0000_1111
-```
-
-but the following flags values are not normalized:
-
-```rust
-0b1111_1111
-0b0000_1000
-```
-
-A consequence of zero-bit flags always being contained but never intersected means a flags type that defines one can never be normalized.
-
 ### Operations
 
 Examples in this section all use the given flags type:
@@ -365,8 +298,6 @@ The definition of this flags type has implications on the results of most operat
 #### Truncate
 
 Unset all unknown bits in a flags value.
-
-If the flags type is normal then the result is normalized.
 
 ----
 
@@ -453,7 +384,7 @@ The following are examples of the difference between two flags values:
 
 ### Iteration
 
-Yield a set of flags values contained in a source flags value, where the result of bitwise or'ing the bits of all yielded flags values will exactly reproduce the source.
+Yield exactly the bits of a source flags value in a set of contained flags values.
 
 ----
 
@@ -508,15 +439,9 @@ Flags values can be formatted and parsed using the following *whitespace-insensi
 - _Name:_ The name of any defined flag
 - _Hex Number_: `0x`([0-9a-fA-F])*
 
-Flags values can be formatted by iterating over them.
+Flags values can be formatted by iterating over them with each yielded flags value can be formatted as a _Flag_. Any yielded flags value that sets exactly the bits of a defined flag with a name should be formatted as a _Name_. Any yielded flags value that doesn't set exactly the bits of a defined flag with a name must be formatted as a _Hex Number_.
 
-Flags values may be truncated before formatting so any unknown bits are not formatted.
-
-Any yielded flags value that sets exactly the bits of a defined flag with a name should be formatted as that name. Any yielded flags value that doesn't set exactly the bits of a defined flag with a name must be formatted as a hex number.
-
-The result of parsing a formatted flags value is the truncated source.
-
-An empty formatted flags value is zero.
+Parsing and formatting roundtrips, including any unknown bits. Flags values may be truncating before formatting. An empty formatted flags value is zero.
 
 ----
 
