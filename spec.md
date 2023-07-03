@@ -313,6 +313,45 @@ the result of truncation will be:
 0b0000_1111
 ```
 
+----
+
+Truncating doesn't guarantee that a non-empty result will contain any defined flags. Given the following flags type:
+
+```rust
+struct Flags {
+    const A = 0b0000_0101;
+}
+```
+
+and the following flags value:
+
+```rust
+0b0000_1110;
+```
+
+The result of truncation will be:
+
+```rust
+0b0000_0100;
+```
+
+which intersects the flag `A`, but doesn't contain it.
+
+This behavior is possible even when only operating with flags values containing defined flags. Given the following flags type:
+
+```rust
+struct Flags {
+    const A = 0b0000_0101;
+    const B = 0b0000_0001;
+}
+```
+
+The result of `A ^ B` is `0b0000_0100`, which also doesn't contain any defined flag.
+
+----
+
+If all known bits are in the set of at least one single-bit flag, then all operations that produce non-empty results will always contain defined flags.
+
 #### Union
 
 The bitwise or (`|`) of the bits in two flags values, truncating the result.
@@ -384,7 +423,7 @@ The following are examples of the difference between two flags values:
 
 ### Iteration
 
-Yield all bits of a source flags value in a set of contained flags values.
+Yield the bits of a source flags value in a set of contained flags values.
 
 ----
 
@@ -460,8 +499,8 @@ Flags values can be formatted as _Flags_ by iterating over them, formatting each
 Formatting and parsing supports three modes:
 
 - Truncate: Flags values are truncated before formatting, and truncated after parsing. This is the default behavior.
-- Retain: Formatting and parsing roundtrips exactly the bits of the source flags value.
-- Strict: A _Flag_ may only be formatted and parsed as a _Name_, _Hex numbers_ are not allowed. A consequence of this is that unknown bits and any bits that aren't in a contained named flag will be ignored.
+- Retain: Formatting and parsing roundtrips exactly the bits of the source flags value. This is recommended for debug formatting.
+- Strict: A _Flag_ may only be formatted and parsed as a _Name_. _Hex numbers_ are not allowed. A consequence of this is that unknown bits and any bits that aren't in a contained named flag will be ignored. This is recommended for flags values serialized across API boundaries, like web services.
 
 Text that is empty or whitespace is an empty flags value.
 
@@ -474,303 +513,39 @@ struct Flags {
     const A  = 0b0000_0001;
     const B  = 0b0000_0010;
     const AB = 0b0000_0011;
+    const C  = 0b0000_1100;
 }
 ```
 
-The following are examples of how flags values can be formatted:
+The following are examples of how flags values can be formatted using any mode:
 
 ```rust
 0b0000_0000 = ""
-0b0000_0000 = "0x0"
 0b0000_0001 = "A"
-0b0000_0001 = "0x1"
 0b0000_0010 = "B"
-0b0000_0010 = "0x2"
 0b0000_0011 = "A | B"
 0b0000_0011 = "AB"
+0b0000_1111 = "A | B | C"
+```
+
+Truncate mode will unset any unknown bits:
+
+```rust
+0b1000_0000 = ""
+0b1111_1111 = "A | B | C"
+```
+
+Retain mode will include any unknown bits as a final _Flag_:
+
+```rust
 0b1000_0000 = "0x80"
-0b1111_1111 = "A | B | 0xfc"
-0b1111_1111 = "0xff"
+0b1111_1111 = "A | B | C | 0xf0"
 ```
 
-----
-
-Given the following flags type:
+Strict mode will unset any unknown bits, as well as bits not contained in any defined named flags:
 
 ```rust
-struct Flags {
-    const A = 0b0000_0011;
-}
+0b1000_0000 = ""
+0b1111_1111 = "A | B | C"
+0b0000_1000 = ""
 ```
-
-and the following flags value:
-
-```rust
-0b0000_0001
-```
-
-The result of formatting the flags value must be the hex number `0x1`, because `0b0000_0001` doesn't contain the flag `A`.
-
-## Implementation
-
-> This section is just here to link the spec to what's implemented; it should be removed in favor of regular doc comments.
-
-The specification is implemented through the `Flags` trait. An implementor of the `Flags` trait is a flags type. An instance of the implementor is a flags value.
-
-### `type Bits`
-
-```rust
-type Bits: Bits;
-```
-
-The bits type used.
-
-### `const FLAGS`
-
-```rust
-const FLAGS: &'static [Flag<Self>];
-```
-
-Defines the set of flags.
-
-### `fn bits`
-
-```rust
-fn bits(&self) -> Self::Bits;
-```
-
-Get the the bits value.
-
-The result won't be truncated.
-
-### `fn from_bits_truncate`
-
-```rust
-fn from_bits_truncate(bits: Self::Bits) -> Self;
-```
-
-Get a flags value with only the known bits in `bits` set.
-
-### `fn from_bits`
-
-```rust
-fn from_bits(bits: Self::Bits) -> Option<Self>;
-```
-
-Get a flags value with only the known bits in `bits` set.
-
-If the result is non-empty this function will return `Some`, otherwise it will return `None`.
-
-### `fn from_bits_retain`
-
-```rust
-fn from_bits_retain(bits: Self::Bits) -> Self;
-```
-
-Get a flags value with exactly the bits in `bits` set.
-
-Prefer `from_bits_truncate` where possible. If `bits` has any unknown bits set then they'll be truncated by any operations on the returned flags type.
-
-### `fn from_name`
-
-```rust
-fn from_name(name: &str) -> Option<Self>;
-```
-
-Get a flags value with the bits for a defined flag with the given name set.
-
-If `name` is non-empty and there is a flag defined with `name` this function will return `Some`, otherwise it will return `None`. Names are case-sensitive.
-
-Unnamed flags won't be produced through this method.
-
-### `fn empty`
-
-```rust
-fn empty() -> Self;
-```
-
-Get a flags value with all bits unset.
-
-The returned flags value will satisfy `is_empty`.
-
-### `fn all`
-
-```rust
-fn all() -> Self;
-```
-
-Get a flags value with all known bits set and all unknown bits unset.
-
-The returned flags value will satisfy `is_all`.
-
-### `fn is_empty`
-
-```rust
-fn is_empty(&self) -> bool;
-```
-
-Whether all bits in the flags value are unset.
-
-### `fn is_all`
-
-```rust
-fn is_all(&self) -> bool;
-```
-
-Whether all defined flags are contained in the flags value.
-
-### `fn intersection`
-
-```rust
-fn intersection(self, other: Self) -> Self;
-```
-
-Calculates the intersection of the bits in `self` and `other`.
-
-The result will be truncated.
-
-### `fn intersects`
-
-```rust
-fn intersects(&self, other: Self) -> bool;
-```
-
-Whether `self` and `other` intersect.
-
-### `fn contains`
-
-```rust
-fn contains(&self, other: Self) -> bool;
-```
-
-Whether `self` contains `other`.
-
-### `fn union`
-
-```rust
-fn union(self, other: Self) -> Self;
-```
-
-Calculates the union of the bits in `self` and `other`.
-
-The result will be truncated.
-
-### `fn insert`
-
-```rust
-fn insert(&mut self, other: Self);
-```
-
-Assigns the union of the bits in `self` and `other`.
-
-The result will be truncated.
-
-### `fn difference`
-
-```rust
-fn difference(self, other: Self) -> Self;
-```
-
-Calculates the difference between the bits in `self` and `other`.
-
-The result will be truncated.
-
-### `fn remove`
-
-```rust
-fn remove(&mut self, other: Self);
-```
-
-Assigns the difference between the bits in `self` and `other`.
-
-The result will be truncated.
-
-### `fn set`
-
-```rust
-fn set(&mut self, other: Self, value: bool);
-```
-
-Assigns the union of `self` and `other` if `value` is `true`, or the difference between `self` and `other` if `value` is `false`.
-
-The result will be truncated.
-
-### `fn symmetric_difference`
-
-```rust
-fn symmetric_difference(self, other: Self) -> Self;
-```
-
-Calculates the symmetric difference between the bits in `self` and `other`.
-
-The result will be truncated.
-
-### `fn toggle`
-
-```rust
-fn toggle(&mut self, other: Self);
-```
-
-Calculates the symmetric difference between the bits in `self` and `other`.
-
-The result will be truncated.
-
-### `fn complement`
-
-```rust
-fn complement(self) -> Self;
-```
-
-Calculates the complement of the bits in `self`.
-
-The result will be truncated.
-
-### `fn truncation`
-
-```rust
-fn truncation(self) -> Self;
-```
-
-Truncates `self`, unsetting all unknown bits.
-
-### `fn truncate`
-
-```rust
-fn truncate(&mut self);
-```
-
-Truncates `self`, unsetting all unknown bits.
-
-### `fn has_unknown_bits`
-
-```rust
-fn has_unknown_bits(&self) -> bool;
-```
-
-Whether any unknown bits are set in `self`.
-
-### `fn iter`
-
-```rust
-fn iter(&self) -> iter::Iter<Self>;
-```
-
-Iterate over defined flags contained in `self`.
-
-The result of unioning all yielded flags will exactly reproduce `self`.
-
-Each yielded flags value will correspond to a single flag. Not all flags contained in `self` are guaranteed to be yielded; only enough to exactly reproduce `self`. Overlapping flags may be omitted.
-
-If `self` is not normalized then any remaining bits will be yielded as a final result.
-
-### `fn iter_names`
-
-```rust
-fn iter_names(&self) -> iter::IterNames<Self>;
-```
-
-Iterate over defined flags and their names contained in `self`.
-
-The result of unioning all yielded flags will lossily normalize `self`.
-
-If `self` is normalized then the result of unioning all yielded flags will exactly reproduce `self`. If `self` is not normalized then any remaining bits will not be yielded. Not all flags contained in `self` are guaranteed to be yielded; only enough to lossily normalize `self`.
