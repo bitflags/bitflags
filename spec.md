@@ -457,7 +457,11 @@ Format and parse a flags value as text using the following grammar:
 
 Flags values can be formatted as _Flags_ by iterating over them, formatting each yielded flags value as a _Flag_. Any yielded flags value that sets exactly the bits of a defined flag with a name should be formatted as a _Name_. Otherwise it must be formatted as a _Hex Number_.
 
-The result of parsing a formatted source flags value will be the original source. If a _Name_ doesn't correspond to the name of any defined flag then parsing will fail. If a formatted hex number includes unknown bits then those bits will be set in the parsed result. Parsing does not truncate.
+Formatting and parsing supports three modes:
+
+- Truncate: Flags values are truncated before formatting, and truncated after parsing. This is the default behavior.
+- Retain: Formatting and parsing roundtrips exactly the bits of the source flags value.
+- Strict: A _Flag_ may only be formatted and parsed as a _Name_, _Hex numbers_ are not allowed. A consequence of this is that unknown bits and any bits that aren't in a contained named flag will be ignored.
 
 Text that is empty or whitespace is an empty flags value.
 
