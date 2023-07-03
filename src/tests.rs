@@ -104,4 +104,19 @@ bitflags! {
         /// 2
         const D = 1 << 1;
     }
+
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+    pub struct TestExternal: u8 {
+        /// 1
+        const A = 1;
+
+        /// 1 << 1
+        const B = 1 << 1;
+
+        /// 1 << 2
+        const C = 1 << 2;
+
+        /// External
+        const _ = !0;
+    }
 }
