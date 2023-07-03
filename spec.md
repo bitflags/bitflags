@@ -350,7 +350,7 @@ The result of `A ^ B` is `0b0000_0100`, which also doesn't contain any defined f
 
 ----
 
-If all known bits are in the set of at least one single-bit flag, then all operations that produce non-empty results will always contain defined flags.
+If all known bits are in the set of at least one defined single-bit flag, then all operations that produce non-empty results will always contain defined flags.
 
 #### Union
 
@@ -498,9 +498,9 @@ Flags values can be formatted as _Flags_ by iterating over them, formatting each
 
 Formatting and parsing supports three modes:
 
-- Truncate: Flags values are truncated before formatting, and truncated after parsing. This is the default behavior.
-- Retain: Formatting and parsing roundtrips exactly the bits of the source flags value. This is recommended for debug formatting.
-- Strict: A _Flag_ may only be formatted and parsed as a _Name_. _Hex numbers_ are not allowed. A consequence of this is that unknown bits and any bits that aren't in a contained named flag will be ignored. This is recommended for flags values serialized across API boundaries, like web services.
+- **Truncate**: Flags values are truncated before formatting, and truncated after parsing. This is the default behavior.
+- **Retain**: Formatting and parsing roundtrips exactly the bits of the source flags value. This is recommended for debug formatting.
+- **Strict**: A _Flag_ may only be formatted and parsed as a _Name_. _Hex numbers_ are not allowed. A consequence of this is that unknown bits and any bits that aren't in a contained named flag will be ignored. This is recommended for flags values serialized across API boundaries, like web services.
 
 Text that is empty or whitespace is an empty flags value.
 
@@ -533,6 +533,7 @@ Truncate mode will unset any unknown bits:
 ```rust
 0b1000_0000 = ""
 0b1111_1111 = "A | B | C"
+0b0000_1000 = "0x8"
 ```
 
 Retain mode will include any unknown bits as a final _Flag_:
@@ -540,6 +541,7 @@ Retain mode will include any unknown bits as a final _Flag_:
 ```rust
 0b1000_0000 = "0x80"
 0b1111_1111 = "A | B | C | 0xf0"
+0b0000_1000 = "0x8"
 ```
 
 Strict mode will unset any unknown bits, as well as bits not contained in any defined named flags:
