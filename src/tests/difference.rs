@@ -23,6 +23,19 @@ fn cases() {
         TestFlags::difference,
     );
 
+    case(
+        TestExternal::from_bits_retain(!0),
+        &[
+            (TestExternal::A, 0b1111_1110),
+        ],
+        TestExternal::difference,
+    );
+
+    assert_eq!(
+        0b1111_1110,
+        (TestExternal::from_bits_retain(!0) & !TestExternal::A).bits()
+    );
+
     assert_eq!(
         0b1111_1110,
         (TestFlags::from_bits_retain(!0).difference(TestFlags::A)).bits()
@@ -33,6 +46,8 @@ fn cases() {
         1 << 1 | 1 << 2,
         (TestFlags::from_bits_retain(!0) & !TestFlags::A).bits()
     );
+
+
 }
 
 #[track_caller]

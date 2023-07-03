@@ -31,6 +31,8 @@ fn cases() {
 
     // Complement doesn't detect overlapping bits in multi-bit flags
     case(0, TestOverlapping::AB, TestOverlapping::complement);
+
+    case(!0, TestExternal::empty(), TestExternal::complement);
 }
 
 #[track_caller]

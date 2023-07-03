@@ -70,6 +70,17 @@ fn cases() {
         ],
         TestOverlapping::contains,
     );
+
+    case(
+        TestExternal::all(),
+        &[
+            (TestExternal::A, true),
+            (TestExternal::B, true),
+            (TestExternal::C, true),
+            (TestExternal::from_bits_retain(1 << 5 | 1 << 7), true),
+        ],
+        TestExternal::contains,
+    );
 }
 
 #[track_caller]

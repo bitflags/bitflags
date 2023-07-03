@@ -116,6 +116,9 @@ bitflags! {
         /// 1 << 2
         const C = 1 << 2;
 
+        /// 1 | (1 << 1) | (1 << 2)
+        const ABC = Self::A.bits() | Self::B.bits() | Self::C.bits();
+
         /// External
         const _ = !0;
     }
