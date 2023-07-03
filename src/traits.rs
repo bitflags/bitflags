@@ -63,10 +63,6 @@ pub trait Flags: Sized + 'static {
 
     /// Convert from underlying bit representation, unless that
     /// representation contains bits that do not correspond to a flag.
-    ///
-    /// Note that each [multi-bit flag] is treated as a unit for this comparison.
-    ///
-    /// [multi-bit flag]: index.html#multi-bit-flags
     fn from_bits(bits: Self::Bits) -> Option<Self> {
         let truncated = Self::from_bits_truncate(bits);
 
@@ -79,10 +75,6 @@ pub trait Flags: Sized + 'static {
 
     /// Convert from underlying bit representation, dropping any bits
     /// that do not correspond to flags.
-    ///
-    /// Note that each [multi-bit flag] is treated as a unit for this comparison.
-    ///
-    /// [multi-bit flag]: index.html#multi-bit-flags
     fn from_bits_truncate(bits: Self::Bits) -> Self {
         Self::from_bits_retain(bits & Self::all().bits())
     }
@@ -189,26 +181,26 @@ pub trait Flags: Sized + 'static {
     /// Returns the intersection between the flags in `self` and `other`.
     #[must_use]
     fn intersection(self, other: Self) -> Self {
-        Self::from_bits_truncate(self.bits() & other.bits())
+        Self::from_bits_retain(self.bits() & other.bits())
     }
 
     /// Returns the union of between the flags in `self` and `other`.
     #[must_use]
     fn union(self, other: Self) -> Self {
-        Self::from_bits_truncate(self.bits() | other.bits())
+        Self::from_bits_retain(self.bits() | other.bits())
     }
 
     /// Returns the difference between the flags in `self` and `other`.
     #[must_use]
     fn difference(self, other: Self) -> Self {
-        Self::from_bits_truncate(self.bits() & !other.bits())
+        Self::from_bits_retain(self.bits() & !other.bits())
     }
 
     /// Returns the symmetric difference between the flags
     /// in `self` and `other`.
     #[must_use]
     fn symmetric_difference(self, other: Self) -> Self {
-        Self::from_bits_truncate(self.bits() ^ other.bits())
+        Self::from_bits_retain(self.bits() ^ other.bits())
     }
 
     /// Returns the complement of this set of flags.

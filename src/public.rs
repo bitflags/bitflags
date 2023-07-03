@@ -150,11 +150,12 @@ macro_rules! __impl_public_bitflags {
                             $(#[$inner $($args)*])*
                             {{
                                 truncated = truncated | <$PublicBitFlags as $crate::Flags>::FLAGS[i].value().bits();
-                                i +=1 ;
+                                i += 1;
                             }}
                         );
                     )*
 
+                    let _ = i;
                     Self::from_bits_retain(truncated)
                 }
 
@@ -241,19 +242,19 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn intersection(f, other) {
-                    Self::from_bits_truncate(f.bits() & other.bits())
+                    Self::from_bits_retain(f.bits() & other.bits())
                 }
 
                 fn union(f, other) {
-                    Self::from_bits_truncate(f.bits() | other.bits())
+                    Self::from_bits_retain(f.bits() | other.bits())
                 }
 
                 fn difference(f, other) {
-                    Self::from_bits_truncate(f.bits() & !other.bits())
+                    Self::from_bits_retain(f.bits() & !other.bits())
                 }
 
                 fn symmetric_difference(f, other) {
-                    Self::from_bits_truncate(f.bits() ^ other.bits())
+                    Self::from_bits_retain(f.bits() ^ other.bits())
                 }
 
                 fn complement(f) {
