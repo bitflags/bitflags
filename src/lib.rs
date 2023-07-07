@@ -455,6 +455,7 @@ macro_rules! __impl_bitflags {
                     $(
                         __impl_bitflags! {
                             #[allow(deprecated)]
+                            #[allow(clippy::bad_bit_mask)]
                             #[inline]
                             $(? #[$attr $($args)*])*
                             fn $Flag(&self) -> bool {
