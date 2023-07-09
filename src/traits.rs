@@ -76,28 +76,7 @@ pub trait Flags: Sized + 'static {
     /// Convert from underlying bit representation, dropping any bits
     /// that do not correspond to flags.
     fn from_bits_truncate(bits: Self::Bits) -> Self {
-        // 3.x: Self::from_bits_retain(bits & Self::all().bits())
-        let mut truncated = Self::Bits::EMPTY;
-
-        for flag in Self::FLAGS.iter() {
-            // Treat named flags as "full"
-            // Only bits from contained flags are retained
-            if !flag.name.is_empty() {
-                let flag = flag.value().bits();
-
-                if flag & bits == flag {
-                    truncated = truncated | flag;
-                }
-            }
-            // Treat unnamed flags as "partial"
-            // Any intersecting bits are retained
-            else {
-                let flag = flag.value().bits() & bits;
-                truncated = truncated | flag;
-            }
-        }
-
-        Self::from_bits_retain(truncated)
+        Self::from_bits_retain(bits & Self::all().bits())
     }
 
     /// Convert from underlying bit representation, preserving all
@@ -203,21 +182,18 @@ pub trait Flags: Sized + 'static {
     /// Returns the intersection between the flags in `self` and `other`.
     #[must_use]
     fn intersection(self, other: Self) -> Self {
-        // 3.x: Self::from_bits_truncate(self.bits() & other.bits())
         Self::from_bits_retain(self.bits() & other.bits())
     }
 
     /// Returns the union of between the flags in `self` and `other`.
     #[must_use]
     fn union(self, other: Self) -> Self {
-        // 3.x: Self::from_bits_truncate(self.bits() | other.bits())
         Self::from_bits_retain(self.bits() | other.bits())
     }
 
     /// Returns the difference between the flags in `self` and `other`.
     #[must_use]
     fn difference(self, other: Self) -> Self {
-        // 3.x: Self::from_bits_truncate(self.bits() & !other.bits())
         Self::from_bits_retain(self.bits() & !other.bits())
     }
 
@@ -225,7 +201,6 @@ pub trait Flags: Sized + 'static {
     /// in `self` and `other`.
     #[must_use]
     fn symmetric_difference(self, other: Self) -> Self {
-        // 3.x: Self::from_bits_truncate(self.bits() ^ other.bits())
         Self::from_bits_retain(self.bits() ^ other.bits())
     }
 

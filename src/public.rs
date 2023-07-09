@@ -176,49 +176,7 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn from_bits_truncate(bits) {
-                    // 3.x: Self(bits & Self::all().bits())
-
-                    let mut truncated = <$T as $crate::Bits>::EMPTY;
-                    let mut i = 0;
-
-                    $(
-                        __bitflags_flag!({
-                            name: $Flag,
-                            named: {
-                                // Treat named flags as "full"
-                                // Only bits from contained flags are retained
-                                __bitflags_expr_safe_attrs!(
-                                    $(#[$inner $($args)*])*
-                                    {{
-                                        let flag = <$PublicBitFlags as $crate::Flags>::FLAGS[i].value().bits();
-
-                                        if flag & bits == flag {
-                                            truncated = truncated | flag;
-                                        }
-
-                                        i += 1;
-                                    }}
-                                );
-                            },
-                            unnamed: {
-                                // Treat unnamed flags as "partial"
-                                // Any intersecting bits are retained
-                                __bitflags_expr_safe_attrs!(
-                                    $(#[$inner $($args)*])*
-                                    {{
-                                        let flag = <$PublicBitFlags as $crate::Flags>::FLAGS[i].value().bits() & bits;
-                                        truncated = truncated | flag;
-
-                                        i += 1;
-                                    }}
-                                );
-                            },
-                        });
-                    )*
-
-                    let _ = bits;
-                    let _ = i;
-                    Self(truncated)
+                    Self(bits & Self::all().bits())
                 }
 
                 fn from_bits_retain(bits) {
@@ -286,22 +244,18 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn intersection(f, other) {
-                    // 3.x: Self::from_bits_truncate(f.bits() & other.bits())
                     Self::from_bits_retain(f.bits() & other.bits())
                 }
 
                 fn union(f, other) {
-                    // 3.x: Self::from_bits_truncate(f.bits() & other.bits())
                     Self::from_bits_retain(f.bits() | other.bits())
                 }
 
                 fn difference(f, other) {
-                    // 3.x: Self::from_bits_truncate(f.bits() & other.bits())
                     Self::from_bits_retain(f.bits() & !other.bits())
                 }
 
                 fn symmetric_difference(f, other) {
-                    // 3.x: Self::from_bits_truncate(f.bits() & other.bits())
                     Self::from_bits_retain(f.bits() ^ other.bits())
                 }
 
