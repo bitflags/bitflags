@@ -293,8 +293,6 @@ struct Flags {
 }
 ```
 
-The definition of this flags type has implications on the results of other examples in this section.
-
 #### Truncate
 
 Unset all unknown bits in a flags value.
@@ -354,7 +352,7 @@ If all known bits are in the set of at least one defined single-bit flag, then a
 
 #### Union
 
-The bitwise or (`|`) of the bits in two flags values, truncating the result.
+The bitwise or (`|`) of the bits in two flags values.
 
 ----
 
@@ -362,12 +360,12 @@ The following are examples of the result of unioning flags values:
 
 ```rust
 0b0000_0001 | 0b0000_0010 = 0b0000_0011
-0b0000_0000 | 0b1111_1111 = 0b0000_1111
+0b0000_0000 | 0b1111_1111 = 0b1111_1111
 ```
 
 #### Intersection
 
-The bitwise and (`&`) of the bits in two flags values, truncating the result.
+The bitwise and (`&`) of the bits in two flags values.
 
 ----
 
@@ -375,13 +373,13 @@ The following are examples of the result of intersecting flags values:
 
 ```rust
 0b0000_0001 & 0b0000_0010 = 0b0000_0000
-0b1111_1100 & 0b1111_0111 = 0b0000_0100
-0b1111_1111 & 0b1111_1111 = 0b0000_1111
+0b1111_1100 & 0b1111_0111 = 0b1111_0100
+0b1111_1111 & 0b1111_1111 = 0b1111_1111
 ```
 
 #### Symmetric difference
 
-The bitwise exclusive-or (`^`) of the bits in two flags values, truncating the result.
+The bitwise exclusive-or (`^`) of the bits in two flags values.
 
 ----
 
@@ -390,7 +388,7 @@ The following are examples of the symmetric difference between two flags values:
 ```rust
 0b0000_0001 ^ 0b0000_0010 = 0b0000_0011
 0b0000_1111 ^ 0b0000_0011 = 0b0000_1100
-0b1100_0000 ^ 0b0011_0000 = 0b0000_0000
+0b1100_0000 ^ 0b0011_0000 = 0b1111_0000
 ```
 
 #### Complement
@@ -428,10 +426,6 @@ Yield the bits of a source flags value in a set of contained flags values.
 ----
 
 To be most useful, each yielded flags value should set exactly the bits of a defined flag contained in the source. Any known bits that aren't in the set of any contained flag should be yielded together as a final flags value.
-
-----
-
-Unknown bits must be yielded, but since union is truncating the result of unioning all yielded flags values will be the truncated source.
 
 ----
 
@@ -498,8 +492,8 @@ Flags values can be formatted as _Flags_ by iterating over them, formatting each
 
 Formatting and parsing supports three modes:
 
-- **Truncate**: Flags values are truncated before formatting, and truncated after parsing. This is the default behavior.
-- **Retain**: Formatting and parsing roundtrips exactly the bits of the source flags value. This is recommended for debug formatting.
+- **Retain**: Formatting and parsing roundtrips exactly the bits of the source flags value. This is the default behavior.
+- **Truncate**: Flags values are truncated before formatting, and truncated after parsing.
 - **Strict**: A _Flag_ may only be formatted and parsed as a _Name_. _Hex numbers_ are not allowed. A consequence of this is that unknown bits and any bits that aren't in a contained named flag will be ignored. This is recommended for flags values serialized across API boundaries, like web services.
 
 Text that is empty or whitespace is an empty flags value.
