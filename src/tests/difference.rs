@@ -25,9 +25,7 @@ fn cases() {
 
     case(
         TestExternal::from_bits_retain(!0),
-        &[
-            (TestExternal::A, 0b1111_1110),
-        ],
+        &[(TestExternal::A, 0b1111_1110)],
         TestExternal::difference,
     );
 
@@ -46,8 +44,6 @@ fn cases() {
         1 << 1 | 1 << 2,
         (TestFlags::from_bits_retain(!0) & !TestFlags::A).bits()
     );
-
-
 }
 
 #[track_caller]

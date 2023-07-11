@@ -109,6 +109,11 @@ impl<B: Flags> Iterator for IterNames<B> {
 
             self.idx += 1;
 
+            // Skip unnamed flags
+            if flag.name().is_empty() {
+                continue;
+            }
+
             let bits = flag.value().bits();
 
             // If the flag is set in the original source _and_ it has bits that haven't

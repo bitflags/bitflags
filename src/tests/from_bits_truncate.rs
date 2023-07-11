@@ -17,7 +17,9 @@ fn cases() {
 
     case(1 | 1 << 1, 1 | 1 << 1, TestOverlapping::from_bits_truncate);
 
-    case(0, 1 << 1, TestOverlapping::from_bits_truncate);
+    case(1 << 1, 1 << 1, TestOverlapping::from_bits_truncate);
+
+    case(1 << 5, 1 << 5, TestExternal::from_bits_truncate);
 }
 
 #[track_caller]

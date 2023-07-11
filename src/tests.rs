@@ -122,4 +122,10 @@ bitflags! {
         /// External
         const _ = !0;
     }
+
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+    pub struct TestExternalFull: u8 {
+        /// External
+        const _ = !0;
+    }
 }

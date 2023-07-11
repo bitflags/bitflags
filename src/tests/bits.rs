@@ -16,7 +16,11 @@ fn cases() {
 
     case(1 << 3, TestEmpty::from_bits_retain(1 << 3), TestEmpty::bits);
 
-    case(1 << 4 | 1 << 6, TestExternal::from_bits_retain(1 << 4 | 1 << 6), TestExternal::bits);
+    case(
+        1 << 4 | 1 << 6,
+        TestExternal::from_bits_retain(1 << 4 | 1 << 6),
+        TestExternal::bits,
+    );
 }
 
 #[track_caller]

@@ -8,6 +8,10 @@ bitflags! {
         const _ = 2;
         const _ = !0;
     }
+
+    pub struct External: u8 {
+        const _ = !0;
+    }
 }
 
 fn main() {}

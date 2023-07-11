@@ -17,10 +17,6 @@ fn roundtrip() {
             let f = TestExternal::from_bits_retain(a | b);
 
             assert_eq!(f, f.iter().collect::<TestExternal>());
-            assert_eq!(
-                TestExternal::from_bits_truncate(f.bits()),
-                f.iter_names().map(|(_, f)| f).collect::<TestExternal>()
-            );
         }
     }
 }
@@ -61,9 +57,9 @@ mod collect {
                 TestExternal::from_bits_retain(1 << 5),
                 TestExternal::from_bits_retain(1 << 7),
             ]
-                .into_iter()
-                .collect::<TestExternal>()
-                .bits()
+            .into_iter()
+            .collect::<TestExternal>()
+            .bits()
         );
     }
 }
@@ -98,7 +94,11 @@ mod iter {
 
         case(&[], TestZero::ZERO, TestZero::iter);
 
-        case(&[1, 1 << 1, 1 << 2, 0b1111_1000], TestExternal::all(), TestExternal::iter);
+        case(
+            &[1, 1 << 1, 1 << 2, 0b1111_1000],
+            TestExternal::all(),
+            TestExternal::iter,
+        );
     }
 
     #[track_caller]

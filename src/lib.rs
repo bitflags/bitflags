@@ -352,10 +352,9 @@
 //!
 //! ## Multi-bit Flags
 //!
-//! It is allowed to define a flag with multiple bits set, however such
-//! flags are _not_ treated as a set where any of those bits is a valid
-//! flag. Instead, each flag is treated as a unit when converting from
-//! bits with [`from_bits`] or [`from_bits_truncate`].
+//! It is allowed to define a flag with multiple bits set. When using multi-bit flags
+//! with [`from_bits`] or [`from_bits_truncate`], if only a subset of the bits in that flag
+//! are set, the result will still be non-empty:
 //!
 //! ```
 //! use bitflags::bitflags;
@@ -369,8 +368,8 @@
 //!
 //! fn main() {
 //!     // This bit pattern does not set all the bits in `F3`, so it is rejected.
-//!     assert!(Flags::from_bits(0b00000001).is_none());
-//!     assert!(Flags::from_bits_truncate(0b00000001).is_empty());
+//!     assert!(Flags::from_bits(0b00000001).is_some());
+//!     assert!(!Flags::from_bits_truncate(0b00000001).is_empty());
 //! }
 //! ```
 //!

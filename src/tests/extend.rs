@@ -34,6 +34,9 @@ mod external {
 
         flags.extend(TestExternal::from_bits_retain(1 << 5));
 
-        assert_eq!(TestExternal::ABC | TestExternal::from_bits_retain(1 << 5), flags);
+        assert_eq!(
+            TestExternal::ABC | TestExternal::from_bits_retain(1 << 5),
+            flags
+        );
     }
 }

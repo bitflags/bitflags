@@ -49,6 +49,33 @@ fn cases() {
         "2",
         "10",
     );
+
+    case(
+        TestExternal::from_bits_retain(1 | 1 << 1 | 1 << 3),
+        "TestExternal(A | B | 0x8)",
+        "B",
+        "b",
+        "13",
+        "1011",
+    );
+
+    case(
+        TestExternal::all(),
+        "TestExternal(A | B | C | 0xf8)",
+        "FF",
+        "ff",
+        "377",
+        "11111111",
+    );
+
+    case(
+        TestExternalFull::all(),
+        "TestExternalFull(0xff)",
+        "FF",
+        "ff",
+        "377",
+        "11111111",
+    );
 }
 
 #[track_caller]
