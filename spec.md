@@ -407,7 +407,12 @@ The following are examples of the complement of a flags value:
 
 #### Difference
 
-The intersection of a source flags value with the complement of a target flags value (`&!`), truncating the result.
+The bitwise union (`|`) of the bits in one flags value and the bitwise negation (`!`) of the bits in another.
+
+----
+
+This operation is not equivalent to the intersection of one flags value with the complement of another (`&!`).
+The former will truncate the result, where difference will not.
 
 ----
 
@@ -416,7 +421,7 @@ The following are examples of the difference between two flags values:
 ```rust
 0b0000_0001 & !0b0000_0010 = 0b0000_0001
 0b0000_1101 & !0b0000_0011 = 0b0000_1100
-0b1111_1111 & !0b0000_0001 = 0b0000_1110
+0b1111_1111 & !0b0000_0001 = 0b1111_1110
 ```
 
 ### Iteration
