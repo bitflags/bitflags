@@ -352,10 +352,9 @@
 //!
 //! ## Multi-bit Flags
 //!
-//! It is allowed to define a flag with multiple bits set, however such
-//! flags are _not_ treated as a set where any of those bits is a valid
-//! flag. Instead, each flag is treated as a unit when converting from
-//! bits with [`from_bits`] or [`from_bits_truncate`].
+//! It is allowed to define a flag with multiple bits set. When using multi-bit flags
+//! with [`from_bits`] or [`from_bits_truncate`], if only a subset of the bits in that flag
+//! are set, the result will still be non-empty:
 //!
 //! ```
 //! use bitflags::bitflags;
@@ -369,8 +368,8 @@
 //!
 //! fn main() {
 //!     // This bit pattern does not set all the bits in `F3`, so it is rejected.
-//!     assert!(Flags::from_bits(0b00000001).is_none());
-//!     assert!(Flags::from_bits_truncate(0b00000001).is_empty());
+//!     assert!(Flags::from_bits(0b00000001).is_some());
+//!     assert!(!Flags::from_bits_truncate(0b00000001).is_empty());
 //! }
 //! ```
 //!
@@ -560,7 +559,7 @@ macro_rules! bitflags {
         $vis:vis struct $BitFlags:ident: $T:ty {
             $(
                 $(#[$inner:ident $($args:tt)*])*
-                const $Flag:ident = $value:expr;
+                const $Flag:tt = $value:expr;
             )*
         }
 
@@ -578,7 +577,7 @@ macro_rules! bitflags {
             $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
-                    $Flag = $value;
+                    const $Flag = $value;
                 )*
             }
         }
@@ -604,7 +603,7 @@ macro_rules! bitflags {
                 InternalBitFlags: $T, $BitFlags {
                     $(
                         $(#[$inner $($args)*])*
-                        $Flag = $value;
+                        const $Flag = $value;
                     )*
                 }
             }
@@ -614,7 +613,7 @@ macro_rules! bitflags {
                 InternalBitFlags: $T, $BitFlags {
                     $(
                         $(#[$inner $($args)*])*
-                        $Flag;
+                        const $Flag;
                     )*
                 }
             }
@@ -640,7 +639,7 @@ macro_rules! bitflags {
         impl $BitFlags:ident: $T:ty {
             $(
                 $(#[$inner:ident $($args:tt)*])*
-                const $Flag:ident = $value:expr;
+                const $Flag:tt = $value:expr;
             )*
         }
 
@@ -650,7 +649,7 @@ macro_rules! bitflags {
             $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
-                    $Flag = $value;
+                    const $Flag = $value;
                 )*
             }
         }
@@ -670,7 +669,7 @@ macro_rules! bitflags {
                 $BitFlags: $T, $BitFlags {
                     $(
                         $(#[$inner $($args)*])*
-                        $Flag;
+                        const $Flag = $value;
                     )*
                 }
             }
@@ -1010,6 +1009,30 @@ macro_rules! __bitflags_expr_safe_attrs {
         $(#[$expr $($exprargs)*])*
         { $e }
     }
+}
+
+/// Implement a flag, which may be a wildcard `_`.
+#[macro_export(local_inner_macros)]
+#[doc(hidden)]
+macro_rules! __bitflags_flag {
+    (
+        {
+            name: _,
+            named: { $($named:tt)* },
+            unnamed: { $($unnamed:tt)* },
+        }
+    ) => {
+        $($unnamed)*
+    };
+    (
+        {
+            name: $Flag:ident,
+            named: { $($named:tt)* },
+            unnamed: { $($unnamed:tt)* },
+        }
+    ) => {
+        $($named)*
+    };
 }
 
 #[macro_use]

@@ -7,8 +7,8 @@ error: no rules expected the token `;`
 note: while trying to match `=`
  --> src/lib.rs
   |
-  |                 const $Flag:ident = $value:expr;
-  |                                   ^
+  |                 const $Flag:tt = $value:expr;
+  |                                ^
 
 error[E0601]: `main` function not found in crate `$CRATE`
  --> tests/compile-fail/bitflags_missing_value.rs:8:2

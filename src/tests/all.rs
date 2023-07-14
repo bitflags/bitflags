@@ -9,6 +9,8 @@ fn cases() {
     case(0, TestZero::all);
 
     case(0, TestEmpty::all);
+
+    case(!0, TestExternal::all);
 }
 
 #[track_caller]

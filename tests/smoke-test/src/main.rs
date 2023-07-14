@@ -9,6 +9,8 @@ bitflags! {
         const B = 0b00000010;
         const C = 0b00000100;
         const ABC = Flags::A.bits() | Flags::B.bits() | Flags::C.bits();
+
+        const _ = !0;
     }
 }
 

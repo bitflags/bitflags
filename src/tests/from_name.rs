@@ -16,6 +16,10 @@ fn cases() {
     case(Some(0), "ZERO", TestZero::from_name);
 
     case(Some(2), "二", TestUnicode::from_name);
+
+    case(None, "_", TestExternal::from_name);
+
+    case(None, "", TestExternal::from_name);
 }
 
 #[track_caller]

@@ -1,0 +1,21 @@
+error: expected identifier, found reserved identifier `_`
+ --> tests/compile-fail/unnamed_const.rs:7:25
+  |
+7 |         const A = Self::_.bits();
+  |                         ^ expected identifier, found reserved identifier
+
+error[E0599]: no associated item named `_` found for struct `Unnamed` in the current scope
+ --> tests/compile-fail/unnamed_const.rs:7:25
+  |
+3 | / bitflags! {
+4 | |     pub struct Unnamed: u8 {
+5 | |         const _ = 1;
+6 | |
+7 | |         const A = Self::_.bits();
+  | |                         ^
+  | |                         |
+  | |                         associated item not found in `Unnamed`
+  | |                         help: there is an associated constant with a similar name: `A`
+8 | |     }
+9 | | }
+  | |_- associated item `_` not found for this struct
