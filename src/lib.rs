@@ -723,74 +723,73 @@ macro_rules! __impl_bitflags {
     ) => {
         #[allow(dead_code, deprecated, unused_attributes)]
         impl $PublicBitFlags {
-            /// Returns an empty set of flags.
+            /// Get a flags value with all bits unset.
             #[inline]
             pub const fn empty() -> Self {
                 $empty
             }
 
-            /// Returns the set containing all flags.
+            /// Get a flags value with all known bits set.
             #[inline]
             pub const fn all() -> Self {
                 $all
             }
 
-            /// Returns the raw value of the flags currently stored.
+            /// Get the underlying bits value.
+            ///
+            /// The returned value is exactly the bits set in this flags value.
             #[inline]
             pub const fn bits(&self) -> $T {
                 let $bits0 = self;
                 $bits
             }
 
-            /// Convert from underlying bit representation, unless that
-            /// representation contains bits that do not correspond to a flag.
+            /// Convert from a bits value, unless any unset bits are set.
             #[inline]
             pub const fn from_bits(bits: $T) -> $crate::__private::core::option::Option<Self> {
                 let $from_bits0 = bits;
                 $from_bits
             }
 
-            /// Convert from underlying bit representation, dropping any bits
-            /// that do not correspond to flags.
+            /// Convert from a bits value, unsetting any unknown bits.
             #[inline]
             pub const fn from_bits_truncate(bits: $T) -> Self {
                 let $from_bits_truncate0 = bits;
                 $from_bits_truncate
             }
 
-            /// Convert from underlying bit representation, preserving all
-            /// bits (even those not corresponding to a defined flag).
+            /// Convert from a bits value, without altering them in any way.
             #[inline]
             pub const fn from_bits_retain(bits: $T) -> Self {
                 let $from_bits_retain0 = bits;
                 $from_bits_retain
             }
 
-            /// Get the value for a flag from its stringified name.
+            /// Get a flags value with the bits of a flag with the given name set.
             ///
-            /// Names are _case-sensitive_, so must correspond exactly to
-            /// the identifier given to the flag.
+            /// This method will return `None` if `name` is empty or doesn't
+            /// correspond to any named flag.
             #[inline]
             pub fn from_name(name: &str) -> $crate::__private::core::option::Option<Self> {
                 let $from_name0 = name;
                 $from_name
             }
 
-            /// Returns `true` if no flags are currently stored.
+            /// Whether all bits in this flags value are unset.
             #[inline]
             pub const fn is_empty(&self) -> bool {
                 let $is_empty0 = self;
                 $is_empty
             }
 
-            /// Returns `true` if all flags are currently set.
+            /// Whether all defined flags are contained in this flags value.
             #[inline]
             pub const fn is_all(&self) -> bool {
                 let $is_all0 = self;
                 $is_all
             }
 
-            /// Returns `true` if there are flags common to both `self` and `other`.
+            /// Whether any set bits in a source flags value are also set in a target flags value.
             #[inline]
             pub const fn intersects(&self, other: Self) -> bool {
                 let $intersects0 = self;
@@ -798,7 +797,7 @@ macro_rules! __impl_bitflags {
                 $intersects
             }
 
-            /// Returns `true` if all of the flags in `other` are contained within `self`.
+            /// Whether all set bits in a source flags value are also set in a target flags value.
             #[inline]
             pub const fn contains(&self, other: Self) -> bool {
                 let $contains0 = self;
@@ -806,9 +805,7 @@ macro_rules! __impl_bitflags {
                 $contains
             }
 
-            /// Inserts the specified flags in-place.
-            ///
-            /// This method is equivalent to `union`.
+            /// The bitwise or (`|`) of the bits in two flags values.
             #[inline]
             pub fn insert(&mut self, other: Self) {
                 let $insert0 = self;
@@ -816,9 +813,10 @@ macro_rules! __impl_bitflags {
                 $insert
             }
 
-            /// Removes the specified flags in-place.
+            /// The intersection of a source flags value with the complement of a target flags value (`&!`).
             ///
-            /// This method is equivalent to `difference`.
+            /// This method is not equivalent to `self & !other` when `other` has unknown bits set.
+            /// `remove` won't truncate `other`, but the `!` operator will.
             #[inline]
             pub fn remove(&mut self, other: Self) {
                 let $remove0 = self;
@@ -826,9 +824,7 @@ macro_rules! __impl_bitflags {
                 $remove
             }
 
-            /// Toggles the specified flags in-place.
-            ///
-            /// This method is equivalent to `symmetric_difference`.
+            /// The bitwise exclusive-or (`^`) of the bits in two flags values.
             #[inline]
             pub fn toggle(&mut self, other: Self) {
                 let $toggle0 = self;
@@ -836,7 +832,7 @@ macro_rules! __impl_bitflags {
                 $toggle
             }
 
-            /// Inserts or removes the specified flags depending on the passed value.
+            /// Call `insert` when `value` is `true` or `remove` when `value` is `false`.
             #[inline]
             pub fn set(&mut self, other: Self, value: bool) {
                 let $set0 = self;
@@ -845,11 +841,7 @@ macro_rules! __impl_bitflags {
                 $set
             }
 
-            /// Returns the intersection between the flags in `self` and
-            /// `other`.
-            ///
-            /// Calculating `self` bitwise and (`&`) other, including
-            /// any bits that don't correspond to a defined flag.
+            /// The bitwise and (`&`) of the bits in two flags values.
             #[inline]
             #[must_use]
             pub const fn intersection(self, other: Self) -> Self {
@@ -858,10 +850,7 @@ macro_rules! __impl_bitflags {
                 $intersection
             }
 
-            /// Returns the union of between the flags in `self` and `other`.
-            ///
-            /// Calculates `self` bitwise or (`|`) `other`, including
-            /// any bits that don't correspond to a defined flag.
+            /// The bitwise or (`|`) of the bits in two flags values.
             #[inline]
             #[must_use]
             pub const fn union(self, other: Self) -> Self {
@@ -870,15 +859,10 @@ macro_rules! __impl_bitflags {
                 $union
             }
 
-            /// Returns the difference between the flags in `self` and `other`.
+            /// The intersection of a source flags value with the complement of a target flags value (`&!`).
             ///
-            /// Calculates `self` bitwise and (`&!`) the bitwise negation of `other`,
-            /// including any bits that don't correspond to a defined flag.
-            ///
-            /// This method is _not_ equivalent to `a & !b` when there are bits set that
-            /// don't correspond to a defined flag. The `!` operator will unset any
-            /// bits that don't correspond to a flag, so they'll always be unset by `a &! b`,
-            /// but respected by `a.difference(b)`.
+            /// This method is not equivalent to `self & !other` when `other` has unknown bits set.
+            /// `difference` won't truncate `other`, but the `!` operator will.
             #[inline]
             #[must_use]
             pub const fn difference(self, other: Self) -> Self {
@@ -887,11 +871,7 @@ macro_rules! __impl_bitflags {
                 $difference
             }
 
-            /// Returns the symmetric difference between the flags
-            /// in `self` and `other`.
-            ///
-            /// Calculates `self` bitwise exclusive or (`^`) `other`,
-            /// including any bits that don't correspond to a defined flag.
+            /// The bitwise exclusive-or (`^`) of the bits in two flags values.
             #[inline]
             #[must_use]
             pub const fn symmetric_difference(self, other: Self) -> Self {
@@ -900,10 +880,7 @@ macro_rules! __impl_bitflags {
                 $symmetric_difference
             }
 
-            /// Returns the complement of this set of flags.
-            ///
-            /// Calculates the bitwise negation (`!`) of `self`,
-            /// **unsetting** any bits that don't correspond to a defined flag.
+            /// The bitwise negation (`!`) of the bits in a flags value, truncating the result.
             #[inline]
             #[must_use]
             pub const fn complement(self) -> Self {

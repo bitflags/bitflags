@@ -273,7 +273,10 @@ macro_rules! __impl_public_bitflags {
 macro_rules! __impl_public_bitflags_iter {
     ($BitFlags:ident: $T:ty, $PublicBitFlags:ident) => {
         impl $BitFlags {
-            /// Iterate over enabled flag values.
+            /// Yield a set of contained flags values.
+            ///
+            /// Each yielded flags value will correspond to a defined named flag. Any unknown bits
+            /// will be yielded together as a final flags value.
             #[inline]
             pub const fn iter(&self) -> $crate::iter::Iter<$PublicBitFlags> {
                 $crate::iter::Iter::__private_const_new(
@@ -283,7 +286,10 @@ macro_rules! __impl_public_bitflags_iter {
                 )
             }
 
-            /// Iterate over enabled flag values with their stringified names.
+            /// Yield a set of contained named flags values.
+            ///
+            /// This method is like [`iter`], except only yields bits in contained named flags.
+            /// Any unknown bits, or bits not corresponding to a contained flag will not be yielded.
             #[inline]
             pub const fn iter_names(&self) -> $crate::iter::IterNames<$PublicBitFlags> {
                 $crate::iter::IterNames::__private_const_new(
@@ -349,7 +355,7 @@ macro_rules! __impl_public_bitflags_ops {
         impl $crate::__private::core::ops::BitOr for $PublicBitFlags {
             type Output = Self;
 
-            /// Returns the union of the two sets of flags.
+            /// The bitwise or (`|`) of the bits in two flags values.
             #[inline]
             fn bitor(self, other: $PublicBitFlags) -> Self {
                 self.union(other)
@@ -357,7 +363,7 @@ macro_rules! __impl_public_bitflags_ops {
         }
 
         impl $crate::__private::core::ops::BitOrAssign for $PublicBitFlags {
-            /// Adds the set of flags.
+            /// The bitwise or (`|`) of the bits in two flags values.
             #[inline]
             fn bitor_assign(&mut self, other: Self) {
                 self.insert(other);
@@ -367,7 +373,7 @@ macro_rules! __impl_public_bitflags_ops {
         impl $crate::__private::core::ops::BitXor for $PublicBitFlags {
             type Output = Self;
 
-            /// Returns the left flags, but with all the right flags toggled.
+            /// The bitwise exclusive-or (`^`) of the bits in two flags values.
             #[inline]
             fn bitxor(self, other: Self) -> Self {
                 self.symmetric_difference(other)
@@ -375,7 +381,7 @@ macro_rules! __impl_public_bitflags_ops {
         }
 
         impl $crate::__private::core::ops::BitXorAssign for $PublicBitFlags {
-            /// Toggles the set of flags.
+            /// The bitwise exclusive-or (`^`) of the bits in two flags values.
             #[inline]
             fn bitxor_assign(&mut self, other: Self) {
                 self.toggle(other);
@@ -385,7 +391,7 @@ macro_rules! __impl_public_bitflags_ops {
         impl $crate::__private::core::ops::BitAnd for $PublicBitFlags {
             type Output = Self;
 
-            /// Returns the intersection between the two sets of flags.
+            /// The bitwise and (`&`) of the bits in two flags values.
             #[inline]
             fn bitand(self, other: Self) -> Self {
                 self.intersection(other)
@@ -393,7 +399,7 @@ macro_rules! __impl_public_bitflags_ops {
         }
 
         impl $crate::__private::core::ops::BitAndAssign for $PublicBitFlags {
-            /// Disables all flags disabled in the set.
+            /// The bitwise and (`&`) of the bits in two flags values.
             #[inline]
             fn bitand_assign(&mut self, other: Self) {
                 *self = Self::from_bits_retain(self.bits()).intersection(other);
@@ -403,7 +409,10 @@ macro_rules! __impl_public_bitflags_ops {
         impl $crate::__private::core::ops::Sub for $PublicBitFlags {
             type Output = Self;
 
-            /// Returns the set difference of the two sets of flags.
+            /// The intersection of a source flags value with the complement of a target flags value (`&!`).
+            ///
+            /// This method is not equivalent to `self & !other` when `other` has unknown bits set.
+            /// `difference` won't truncate `other`, but the `!` operator will.
             #[inline]
             fn sub(self, other: Self) -> Self {
                 self.difference(other)
@@ -411,7 +420,10 @@ macro_rules! __impl_public_bitflags_ops {
         }
 
         impl $crate::__private::core::ops::SubAssign for $PublicBitFlags {
-            /// Disables all flags enabled in the set.
+            /// The intersection of a source flags value with the complement of a target flags value (`&!`).
+            ///
+            /// This method is not equivalent to `self & !other` when `other` has unknown bits set.
+            /// `difference` won't truncate `other`, but the `!` operator will.
             #[inline]
             fn sub_assign(&mut self, other: Self) {
                 self.remove(other);
@@ -421,7 +433,7 @@ macro_rules! __impl_public_bitflags_ops {
         impl $crate::__private::core::ops::Not for $PublicBitFlags {
             type Output = Self;
 
-            /// Returns the complement of this set of flags.
+            /// The bitwise negation (`!`) of the bits in a flags value, truncating the result.
             #[inline]
             fn not(self) -> Self {
                 self.complement()
@@ -429,6 +441,7 @@ macro_rules! __impl_public_bitflags_ops {
         }
 
         impl $crate::__private::core::iter::Extend<$PublicBitFlags> for $PublicBitFlags {
+            /// The bitwise or (`|`) of the bits in each flags value.
             fn extend<T: $crate::__private::core::iter::IntoIterator<Item = Self>>(
                 &mut self,
                 iterator: T,
@@ -440,6 +453,7 @@ macro_rules! __impl_public_bitflags_ops {
         }
 
         impl $crate::__private::core::iter::FromIterator<$PublicBitFlags> for $PublicBitFlags {
+            /// The bitwise or (`|`) of the bits in each flags value.
             fn from_iter<T: $crate::__private::core::iter::IntoIterator<Item = Self>>(
                 iterator: T,
             ) -> Self {
