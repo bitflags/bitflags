@@ -64,7 +64,9 @@ pub trait Flags: Sized + 'static {
     /// The returned value is exactly the bits set in this flags value.
     fn bits(&self) -> Self::Bits;
 
-    /// Convert from a bits value, unless any unset bits are set.
+    /// Convert from a bits value.
+    ///
+    /// This method will return `None` if any unknown bits are set.
     fn from_bits(bits: Self::Bits) -> Option<Self> {
         let truncated = Self::from_bits_truncate(bits);
 
@@ -80,7 +82,7 @@ pub trait Flags: Sized + 'static {
         Self::from_bits_retain(bits & Self::all().bits())
     }
 
-    /// Convert from a bits value, without altering them in any way.
+    /// Convert from a bits value exactly.
     fn from_bits_retain(bits: Self::Bits) -> Self;
 
     /// Get a flags value with the bits of a flag with the given name set.
@@ -123,7 +125,7 @@ pub trait Flags: Sized + 'static {
         self.bits() == Self::Bits::EMPTY
     }
 
-    /// Whether all defined flags are contained in this flags value.
+    /// Whether all known bits in this flags value are set.
     fn is_all(&self) -> bool {
         // NOTE: We check against `Self::all` here, not `Self::Bits::ALL`
         // because the set of all flags may not use all bits
@@ -304,6 +306,7 @@ pub trait PublicFlags {
     type Internal;
 }
 
+#[doc(hidden)]
 #[deprecated(note = "use the `Flags` trait instead")]
 pub trait BitFlags: ImplementedByBitFlagsMacro + Flags {
     /// An iterator over enabled flags in an instance of the type.
