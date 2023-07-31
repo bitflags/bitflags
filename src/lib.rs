@@ -172,7 +172,7 @@ unset unknown bits.
 
 If you're using `bitflags` for flags types defined externally, such as from C, you probably want all
 bits to be considered known, in case that external source changes. You can do this using an unnamed
-flag, as described in [unnamed flags](#unnamed-flags).
+flag, as described in [externally defined flags](#externally-defined-flags).
 
 ## Zero-bit flags
 

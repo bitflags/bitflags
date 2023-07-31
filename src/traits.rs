@@ -8,30 +8,56 @@ use crate::{
     parser::{ParseError, ParseHex, WriteHex},
 };
 
-/// A set of bits in a bits type that may have a unique name.
+/**
+A defined flags value that may be named or unnamed.
+*/
 pub struct Flag<B> {
     name: &'static str,
     value: B,
 }
 
 impl<B> Flag<B> {
-    /// Create a new flag with the given name and value.
-    ///
-    /// If `name` is empty then the flag is unnamed.
+    /**
+    Define a flag.
+
+    If `name` is non-empty then the flag is named, otherwise it's unnamed.
+    */
     pub const fn new(name: &'static str, value: B) -> Self {
         Flag { name, value }
     }
 
-    /// Get the name of this flag.
-    ///
-    /// If `name` is empty then the flag is unnamed.
+    /**
+    Get the name of this flag.
+
+    If the flag is unnamed then the returned string will be empty.
+    */
     pub const fn name(&self) -> &'static str {
         self.name
     }
 
-    /// Get the value of this flag.
+    /**
+    Get the flags value of this flag.
+    */
     pub const fn value(&self) -> &B {
         &self.value
+    }
+
+    /**
+    Whether the flag is named.
+
+    If [`name`] returns a non-empty string then this method will return `true`.
+    */
+    pub const fn is_named(&self) -> bool {
+        self.name != ""
+    }
+
+    /**
+    Whether the flag is unnamed.
+
+    If [`name`] returns a non-empty string then this method will return `false`.
+    */
+    pub const fn is_unnamed(&self) -> bool {
+        self.name == ""
     }
 }
 
@@ -76,6 +102,30 @@ impl Flags for MyFlags {
         self.0
     }
 }
+```
+
+## Using `Flags`
+
+The `Flags` trait can be used generically to work with any flags types. In this example,
+we can count the number of defined named flags:
+
+```
+# use bitflags::{bitflags, Flags};
+fn defined_flags<F: Flags>() -> usize {
+    F::FLAGS.iter().filter(|f| f.is_named()).count()
+}
+
+bitflags! {
+    struct MyFlags: u8 {
+        const A = 1;
+        const B = 1 << 1;
+        const C = 1 << 2;
+
+        const _ = !0;
+    }
+}
+
+assert_eq!(3, defined_flags::<MyFlags>());
 ```
 */
 pub trait Flags: Sized + 'static {
@@ -263,7 +313,9 @@ pub trait Flags: Sized + 'static {
     }
 }
 
-/// Underlying storage for a flags type.
+/**
+A bits type that can be used as storage for a flags type.
+*/
 pub trait Bits:
     Clone
     + Copy
