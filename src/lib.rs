@@ -40,14 +40,13 @@ See the docs for the `bitflags` macro for the full syntax.
 
 Also see the [`example_generated`] module for an example of what the `bitflags` macro generates for a flags type.
 
-### Unnamed flags
+### Externally defined flags
 
-If you're generating flags types for an externally defined source you can define an extra unnamed flag
-as a mask of all bits the external source may ever set. Usually this would be all bits (`!0`):
+If you're generating flags types for an external source, such as a C API, you can define
+an extra unnamed flag as a mask of all bits the external source may ever set. Usually this would be all bits (`!0`):
 
 ```rust
-use bitflags::bitflags;
-
+# use bitflags::bitflags;
 bitflags! {
     pub struct Flags: u32 {
         const A = 0b00000001;
@@ -66,16 +65,24 @@ without generating additional constants for them. It helps compatibility when th
 may start setting additional bits at any time. The [known and unknown bits](#known-and-unknown-bits)
 section has more details on this behavior.
 
-### Bring-your-own struct
+### Custom derives
 
-You can define your own flags type outside of the [`bitflags`] macro and then use it to generate methods.
+You can derive some traits on generated flags types if you enable Cargo features. The following
+libraries are currently supported:
+
+- `serde`: Support `#[derive(Serialize, Deserialize)]`, using text for human-readable formats,
+and a raw number for binary formats.
+- `arbitrary`: Support `#[derive(Arbitrary)]`, only generating flags values with known bits.
+- `bytemuck`: Support `#[derive(Pod, Zeroable)]`, for casting between flags values and their
+underlying bits values.
+
+You can also define your own flags type outside of the [`bitflags`] macro and then use it to generate methods.
 This can be useful if you need a custom `#[derive]` attribute for a library that `bitflags` doesn't
 natively support:
 
 ```rust
 # use std::fmt::Debug as SomeTrait;
-use bitflags::bitflags;
-
+# use bitflags::bitflags;
 #[derive(SomeTrait)]
 pub struct Flags(u32);
 
@@ -88,14 +95,13 @@ bitflags! {
 }
 ```
 
-### Attributes and impl blocks
+### Adding custom methods
 
 The [`bitflags`] macro supports attributes on generated flags types within the macro itself, while
 `impl` blocks can be added outside of it:
 
 ```rust
-use bitflags::bitflags;
-
+# use bitflags::bitflags;
 bitflags! {
     // Attributes can be applied to flags types
     #[repr(transparent)]
@@ -159,7 +165,7 @@ things are worth calling out explicitly here.
 
 ## Known and unknown bits
 
-Any bit that's set in a flag you define are considered _known bits_. Any other bits are _unknown bits_.
+Any bits in a flag you define are called _known bits_. Any other bits are _unknown bits_.
 `bitflags` doesn't guarantee that a flags value will only ever have known bits set, but some operators
 will unset any unknown bits they encounter. In a future version of `bitflags`, all operators will
 unset unknown bits.
@@ -167,6 +173,14 @@ unset unknown bits.
 If you're using `bitflags` for flags types defined externally, such as from C, you probably want all
 bits to be considered known, in case that external source changes. You can do this using an unnamed
 flag, as described in [unnamed flags](#unnamed-flags).
+
+## Zero-bit flags
+
+Avoid them.
+
+## Multi-bit flags
+
+Avoid them, unless each bit is also part of a single-bit flag.
 */
 
 #![cfg_attr(not(any(feature = "std", test)), no_std)]
@@ -251,18 +265,126 @@ Generate a flags type.
 # `struct` mode
 
 A declaration that begins with `$vis struct` will generate a `struct` for a flags type, along with
-methods and trait implementations for it.
+methods and trait implementations for it. The body of the declaration defines flags as constants,
+where each constant is a flags value of the generated flags type.
+
+## Examples
+
+Generate a flags type using `u8` as the bits type:
+
+```
+# use bitflags::bitflags;
+bitflags! {
+    struct Flags: u8 {
+        const A = 1;
+        const B = 1 << 1;
+        const C = 0b0000_0100;
+    }
+}
+```
+
+Flags types are private by default and accept standard visibility modifiers. Flags themselves
+are always public:
+
+```
+# use bitflags::bitflags;
+bitflags! {
+    pub struct Flags: u8 {
+        // Constants are always `pub`
+        const A = 1;
+    }
+}
+```
+
+Flags may refer to other flags using their [`Flags::bits`] value:
+
+```
+# use bitflags::bitflags;
+bitflags! {
+    struct Flags: u8 {
+        const A = 1;
+        const B = 1 << 1;
+        const AB = Flags::A.bits() | Flags::B.bits();
+    }
+}
+```
+
+A single `bitflags` invocation may include zero or more flags type declarations:
+
+```
+# use bitflags::bitflags;
+bitflags! {}
+
+bitflags! {
+    struct Flags1: u8 {
+        const A = 1;
+    }
+
+    struct Flags2: u8 {
+        const A = 1;
+    }
+}
+```
 
 # `impl` mode
 
 A declaration that begins with `impl` will only generate methods and trait implementations for the
 `struct` defined outside of the `bitflags` macro.
 
+The struct itself must be a newtype using the bits type as its field.
+
+The syntax for `impl` mode is identical to `struct` mode besides the starting token.
+
+## Examples
+
+Implement flags methods and traits for a custom flags type using `u8` as its underlying bits type:
+
+```
+# use bitflags::bitflags;
+struct Flags(u8);
+
+bitflags! {
+    impl Flags: u8 {
+        const A = 1;
+        const B = 1 << 1;
+        const C = 0b0000_0100;
+    }
+}
+```
+
 # Named and unnamed flags
 
 Constants in the body of a declaration are flags. The identifier of the constant is the name of
 the flag. If the identifier is `_`, then the flag is unnamed. Unnamed flags don't appear in the
 generated API, but affect how bits are truncated.
+
+## Examples
+
+Adding an unnamed flag that makes all bits known:
+
+```
+# use bitflags::bitflags;
+bitflags! {
+    struct Flags: u8 {
+        const A = 1;
+        const B = 1 << 1;
+
+        const _ = !0;
+    }
+}
+```
+
+Flags types may define multiple unnamed flags:
+
+```
+# use bitflags::bitflags;
+bitflags! {
+    struct Flags: u8 {
+        const _ = 1;
+        const _ = 1 << 1;
+    }
+}
+```
 */
 #[macro_export(local_inner_macros)]
 macro_rules! bitflags {

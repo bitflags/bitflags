@@ -35,7 +35,49 @@ impl<B> Flag<B> {
     }
 }
 
-/// A set of defined flags over a specific bits type.
+/**
+A set of defined flags using a bits type as storage.
+
+## Implementing `Flags`
+
+This trait is implemented by the [`bitflags`](macro.bitflags.html) macro:
+
+```
+use bitflags::bitflags;
+
+bitflags! {
+    struct MyFlags: u8 {
+        const A = 1;
+        const B = 1 << 1;
+    }
+}
+```
+
+It can also be implemented manually:
+
+```
+use bitflags::{Flag, Flags};
+
+struct MyFlags(u8);
+
+impl Flags for MyFlags {
+    const FLAGS: &'static [Flag<Self>] = &[
+        Flag::new("A", MyFlags(1)),
+        Flag::new("B", MyFlags(1 << 1)),
+    ];
+
+    type Bits = u8;
+
+    fn from_bits_retain(bits: Self::Bits) -> Self {
+        MyFlags(bits)
+    }
+
+    fn bits(&self) -> Self::Bits {
+        self.0
+    }
+}
+```
+*/
 pub trait Flags: Sized + 'static {
     /// The set of defined flags.
     const FLAGS: &'static [Flag<Self>];
