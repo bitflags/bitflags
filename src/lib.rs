@@ -590,7 +590,9 @@ macro_rules! bitflags {
             unused_mut,
             unused_imports,
             non_upper_case_globals,
-            clippy::assign_op_pattern
+            clippy::assign_op_pattern,
+            clippy::indexing_slicing,
+            clippy::same_name_method
         )]
         const _: () = {
             // Declared in a "hidden" scope that can't be reached directly
