@@ -176,11 +176,27 @@ flag, as described in [unnamed flags](#unnamed-flags).
 
 ## Zero-bit flags
 
-Avoid them.
+Flags with no bits set should be avoided because they interact strangely with [`Flags::contains`]
+and [`Flags::intersects`]. A zero-bit flag is always contained, but is never intersected. The
+names of zero-bit flags can be parsed, but are never formatted.
 
 ## Multi-bit flags
 
-Avoid them, unless each bit is also part of a single-bit flag.
+Flags that set multiple bits should be avoided unless each bit is also in a single-bit flag.
+Take the following flags type as an example:
+
+```
+# use bitflags::bitflags;
+bitflags! {
+    struct Flags: u8 {
+        const A = 1;
+        const B = 1 | 1 << 1;
+    }
+}
+```
+
+The result of `Flags::A ^ Flags::B` is `0b0000_0010`, which doesn't correspond to either
+`Flags::A` or `Flags::B` even though it's still a known bit.
 */
 
 #![cfg_attr(not(any(feature = "std", test)), no_std)]

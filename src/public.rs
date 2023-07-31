@@ -288,7 +288,7 @@ macro_rules! __impl_public_bitflags_iter {
 
             /// Yield a set of contained named flags values.
             ///
-            /// This method is like [`iter`], except only yields bits in contained named flags.
+            /// This method is like [`iter`](#method.iter), except only yields bits in contained named flags.
             /// Any unknown bits, or bits not corresponding to a contained flag will not be yielded.
             #[inline]
             pub const fn iter_names(&self) -> $crate::iter::IterNames<$PublicBitFlags> {
