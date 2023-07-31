@@ -163,9 +163,48 @@ The terminology and behavior of generated flags types is
 Details are repeated in these docs where appropriate, but is exhaustively listed in the spec. Some
 things are worth calling out explicitly here.
 
+## Flags types, flags values, flags
+
+The spec and these docs use consistent terminology to refer to things in the bitflags domain:
+
+- **Bits type**: A type that defines a fixed number of bits at specific locations.
+- **Flag**: A set of bits in a bits type that may have a unique name.
+- **Flags type**: A set of defined flags over a specific bits type.
+- **Flags value**: An instance of a flags type using its specific bits value for storage.
+
+```
+# use bitflags::bitflags;
+bitflags! {
+    struct FlagsType: u8 {
+//                    -- Bits type
+//         --------- Flags type
+        const A = 1;
+//            ----- Flag
+    }
+}
+
+let flag = FlagsType::A;
+//  ---- Flags value
+```
+
 ## Known and unknown bits
 
 Any bits in a flag you define are called _known bits_. Any other bits are _unknown bits_.
+In the following flags type:
+
+```
+# use bitflags::bitflags;
+bitflags! {
+    struct Flags: u8 {
+        const A = 1;
+        const B = 1 << 1;
+        const C = 1 << 2;
+    }
+}
+```
+
+The known bits are `0b0000_0111` and the unknown bits are `0b1111_1000`.
+
 `bitflags` doesn't guarantee that a flags value will only ever have known bits set, but some operators
 will unset any unknown bits they encounter. In a future version of `bitflags`, all operators will
 unset unknown bits.
