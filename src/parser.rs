@@ -137,7 +137,7 @@ where
 /**
 Encode a value as a hex string.
 
-Implementors of this trait should not write the leading `0x` prefix.
+Implementors of this trait should not write the `0x` prefix.
 */
 pub trait WriteHex {
     /// Write the value as hex.
