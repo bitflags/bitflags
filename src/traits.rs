@@ -48,7 +48,7 @@ impl<B> Flag<B> {
     If [`name`] returns a non-empty string then this method will return `true`.
     */
     pub const fn is_named(&self) -> bool {
-        self.name != ""
+        !self.name.is_empty()
     }
 
     /**
@@ -57,7 +57,7 @@ impl<B> Flag<B> {
     If [`name`] returns a non-empty string then this method will return `false`.
     */
     pub const fn is_unnamed(&self) -> bool {
-        self.name == ""
+        self.name.is_empty()
     }
 }
 
