@@ -51,6 +51,22 @@ jobs:
       - name: Default features
         run: cargo bench --no-run
 
+  ui:
+    name: UI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+
+      - name: Install Rust toolchain
+        run: rustup default beta
+
+      - name: Compile pass
+        run: cargo test pass
+
+      - name: Compile fail
+        run: cargo test fail
+
   msrv:
     name: MSRV
     runs-on: ubuntu-latest
