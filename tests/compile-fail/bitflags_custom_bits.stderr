@@ -5,32 +5,17 @@ error[E0277]: the trait bound `MyInt: bitflags::traits::Primitive` is not satisf
     |                      ^^^^^ the trait `bitflags::traits::Primitive` is not implemented for `MyInt`
     |
     = help: the following other types implement trait `bitflags::traits::Primitive`:
-              i128
+              isize
+              i8
               i16
               i32
               i64
-              i8
-              isize
-              u128
-              u16
+              i128
+              usize
+              u8
             and $N others
 note: required by a bound in `PublicFlags::Primitive`
    --> src/traits.rs
     |
     |     type Primitive: Primitive;
     |                     ^^^^^^^^^ required by this bound in `PublicFlags::Primitive`
-
-error[E0308]: mismatched types
-   --> tests/compile-fail/bitflags_custom_bits.rs:128:32
-    |
-127 |     fn write_hex<W: fmt::Write>(&self, writer: W) -> fmt::Result {
-    |                  - this type parameter
-128 |         LowerHex::fmt(&self.0, writer)
-    |         -------------          ^^^^^^ expected `&mut Formatter<'_>`, found type parameter `W`
-    |         |
-    |         arguments to this function are incorrect
-    |
-    = note: expected mutable reference `&mut Formatter<'_>`
-                  found type parameter `W`
-note: method defined here
-   --> $RUST/core/src/fmt/mod.rs
