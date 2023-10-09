@@ -115,7 +115,7 @@ jobs:
           cargo +beta clippy
 
       - name: Tests
-        run: cargo test
+        run: cargo +beta test
 
   embedded:
     name: Build (embedded)
