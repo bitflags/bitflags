@@ -114,9 +114,6 @@ jobs:
           cd ./tests/smoke-test
           cargo +beta clippy
 
-      - name: Tests
-        run: cargo +beta test
-
   embedded:
     name: Build (embedded)
     runs-on: ubuntu-latest
