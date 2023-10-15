@@ -6,6 +6,7 @@ use crate::{
 };
 
 #[test]
+#[cfg(not(miri))] // Very slow in miri
 fn roundtrip() {
     let mut s = String::new();
 
