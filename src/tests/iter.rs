@@ -3,6 +3,7 @@ use super::*;
 use crate::Flags;
 
 #[test]
+#[cfg(not(miri))] // Very slow in miri
 fn roundtrip() {
     for a in 0u8..=255 {
         for b in 0u8..=255 {
