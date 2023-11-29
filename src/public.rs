@@ -321,7 +321,8 @@ macro_rules! __impl_public_bitflags_ops {
                 &self,
                 f: &mut $crate::__private::core::fmt::Formatter,
             ) -> $crate::__private::core::fmt::Result {
-                $crate::__private::core::fmt::Binary::fmt(&self.0, f)
+                let inner = self.0;
+                $crate::__private::core::fmt::Binary::fmt(&inner, f)
             }
         }
 
@@ -330,7 +331,8 @@ macro_rules! __impl_public_bitflags_ops {
                 &self,
                 f: &mut $crate::__private::core::fmt::Formatter,
             ) -> $crate::__private::core::fmt::Result {
-                $crate::__private::core::fmt::Octal::fmt(&self.0, f)
+                let inner = self.0;
+                $crate::__private::core::fmt::Octal::fmt(&inner, f)
             }
         }
 
@@ -339,7 +341,8 @@ macro_rules! __impl_public_bitflags_ops {
                 &self,
                 f: &mut $crate::__private::core::fmt::Formatter,
             ) -> $crate::__private::core::fmt::Result {
-                $crate::__private::core::fmt::LowerHex::fmt(&self.0, f)
+                let inner = self.0;
+                $crate::__private::core::fmt::LowerHex::fmt(&inner, f)
             }
         }
 
@@ -348,7 +351,8 @@ macro_rules! __impl_public_bitflags_ops {
                 &self,
                 f: &mut $crate::__private::core::fmt::Formatter,
             ) -> $crate::__private::core::fmt::Result {
-                $crate::__private::core::fmt::UpperHex::fmt(&self.0, f)
+                let inner = self.0;
+                $crate::__private::core::fmt::UpperHex::fmt(&inner, f)
             }
         }
 
