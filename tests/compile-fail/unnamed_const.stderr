@@ -19,3 +19,21 @@ error[E0599]: no associated item named `_` found for struct `Unnamed` in the cur
 8 | |     }
 9 | | }
   | |_- associated item `_` not found for this struct
+  |
+note: if you're trying to build a new `Unnamed` consider using one of the following associated functions:
+      _::<impl Unnamed>::empty
+      _::<impl Unnamed>::all
+      _::<impl Unnamed>::from_bits
+      _::<impl Unnamed>::from_bits_truncate
+      and $N others
+ --> tests/compile-fail/unnamed_const.rs:3:1
+  |
+3 | / bitflags! {
+4 | |     pub struct Unnamed: u8 {
+5 | |         const _ = 1;
+6 | |
+7 | |         const A = Self::_.bits();
+8 | |     }
+9 | | }
+  | |_^
+  = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
