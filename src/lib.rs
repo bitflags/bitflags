@@ -243,7 +243,7 @@ The result of `Flags::A ^ Flags::B` is `0b0000_0010`, which doesn't correspond t
 #![cfg_attr(test, allow(mixed_script_confusables))]
 
 #[doc(inline)]
-pub use traits::{Bits, Flag, Flags};
+pub use traits::{Bits, Flag, Flags, HasAtomic, AtomicBits, AtomicFlags};
 
 pub mod iter;
 pub mod parser;
@@ -444,6 +444,36 @@ bitflags! {
 */
 #[macro_export(local_inner_macros)]
 macro_rules! bitflags {
+    (
+        $(#[atomic_attr($outer_atomic:meta)])*
+        #[atomic($Atomic:ident)]
+        $(#[$outer:meta])*
+        $vis:vis struct $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:tt = $value:expr;
+            )*
+        }
+
+        $($t:tt)*
+    )=> {
+        __declare_atomic_bitflags! {
+            $(#[$outer_atomic])*
+            $vis struct $Atomic : $BitFlags
+        }
+
+        bitflags! {
+            $(#[$outer])*
+            $vis struct $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    const $Flag = $value;
+                )*
+            }
+
+            $($t)*
+        }
+    };
     (
         $(#[$outer:meta])*
         $vis:vis struct $BitFlags:ident: $T:ty {
@@ -910,6 +940,8 @@ macro_rules! __bitflags_flag {
 
 #[macro_use]
 mod public;
+#[macro_use]
+mod atomic;
 #[macro_use]
 mod internal;
 #[macro_use]
