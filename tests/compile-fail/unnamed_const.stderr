@@ -36,4 +36,4 @@ note: if you're trying to build a new `Unnamed` consider using one of the follow
 8 | |     }
 9 | | }
   | |_^
-  = note: this error originates in the macro `__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+  = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
