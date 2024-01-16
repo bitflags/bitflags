@@ -92,7 +92,7 @@ macro_rules! __impl_external_bitflags {
         // Use `serde` as an example: generate code when the feature is available,
         // and a no-op when it isn't
 
-        __impl_external_bitflags_serde! {
+        $crate::__impl_external_bitflags_serde! {
             $InternalBitFlags: $T, $PublicBitFlags {
                 $(
                     $(#[$inner $($args)*])*
@@ -101,7 +101,7 @@ macro_rules! __impl_external_bitflags {
             }
         }
 
-        __impl_external_bitflags_arbitrary! {
+        $crate::__impl_external_bitflags_arbitrary! {
             $InternalBitFlags: $T, $PublicBitFlags {
                 $(
                     $(#[$inner $($args)*])*
@@ -110,7 +110,7 @@ macro_rules! __impl_external_bitflags {
             }
         }
 
-        __impl_external_bitflags_bytemuck! {
+        $crate::__impl_external_bitflags_bytemuck! {
             $InternalBitFlags: $T, $PublicBitFlags {
                 $(
                     $(#[$inner $($args)*])*

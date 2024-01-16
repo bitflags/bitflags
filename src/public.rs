@@ -28,7 +28,7 @@ macro_rules! __impl_public_bitflags_forward {
     (
         $PublicBitFlags:ident: $T:ty, $InternalBitFlags:ident
     ) => {
-        __impl_bitflags! {
+        $crate::__impl_bitflags! {
             $PublicBitFlags: $T {
                 fn empty() {
                     Self($InternalBitFlags::empty())
@@ -135,7 +135,7 @@ macro_rules! __impl_public_bitflags {
             )*
         }
     ) => {
-        __impl_bitflags! {
+        $crate::__impl_bitflags! {
             $BitFlags: $T {
                 fn empty() {
                     Self(<$T as $crate::Bits>::EMPTY)
@@ -146,7 +146,7 @@ macro_rules! __impl_public_bitflags {
                     let mut i = 0;
 
                     $(
-                        __bitflags_expr_safe_attrs!(
+                        $crate::__bitflags_expr_safe_attrs!(
                             $(#[$inner $($args)*])*
                             {{
                                 let flag = <$PublicBitFlags as $crate::Flags>::FLAGS[i].value().bits();
@@ -185,10 +185,10 @@ macro_rules! __impl_public_bitflags {
 
                 fn from_name(name) {
                     $(
-                        __bitflags_flag!({
+                        $crate::__bitflags_flag!({
                             name: $Flag,
                             named: {
-                                __bitflags_expr_safe_attrs!(
+                                $crate::__bitflags_expr_safe_attrs!(
                                     $(#[$inner $($args)*])*
                                     {
                                         if name == $crate::__private::core::stringify!($Flag) {
@@ -485,7 +485,7 @@ macro_rules! __impl_public_bitflags_consts {
     ) => {
         impl $PublicBitFlags {
             $(
-                __bitflags_flag!({
+                $crate::__bitflags_flag!({
                     name: $Flag,
                     named: {
                         $(#[$inner $($args)*])*
@@ -503,10 +503,10 @@ macro_rules! __impl_public_bitflags_consts {
         impl $crate::Flags for $PublicBitFlags {
             const FLAGS: &'static [$crate::Flag<$PublicBitFlags>] = &[
                 $(
-                    __bitflags_flag!({
+                    $crate::__bitflags_flag!({
                         name: $Flag,
                         named: {
-                            __bitflags_expr_safe_attrs!(
+                            $crate::__bitflags_expr_safe_attrs!(
                                 $(#[$inner $($args)*])*
                                 {
                                     #[allow(
@@ -518,7 +518,7 @@ macro_rules! __impl_public_bitflags_consts {
                             )
                         },
                         unnamed: {
-                            __bitflags_expr_safe_attrs!(
+                            $crate::__bitflags_expr_safe_attrs!(
                                 $(#[$inner $($args)*])*
                                 {
                                     #[allow(

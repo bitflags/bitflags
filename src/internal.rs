@@ -97,7 +97,7 @@ macro_rules! __impl_internal_bitflags {
 
         // The internal flags type offers a similar API to the public one
 
-        __impl_public_bitflags! {
+        $crate::__impl_public_bitflags! {
             $InternalBitFlags: $T, $PublicBitFlags {
                 $(
                     $(#[$inner $($args)*])*
@@ -106,11 +106,11 @@ macro_rules! __impl_internal_bitflags {
             }
         }
 
-        __impl_public_bitflags_ops! {
+        $crate::__impl_public_bitflags_ops! {
             $InternalBitFlags
         }
 
-        __impl_public_bitflags_iter! {
+        $crate::__impl_public_bitflags_iter! {
             $InternalBitFlags: $T, $PublicBitFlags
         }
 
