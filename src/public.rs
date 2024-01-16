@@ -6,7 +6,7 @@
 /// Declare the user-facing bitflags struct.
 ///
 /// This type is guaranteed to be a newtype with a `bitflags`-facing type as its single field.
-#[macro_export(local_inner_macros)]
+#[macro_export]
 #[doc(hidden)]
 macro_rules! __declare_public_bitflags {
     (
@@ -22,7 +22,7 @@ macro_rules! __declare_public_bitflags {
 ///
 /// We need to be careful about adding new methods and trait implementations here because they
 /// could conflict with items added by the end-user.
-#[macro_export(local_inner_macros)]
+#[macro_export]
 #[doc(hidden)]
 macro_rules! __impl_public_bitflags_forward {
     (
@@ -124,7 +124,7 @@ macro_rules! __impl_public_bitflags_forward {
 ///
 /// We need to be careful about adding new methods and trait implementations here because they
 /// could conflict with items added by the end-user.
-#[macro_export(local_inner_macros)]
+#[macro_export]
 #[doc(hidden)]
 macro_rules! __impl_public_bitflags {
     (
@@ -268,7 +268,7 @@ macro_rules! __impl_public_bitflags {
 }
 
 /// Implement iterators on the public (user-facing) bitflags type.
-#[macro_export(local_inner_macros)]
+#[macro_export]
 #[doc(hidden)]
 macro_rules! __impl_public_bitflags_iter {
     ($BitFlags:ident: $T:ty, $PublicBitFlags:ident) => {
@@ -312,7 +312,7 @@ macro_rules! __impl_public_bitflags_iter {
 }
 
 /// Implement traits on the public (user-facing) bitflags type.
-#[macro_export(local_inner_macros)]
+#[macro_export]
 #[doc(hidden)]
 macro_rules! __impl_public_bitflags_ops {
     ($PublicBitFlags:ident) => {
@@ -472,7 +472,7 @@ macro_rules! __impl_public_bitflags_ops {
 }
 
 /// Implement constants on the public (user-facing) bitflags type.
-#[macro_export(local_inner_macros)]
+#[macro_export]
 #[doc(hidden)]
 macro_rules! __impl_public_bitflags_consts {
     (

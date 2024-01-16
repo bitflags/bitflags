@@ -442,7 +442,7 @@ bitflags! {
 }
 ```
 */
-#[macro_export(local_inner_macros)]
+#[macro_export]
 macro_rules! bitflags {
     (
         $(#[$outer:meta])*
@@ -588,7 +588,7 @@ macro_rules! bitflags {
 ///
 /// We need to be careful about adding new methods and trait implementations here because they
 /// could conflict with items added by the end-user.
-#[macro_export(local_inner_macros)]
+#[macro_export]
 #[doc(hidden)]
 macro_rules! __impl_bitflags {
     (
@@ -797,7 +797,7 @@ macro_rules! __impl_bitflags {
 ///
 /// If you find yourself with an attribute that should be considered expression-safe
 /// and isn't, it can be added here.
-#[macro_export(local_inner_macros)]
+#[macro_export]
 #[doc(hidden)]
 macro_rules! __bitflags_expr_safe_attrs {
     // Entrypoint: Move all flags and all attributes into `unprocessed` lists
@@ -885,7 +885,7 @@ macro_rules! __bitflags_expr_safe_attrs {
 }
 
 /// Implement a flag, which may be a wildcard `_`.
-#[macro_export(local_inner_macros)]
+#[macro_export]
 #[doc(hidden)]
 macro_rules! __bitflags_flag {
     (
