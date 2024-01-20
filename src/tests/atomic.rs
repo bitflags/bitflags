@@ -2,7 +2,7 @@ use core::{sync::atomic::Ordering, fmt::Debug};
 
 use super::*;
 
-use crate::{Atomic, Flags, HasAtomic};
+use crate::{Flags, atomic::{Atomic, HasAtomic}};
 
 #[test]
 fn cases() {

@@ -12,10 +12,6 @@ __declare_public_bitflags! {
     pub struct Flags
 }
 
-__declare_atomic_bitflags! {
-    pub struct AtomicFlags: Flags
-}
-
 __declare_internal_bitflags! {
     pub struct Field0: u32
 }

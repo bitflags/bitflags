@@ -244,8 +244,6 @@ The result of `Flags::A ^ Flags::B` is `0b0000_0010`, which doesn't correspond t
 
 #[doc(inline)]
 pub use traits::{Bits, Flag, Flags};
-#[doc(inline)]
-pub use atomic::{Atomic, AtomicBits, HasAtomic};
 
 pub mod iter;
 pub mod parser;
@@ -940,10 +938,10 @@ macro_rules! __bitflags_flag {
     };
 }
 
+pub mod atomic;
+
 #[macro_use]
 mod public;
-#[macro_use]
-mod atomic;
 #[macro_use]
 mod internal;
 #[macro_use]
