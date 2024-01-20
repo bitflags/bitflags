@@ -1,7 +1,6 @@
 use core::{
     fmt,
-    ops::{BitAnd, BitOr, BitXor, Not},
-    sync::atomic::*,
+    ops::{BitAnd, BitOr, BitXor, Not}
 };
 
 use crate::{
@@ -314,57 +313,6 @@ pub trait Flags: Sized + 'static {
     }
 }
 
-pub trait AtomicFlags : Sized + 'static {
-    type AtomicBits: AtomicBits<Bits=<Self::Flags as Flags>::Bits>;
-    type Flags: Flags;
-
-    fn atomic_bits(&self) -> &Self::AtomicBits;
-    fn from_bits_retain(bits: <Self::Flags as Flags>::Bits) -> Self;
-
-    fn empty() -> Self {
-        Self::from_bits_retain(<Self::Flags as Flags>::empty().bits())
-    }
-    fn all() -> Self {
-        Self::from_bits_retain(<Self::Flags as Flags>::all().bits())
-    }
-    fn from_bits(bits: <Self::Flags as Flags>::Bits) -> Self {
-        Self::from_bits_retain(bits)
-    }
-    fn from_bits_truncate(bits: <Self::Flags as Flags>::Bits) -> Self {
-        Self::from_bits_retain(<Self::Flags as Flags>::from_bits_truncate(bits).bits())
-    }
-
-    fn swap(&self, val: Self::Flags, ordering: Ordering) -> Self::Flags {
-        let bits = self.atomic_bits().swap(val.bits(), ordering);
-        Self::Flags::from_bits_retain(bits)
-    }
-    fn store(&self, val: Self::Flags, ordering: Ordering) {
-        self.atomic_bits().store(val.bits(), ordering);
-    }
-    fn load(&self, ordering: Ordering) -> Self::Flags {
-        let bits = self.atomic_bits().load(ordering);
-        Self::Flags::from_bits_retain(bits)
-    }
-    fn fetch_insert(&self, val: Self::Flags, ordering: Ordering) -> Self::Flags {
-        let bits = self.atomic_bits().fetch_or(val.bits(), ordering);
-        Self::Flags::from_bits_retain(bits)
-    }
-    fn fetch_remove(&self, val: Self::Flags, ordering: Ordering) -> Self::Flags {
-        let bits = self.atomic_bits().fetch_and(!val.bits(), ordering);
-        Self::Flags::from_bits_retain(bits)
-    }
-    fn fetch_toggle(&self, val: Self::Flags, ordering: Ordering) -> Self::Flags {
-        let bits = self.atomic_bits().fetch_xor(val.bits(), ordering);
-        Self::Flags::from_bits_retain(bits)
-    }
-    fn fetch_set(&self, val: Self::Flags, set: bool, ordering: Ordering) -> Self::Flags {
-        if set {
-            self.fetch_insert(val, ordering)
-        } else {
-            self.fetch_remove(val, ordering)
-        }
-    }
-}
 
 /**
 A bits type that can be used as storage for a flags type.
@@ -385,27 +333,6 @@ pub trait Bits:
 
     /// A value with all bits set.
     const ALL: Self;
-}
-
-/// Bits type that has an atomic variant
-pub trait HasAtomic : Bits {
-    type Atomic: AtomicBits<Bits=Self>;
-}
-
-/// A type that can be used as atomic storage for a flags type
-pub trait AtomicBits :
-    From<Self::Bits>
-    + Sized
-    + 'static
-{
-    type Bits: HasAtomic<Atomic=Self>;
-
-    fn fetch_and(&self, val: Self::Bits, order: Ordering) -> Self::Bits;
-    fn fetch_or(&self, val: Self::Bits, order: Ordering) -> Self::Bits;
-    fn fetch_xor(&self, val: Self::Bits, order: Ordering) -> Self::Bits;
-    fn load(&self, order: Ordering) -> Self::Bits;
-    fn store(&self, val: Self::Bits, order: Ordering);
-    fn swap(&self, val: Self::Bits, order: Ordering) -> Self::Bits;
 }
 
 // Not re-exported: prevent custom `Bits` impls being used in the `bitflags!` macro,
@@ -463,51 +390,6 @@ impl_bits! {
     u128, i128,
     usize, isize,
 }
-
-macro_rules! impl_atomic {
-    ($a1:ident $i1:ident, $a2:ident $i2:ident) => {
-        impl_atomic!($a1 $i1);
-        impl_atomic!($a2 $i2);
-    };
-    ($atomic:ident $i:ident) => {
-        impl HasAtomic for $i {
-            type Atomic = $atomic;
-        }
-
-        impl AtomicBits for $atomic {
-            type Bits = $i;
-            fn fetch_and(&self, val: Self::Bits, order: Ordering) -> Self::Bits {
-                self.fetch_and(val, order)
-            }
-            fn fetch_or(&self, val: Self::Bits, order: Ordering) -> Self::Bits{
-                self.fetch_or(val, order)
-            }
-            fn fetch_xor(&self, val: Self::Bits, order: Ordering) -> Self::Bits{
-                self.fetch_xor(val, order)
-            }
-            fn load(&self, order: Ordering) -> Self::Bits{
-                self.load(order)
-            }
-            fn store(&self, val: Self::Bits, order: Ordering){
-                self.store(val, order)
-            }
-            fn swap(&self, val: Self::Bits, order: Ordering) -> Self::Bits{
-                self.swap(val, order)
-            }
-        }
-    };
-}
-
-#[cfg(target_has_atomic = "8")]
-impl_atomic!(AtomicU8 u8, AtomicI8 i8);
-#[cfg(target_has_atomic = "16")]
-impl_atomic!(AtomicU16 u16, AtomicI16 i16);
-#[cfg(target_has_atomic = "32")]
-impl_atomic!(AtomicU32 u32, AtomicI32 i32);
-#[cfg(target_has_atomic = "64")]
-impl_atomic!(AtomicU64 u64, AtomicI64 i64);
-#[cfg(target_has_atomic = "ptr")]
-impl_atomic!(AtomicUsize usize, AtomicIsize isize);
 
 /// A trait for referencing the `bitflags`-owned internal type
 /// without exposing it publicly.

@@ -1,4 +1,5 @@
 mod all;
+mod atomic;
 mod bits;
 mod complement;
 mod contains;

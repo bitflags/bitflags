@@ -243,7 +243,9 @@ The result of `Flags::A ^ Flags::B` is `0b0000_0010`, which doesn't correspond t
 #![cfg_attr(test, allow(mixed_script_confusables))]
 
 #[doc(inline)]
-pub use traits::{Bits, Flag, Flags, HasAtomic, AtomicBits, AtomicFlags};
+pub use traits::{Bits, Flag, Flags};
+#[doc(inline)]
+pub use atomic::{Atomic, AtomicBits, HasAtomic};
 
 pub mod iter;
 pub mod parser;
