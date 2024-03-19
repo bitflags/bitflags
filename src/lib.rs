@@ -17,7 +17,7 @@ Add `bitflags` to your `Cargo.toml`:
 
 ```toml
 [dependencies.bitflags]
-version = "2.4.2"
+version = "2.5.0"
 ```
 
 ## Generating flags types
