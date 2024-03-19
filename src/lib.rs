@@ -252,7 +252,8 @@ mod traits;
 
 #[doc(hidden)]
 pub mod __private {
-    #[allow(unused_imports)] // Easier than conditionally checking any optional external dependencies
+    #[allow(unused_imports)]
+    // Easier than conditionally checking any optional external dependencies
     pub use crate::{external::__private::*, traits::__private::*};
 
     pub use core;
