@@ -91,7 +91,20 @@ to a valid flag.
 
 # 2.3.0
 
+## Major changes
+
+### `BitFlags` trait deprecated in favor of `Flags` trait
+
+This release introduces the `Flags` trait and deprecates the `BitFlags` trait. These two traits are semver compatible so if you have public API code depending on `BitFlags` you can move to `Flags` without breaking end-users. This is possible because the `BitFlags` trait was never publicly implementable, so it now carries `Flags` as a supertrait. All implementations of `Flags` additionally implement `BitFlags`.
+
+The `Flags` trait is a publicly implementable version of the old `BitFlags` trait. The original `BitFlags` trait carried some macro baggage that made it difficult to implement, so a new `Flags` trait has been introduced as the _One True Trait_ for interacting with flags types generically. See the the `macro_free` and `custom_derive` examples for more details.
+
+### `Bits` trait publicly exposed
+
+The `Bits` trait for the underlying storage of flags values is also now publicly implementable. This lets you define your own exotic backing storage for flags. See the `custom_bits_type` example for more details.
+
 ## What's Changed
+* Use explicit hashes for actions steps by @KodrAus in https://github.com/bitflags/bitflags/pull/350
 * Support ejecting flags types from the bitflags macro by @KodrAus in https://github.com/bitflags/bitflags/pull/351
 
 **Full Changelog**: https://github.com/bitflags/bitflags/compare/2.2.1...2.3.0
@@ -149,6 +162,59 @@ to a valid flag.
 **Full Changelog**: https://github.com/bitflags/bitflags/compare/2.0.0...2.0.1
 
 # 2.0.0
+
+## Major changes
+
+This release includes some major changes over `1.x`. If you use `bitflags!` types in your public API then upgrading this library may cause breakage in your downstream users.
+
+### ⚠️ Serialization
+
+You'll need to add the `serde` Cargo feature in order to `#[derive(Serialize, Deserialize)]` on your generated flags types:
+
+```rust
+bitflags! {
+    #[derive(Serialize, Deserialize)]
+    #[serde(transparent)]
+    pub struct Flags: T {
+        ..
+    }
+}
+```
+
+where `T` is the underlying bits type you're using, such as `u32`.
+
+The default serialization format with `serde` **has changed** if you `#[derive(Serialize, Deserialize)]` on your generated flags types. It will now use a formatted string for human-readable formats and the underlying bits type for compact formats.
+
+To keep the old format, see the https://github.com/KodrAus/bitflags-serde-legacy library.
+
+### ⚠️ Traits
+
+Generated flags types now derive fewer traits. If you need to maintain backwards compatibility, you can derive the following yourself:
+
+```rust
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Clone, Copy)]
+```
+
+### ⚠️ Methods
+
+The unsafe `from_bits_unchecked` method is now a safe `from_bits_retain` method.
+
+You can add the following method to your generated types to keep them compatible:
+
+```rust
+#[deprecated = "use the safe `from_bits_retain` method instead"]
+pub unsafe fn from_bits_unchecked(bits: T) -> Self {
+    Self::from_bits_retain(bits)
+}
+```
+
+where `T` is the underlying bits type you're using, such as `u32`.
+
+### ⚠️ `.bits` field
+
+You can now use the `.bits()` method instead of the old `.bits`.
+
+The representation of generated flags types has changed from a struct with the single field `bits` to a newtype.
 
 ## What's Changed
 * Fix a typo and call out MSRV bump by @KodrAus in https://github.com/bitflags/bitflags/pull/259
