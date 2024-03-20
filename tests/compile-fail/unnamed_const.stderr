@@ -12,10 +12,7 @@ error[E0599]: no associated item named `_` found for struct `Unnamed` in the cur
 5 | |         const _ = 1;
 6 | |
 7 | |         const A = Self::_.bits();
-  | |                         ^
-  | |                         |
-  | |                         associated item not found in `Unnamed`
-  | |                         help: there is an associated constant with a similar name: `A`
+  | |                         ^ associated item not found in `Unnamed`
 8 | |     }
 9 | | }
   | |_- associated item `_` not found for this struct
@@ -37,3 +34,7 @@ note: if you're trying to build a new `Unnamed` consider using one of the follow
 9 | | }
   | |_^
   = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+help: there is an associated constant `A` with a similar name
+  |
+7 |         const A = Self::A.bits();
+  |                         ~

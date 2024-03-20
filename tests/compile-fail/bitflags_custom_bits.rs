@@ -124,7 +124,7 @@ impl ParseHex for MyInt {
 }
 
 impl WriteHex for MyInt {
-    fn write_hex<W: fmt::Write>(&self, writer: W) -> fmt::Result {
+    fn write_hex<W: fmt::Write>(&self, mut writer: W) -> fmt::Result {
         write!(writer, "{:x}", self.0)
     }
 }
