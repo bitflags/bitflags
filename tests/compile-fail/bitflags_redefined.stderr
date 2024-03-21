@@ -24,25 +24,6 @@ error[E0601]: `main` function not found in crate `$CRATE`
 14 | }
    |  ^ consider adding a `main` function to `$DIR/tests/compile-fail/bitflags_redefined.rs`
 
-error[E0119]: conflicting implementations of trait `Flags` for type `Flags1`
-  --> tests/compile-fail/bitflags_redefined.rs:10:1
-   |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
-   | |_- first implementation here
-9  |
-10 | / bitflags! {
-11 | |     pub struct Flags1: u32 {
-12 | |         const A = 1;
-13 | |     }
-14 | | }
-   | |_^ conflicting implementation for `Flags1`
-   |
-   = note: this error originates in the macro `$crate::__impl_public_bitflags_consts` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-
 error[E0119]: conflicting implementations of trait `PublicFlags` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
@@ -61,6 +42,25 @@ error[E0119]: conflicting implementations of trait `PublicFlags` for type `Flags
    | |_^ conflicting implementation for `Flags1`
    |
    = note: this error originates in the macro `$crate::__impl_internal_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0119]: conflicting implementations of trait `Flags` for type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_- first implementation here
+9  |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ conflicting implementation for `Flags1`
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_consts` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0119]: conflicting implementations of trait `Binary` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -364,6 +364,56 @@ error[E0119]: conflicting implementations of trait `IntoIterator` for type `Flag
 14 | | }
    | |_^ conflicting implementation for `Flags1`
    |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+note: the requirement `_ <: _` appears on the `impl`'s method `into_iter` but not on the corresponding trait's method
+ --> $RUST/core/src/iter/traits/collect.rs
+  |
+  = note: in this trait
+ ::: $RUST/core/src/iter/traits/collect.rs
+  |
+  = note: this trait's method doesn't have the requirement `_ <: _`
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__declare_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+note: the requirement `_ <: _` appears on the `impl`'s method `into_iter` but not on the corresponding trait's method
+  --> $RUST/core/src/iter/traits/collect.rs
+   |
+   = note: in this trait
+  ::: $RUST/core/src/iter/traits/collect.rs
+   |
+   = note: this trait's method doesn't have the requirement `_ <: _`
    = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0592]: duplicate definitions with name `A`
@@ -800,5 +850,2569 @@ error[E0592]: duplicate definitions with name `iter_names`
 13 | |     }
 14 | | }
    | |_- other definition for `iter_names`
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_consts` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:6:15
+   |
+6  |         const A = 1;
+   |               ^ multiple `A` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_consts` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_consts` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_consts` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0283]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: cannot satisfy `_: WriteHex`
+  = help: the following types implement trait `WriteHex`:
+            isize
+            i8
+            i16
+            i32
+            i64
+            i128
+            usize
+            u8
+          and $N others
+note: required by a bound in `to_writer`
+ --> src/parser.rs
+  |
+  | pub fn to_writer<B: Flags>(flags: &B, mut writer: impl Write) -> Result<(), fmt::Error>
+  |        --------- required by a bound in this function
+  | where
+  |     B::Bits: WriteHex,
+  |              ^^^^^^^^ required by this bound in `to_writer`
+  = note: this error originates in the macro `$crate::__impl_internal_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0283]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: cannot satisfy `_: ParseHex`
+  = help: the following types implement trait `ParseHex`:
+            isize
+            i8
+            i16
+            i32
+            i64
+            i128
+            usize
+            u8
+          and $N others
+note: required by a bound in `bitflags::parser::from_str`
+ --> src/parser.rs
+  |
+  | pub fn from_str<B: Flags>(input: &str) -> Result<B, ParseError>
+  |        -------- required by a bound in this function
+  | where
+  |     B::Bits: ParseHex,
+  |              ^^^^^^^^ required by this bound in `from_str`
+  = note: this error originates in the macro `$crate::__impl_internal_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `union` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `insert` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `symmetric_difference` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `toggle` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `intersection` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `difference` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `remove` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `complement` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `insert` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `empty` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^ multiple `iter` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_consts` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:12:15
+   |
+12 |         const A = 1;
+   |               ^ multiple `A` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_consts` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_consts` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_consts` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0283]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: cannot satisfy `_: WriteHex`
+   = help: the following types implement trait `WriteHex`:
+             isize
+             i8
+             i16
+             i32
+             i64
+             i128
+             usize
+             u8
+           and $N others
+note: required by a bound in `to_writer`
+  --> src/parser.rs
+   |
+   | pub fn to_writer<B: Flags>(flags: &B, mut writer: impl Write) -> Result<(), fmt::Error>
+   |        --------- required by a bound in this function
+   | where
+   |     B::Bits: WriteHex,
+   |              ^^^^^^^^ required by this bound in `to_writer`
+   = note: this error originates in the macro `$crate::__impl_internal_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0283]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: cannot satisfy `_: ParseHex`
+   = help: the following types implement trait `ParseHex`:
+             isize
+             i8
+             i16
+             i32
+             i64
+             i128
+             usize
+             u8
+           and $N others
+note: required by a bound in `bitflags::parser::from_str`
+  --> src/parser.rs
+   |
+   | pub fn from_str<B: Flags>(input: &str) -> Result<B, ParseError>
+   |        -------- required by a bound in this function
+   | where
+   |     B::Bits: ParseHex,
+   |              ^^^^^^^^ required by this bound in `from_str`
+   = note: this error originates in the macro `$crate::__impl_internal_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_forward` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `union` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `insert` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `symmetric_difference` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `toggle` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `intersection` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `difference` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `remove` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `complement` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `insert` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `empty` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_ops` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `from_bits_retain` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `bits` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0034]: multiple applicable items in scope
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ multiple `iter` found
+   |
+note: candidate #1 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+4  | / bitflags! {
+5  | |     pub struct Flags1: u32 {
+6  | |         const A = 1;
+7  | |     }
+8  | | }
+   | |_^
+note: candidate #2 is defined in an impl for the type `Flags1`
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+ --> tests/compile-fail/bitflags_redefined.rs:4:1
+  |
+4 | / bitflags! {
+5 | |     pub struct Flags1: u32 {
+6 | |         const A = 1;
+7 | |     }
+8 | | }
+  | |_^ cannot infer type
+  |
+  = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0282]: type annotations needed
+  --> tests/compile-fail/bitflags_redefined.rs:10:1
+   |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_^ cannot infer type
    |
    = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
