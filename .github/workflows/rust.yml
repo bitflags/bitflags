@@ -38,6 +38,20 @@ jobs:
     - name: Smoke test
       run: cargo run --manifest-path tests/smoke-test/Cargo.toml
 
+  check-minimal:
+    name: Check minimal versions
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+
+    - name: Install Rust Toolchain
+      run: rustup default nightly
+
+    - name: Check minimal versions
+      run: cargo check --all --features serde,arbitrary,bytemuck,std,example_generated --all-targets -Z minimal-versions
+
   benches:
     name: Benches
     runs-on: ubuntu-latest

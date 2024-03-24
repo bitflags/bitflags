@@ -18,18 +18,18 @@ A macro to generate structures which behave like bitflags.
 exclude = ["/tests", "/.github"]
 
 [dependencies]
-serde = { version = "1.0", optional = true, default-features = false }
+serde = { version = "1.0.103", optional = true, default-features = false }
 arbitrary = { version = "1.0", optional = true }
-bytemuck = { version = "1.0", optional = true }
+bytemuck = { version = "1.12", optional = true }
 core = { version = "1.0.0", optional = true, package = "rustc-std-workspace-core" }
 compiler_builtins = { version = "0.1.2", optional = true }
 
 [dev-dependencies]
-trybuild = "1.0"
+trybuild = "1.0.18"
 rustversion = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
-serde_test = "1.0"
+serde_test = "1.0.19"
 zerocopy = { version = "0.7", features = ["derive"] }
 arbitrary = { version = "1.0", features = ["derive"] }
 bytemuck = { version = "1.0", features = ["derive"] }
