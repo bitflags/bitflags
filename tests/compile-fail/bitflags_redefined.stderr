@@ -367,25 +367,6 @@ error[E0119]: conflicting implementations of trait `IntoIterator` for type `Flag
    = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0282]: type annotations needed
- --> tests/compile-fail/bitflags_redefined.rs:4:1
-  |
-4 | / bitflags! {
-5 | |     pub struct Flags1: u32 {
-6 | |         const A = 1;
-7 | |     }
-8 | | }
-  | |_^ cannot infer type
-  |
-note: the requirement `_ <: _` appears on the `impl`'s method `into_iter` but not on the corresponding trait's method
- --> $RUST/core/src/iter/traits/collect.rs
-  |
-  = note: in this trait
- ::: $RUST/core/src/iter/traits/collect.rs
-  |
-  = note: this trait's method doesn't have the requirement `_ <: _`
-  = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0282]: type annotations needed
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
 10 | / bitflags! {
@@ -396,25 +377,6 @@ error[E0282]: type annotations needed
    | |_^ cannot infer type
    |
    = note: this error originates in the macro `$crate::__declare_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0282]: type annotations needed
-  --> tests/compile-fail/bitflags_redefined.rs:10:1
-   |
-10 | / bitflags! {
-11 | |     pub struct Flags1: u32 {
-12 | |         const A = 1;
-13 | |     }
-14 | | }
-   | |_^ cannot infer type
-   |
-note: the requirement `_ <: _` appears on the `impl`'s method `into_iter` but not on the corresponding trait's method
-  --> $RUST/core/src/iter/traits/collect.rs
-   |
-   = note: in this trait
-  ::: $RUST/core/src/iter/traits/collect.rs
-   |
-   = note: this trait's method doesn't have the requirement `_ <: _`
-   = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0592]: duplicate definitions with name `A`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
@@ -981,14 +943,14 @@ error[E0283]: type annotations needed
   |
   = note: cannot satisfy `_: WriteHex`
   = help: the following types implement trait `WriteHex`:
-            isize
-            i8
+            i128
             i16
             i32
             i64
-            i128
-            usize
-            u8
+            i8
+            isize
+            u128
+            u16
           and $N others
 note: required by a bound in `to_writer`
  --> src/parser.rs
@@ -1012,14 +974,14 @@ error[E0283]: type annotations needed
   |
   = note: cannot satisfy `_: ParseHex`
   = help: the following types implement trait `ParseHex`:
-            isize
-            i8
+            i128
             i16
             i32
             i64
-            i128
-            usize
-            u8
+            i8
+            isize
+            u128
+            u16
           and $N others
 note: required by a bound in `bitflags::parser::from_str`
  --> src/parser.rs
@@ -2191,14 +2153,14 @@ error[E0283]: type annotations needed
    |
    = note: cannot satisfy `_: WriteHex`
    = help: the following types implement trait `WriteHex`:
-             isize
-             i8
+             i128
              i16
              i32
              i64
-             i128
-             usize
-             u8
+             i8
+             isize
+             u128
+             u16
            and $N others
 note: required by a bound in `to_writer`
   --> src/parser.rs
@@ -2222,14 +2184,14 @@ error[E0283]: type annotations needed
    |
    = note: cannot satisfy `_: ParseHex`
    = help: the following types implement trait `ParseHex`:
-             isize
-             i8
+             i128
              i16
              i32
              i64
-             i128
-             usize
-             u8
+             i8
+             isize
+             u128
+             u16
            and $N others
 note: required by a bound in `bitflags::parser::from_str`
   --> src/parser.rs
