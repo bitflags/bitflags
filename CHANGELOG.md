@@ -97,7 +97,7 @@ to a valid flag.
 
 This release introduces the `Flags` trait and deprecates the `BitFlags` trait. These two traits are semver compatible so if you have public API code depending on `BitFlags` you can move to `Flags` without breaking end-users. This is possible because the `BitFlags` trait was never publicly implementable, so it now carries `Flags` as a supertrait. All implementations of `Flags` additionally implement `BitFlags`.
 
-The `Flags` trait is a publicly implementable version of the old `BitFlags` trait. The original `BitFlags` trait carried some macro baggage that made it difficult to implement, so a new `Flags` trait has been introduced as the _One True Trait_ for interacting with flags types generically. See the the `macro_free` and `custom_derive` examples for more details.
+The `Flags` trait is a publicly implementable version of the old `BitFlags` trait. The original `BitFlags` trait carried some macro baggage that made it difficult to implement, so a new `Flags` trait has been introduced as the _One True Trait_ for interacting with flags types generically. See the `macro_free` and `custom_derive` examples for more details.
 
 ### `Bits` trait publicly exposed
 
