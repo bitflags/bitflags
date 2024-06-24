@@ -1,3 +1,22 @@
+# 2.6.0
+
+## What's Changed
+* Sync CHANGELOG.md with github release notes by @dextero in https://github.com/bitflags/bitflags/pull/402
+* Update error messages and zerocopy by @KodrAus in https://github.com/bitflags/bitflags/pull/403
+* Bump minimum declared versions of dependencies by @dextero in https://github.com/bitflags/bitflags/pull/404
+* chore(deps): bump serde_derive and bytemuck versions by @joshka in https://github.com/bitflags/bitflags/pull/405
+* add OSFF Scorecard workflow by @KodrAus in https://github.com/bitflags/bitflags/pull/396
+* Update stderr messages by @KodrAus in https://github.com/bitflags/bitflags/pull/408
+* Fix typo by @waywardmonkeys in https://github.com/bitflags/bitflags/pull/410
+* Allow specifying outer attributes in impl mode by @KodrAus in https://github.com/bitflags/bitflags/pull/411
+
+## New Contributors
+* @dextero made their first contribution in https://github.com/bitflags/bitflags/pull/402
+* @joshka made their first contribution in https://github.com/bitflags/bitflags/pull/405
+* @waywardmonkeys made their first contribution in https://github.com/bitflags/bitflags/pull/410
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.5.0...2.6.0
+
 # 2.5.0
 
 ## What's Changed
