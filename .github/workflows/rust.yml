@@ -129,6 +129,9 @@ jobs:
           cd ./tests/smoke-test
           cargo +beta clippy
 
+      - name: Other features
+        run: cargo +beta clippy --features arbitrary,bytemuck,serde
+
   embedded:
     name: Build (embedded)
     runs-on: ubuntu-latest
