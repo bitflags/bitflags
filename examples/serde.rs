@@ -4,7 +4,7 @@
 
 #[cfg(feature = "serde")]
 fn main() {
-    use serde_derive::*;
+    use serde::{Deserialize, Serialize};
 
     bitflags::bitflags! {
         #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
