@@ -1,6 +1,10 @@
 #![allow(unknown_lints)]
 #![deny(clippy::all, clippy::pedantic, clippy::restriction)]
-#![allow(clippy::blanket_clippy_restriction_lints)]
+#![allow(
+    clippy::allow_attributes,
+    clippy::allow_attributes_without_reason,
+    clippy::blanket_clippy_restriction_lints
+)]
 // deny all rustc's built-in lints
 #![deny(
     warnings,
