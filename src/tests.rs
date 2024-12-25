@@ -18,6 +18,7 @@ mod intersects;
 mod is_all;
 mod is_empty;
 mod iter;
+mod match_bitflag;
 mod parser;
 mod remove;
 mod symmetric_difference;

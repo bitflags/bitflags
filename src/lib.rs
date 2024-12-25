@@ -587,6 +587,90 @@ macro_rules! bitflags {
     () => {};
 }
 
+/// Match bitflag patterns similar to Rust's match expression
+///
+/// This macro allows for matching bitflag combinations in a way that resembles
+/// Rust's native match expression, but works correctly with bitflag operations.
+///
+/// # Requirements
+///
+/// - The struct used with this macro must implement `PartialEq`.
+/// - It's recommended to use this macro with structs created by the `bitflags!` macro.
+///
+/// # Syntax
+///
+/// ```ignore
+/// match_bitflag!(expression, {
+///     pattern1 => result1,
+///     pattern2 => result2,
+///     ...
+///     _ => default_result
+/// })
+/// ```
+///
+/// # Examples
+///
+/// ```rust
+/// use bitflags::{match_bitflag, bitflags};
+///
+/// bitflags! {
+///     #[derive(PartialEq)]
+///     struct Flags: u8 {
+///         const A = 1 << 0;
+///         const B = 1 << 1;
+///         const C = 1 << 2;
+///     }
+/// }
+///
+/// let flags = Flags::A | Flags::B;
+///
+/// match_bitflag!(expected, {
+///     Flags::A => println!("A"),
+///     Flags::B => println!("B"),
+///     Flags::C  => println!("C"),
+///     Flags::A | Flags::B =>{
+///          // println!("A | B");
+///          print!("A");
+///          print!(" | ");
+///          print!("B");
+///     },
+///     Flags::A | Flags::C => println!("A | C"),
+///     Flags::B | Flags::C => println!("B | C"),
+///     Flags::A | Flags::B | Flags::C => println!("A | B | C"),
+///     _ => println!("other")
+/// })
+/// ```
+///
+/// # How it works
+///
+/// The macro expands to a series of if-else statements, checking equality
+/// between the input expression and each pattern. This allows for correct
+/// matching of bitflag combinations, which is not possible with a regular
+/// match expression due to the way bitflags are implemented.
+///
+/// # Note
+///
+/// The order of patterns matters. The first matching pattern will be executed,
+/// so more specific patterns should come before more general ones.
+#[macro_export]
+macro_rules! match_bitflag {
+    ($operation:expr, {
+    $( $pattern:expr => $result:expr, )*
+        _ => $default:expr
+    }) => {
+        {
+            $(
+                if $operation == $pattern {
+                    $result
+                } else
+            )*
+            {
+                $default
+            }
+        }
+    };
+}
+
 /// Implement functions on bitflags types.
 ///
 /// We need to be careful about adding new methods and trait implementations here because they
