@@ -1,4 +1,4 @@
-error: no rules expected the token `;`
+error: no rules expected `;`
  --> tests/compile-fail/bitflags_missing_value.rs:6:16
   |
 6 |         const A;

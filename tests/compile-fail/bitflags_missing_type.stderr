@@ -1,4 +1,4 @@
-error: no rules expected the token `{`
+error: no rules expected `{`
  --> tests/compile-fail/bitflags_missing_type.rs:5:23
   |
 5 |     pub struct Flags1 {
