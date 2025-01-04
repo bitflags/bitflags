@@ -1,4 +1,4 @@
-error: no rules expected the token `pub`
+error: no rules expected keyword `pub`
  --> tests/compile-fail/bitflags_pub_const.rs:5:9
   |
 5 |         pub const FLAG_A = 0b00000001;
