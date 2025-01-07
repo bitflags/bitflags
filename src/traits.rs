@@ -246,6 +246,14 @@ pub trait Flags: Sized + 'static {
         self.bits() & other.bits() == other.bits()
     }
 
+    /// Remove any unknown bits from the flags.
+    fn truncate(&mut self)
+    where
+        Self: Sized,
+    {
+        *self = Self::from_bits_truncate(self.bits());
+    }
+
     /// The bitwise or (`|`) of the bits in two flags values.
     fn insert(&mut self, other: Self)
     where
