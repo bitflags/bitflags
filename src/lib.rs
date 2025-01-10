@@ -587,7 +587,7 @@ macro_rules! bitflags {
     () => {};
 }
 
-/// Match bitflag patterns similar to Rust's match expression
+/// bitflags match patterns similar to Rust's match expression
 ///
 /// This macro allows for matching bitflag combinations in a way that resembles
 /// Rust's native match expression, but works correctly with bitflag operations.
@@ -600,7 +600,7 @@ macro_rules! bitflags {
 /// # Syntax
 ///
 /// ```ignore
-/// match_bitflag!(expression, {
+/// bitflags_match!(expression, {
 ///     pattern1 => result1,
 ///     pattern2 => result2,
 ///     ...
@@ -611,7 +611,7 @@ macro_rules! bitflags {
 /// # Examples
 ///
 /// ```rust
-/// use bitflags::{match_bitflag, bitflags};
+/// use bitflags::{bitflags, bitflags_match};
 ///
 /// bitflags! {
 ///     #[derive(PartialEq)]
@@ -624,15 +624,14 @@ macro_rules! bitflags {
 ///
 /// let flags = Flags::A | Flags::B;
 ///
-/// match_bitflag!(expected, {
+/// bitflags_match!(flags, {
 ///     Flags::A => println!("A"),
 ///     Flags::B => println!("B"),
-///     Flags::C  => println!("C"),
-///     Flags::A | Flags::B =>{
-///          // println!("A | B");
-///          print!("A");
-///          print!(" | ");
-///          print!("B");
+///     Flags::C => println!("C"),
+///     Flags::A | Flags::B => {
+///         print!("A");
+///         print!(" | ");
+///         print!("B");
 ///     },
 ///     Flags::A | Flags::C => println!("A | C"),
 ///     Flags::B | Flags::C => println!("B | C"),
@@ -653,20 +652,22 @@ macro_rules! bitflags {
 /// The order of patterns matters. The first matching pattern will be executed,
 /// so more specific patterns should come before more general ones.
 #[macro_export]
-macro_rules! match_bitflag {
+macro_rules! bitflags_match {
     ($operation:expr, {
-    $( $pattern:expr => $result:expr, )*
+        $( $pattern:expr => $result:expr, )*
         _ => $default:expr
     }) => {
         {
+            // Iterate over the patterns and check for matches
             $(
                 if $operation == $pattern {
-                    $result
+                   $result
                 } else
             )*
-            {
-                $default
-            }
+           {
+             // Return default result if no match was found
+             $default
+           }
         }
     };
 }

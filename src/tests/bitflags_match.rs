@@ -11,7 +11,7 @@ bitflags! {
 }
 
 fn flag_to_string(flag: Flags) -> String {
-    match_bitflag!(flag, {
+    bitflags_match!(flag, {
         Flags::A => "A".to_string(),
         Flags::B => "B".to_string(),
         Flags::C => "C".to_string(),
@@ -56,7 +56,7 @@ fn test_and_operations() {
         flag_to_string(Flags::A & Flags::B & Flags::C),
         "A and B | empty"
     ); // Since A, B, and C are mutually exclusive, the result of A & B & C is 0 ==> A & B & C = 0000 (i.e., empty).
-       // However, in the match_bitflag! statement (actually is if {..} else if {..} .. else {..}),
+       // However, in the bitflags_match! statement (actually is if {..} else if {..} .. else {..}),
        // the "A & B = 0000" condition is listed first, so 0000 will match "A & B" first,
        // resulting in the output of the "A and B | empty" branch.
     assert_eq!(
