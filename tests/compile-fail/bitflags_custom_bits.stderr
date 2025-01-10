@@ -13,10 +13,7 @@ error[E0277]: the trait bound `MyInt: bitflags::traits::Primitive` is not satisf
               isize
               u128
               u16
-              u32
-              u64
-              u8
-              usize
+            and $N others
 note: required by a bound in `PublicFlags::Primitive`
    --> src/traits.rs
     |
@@ -30,8 +27,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -50,8 +46,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -70,8 +65,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -90,8 +84,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -110,8 +103,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -130,8 +122,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -150,8 +141,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -170,8 +160,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -190,8 +179,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -210,8 +198,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -230,8 +217,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -250,8 +236,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -270,8 +255,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -290,8 +274,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -310,8 +293,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |
@@ -330,8 +312,7 @@ error[E0015]: cannot call non-const operator in constant functions
 133 | |     struct Flags128: MyInt {
 134 | |         const A = MyInt(0b0000_0001u8);
 135 | |         const B = MyInt(0b0000_0010u8);
-136 | |         const C = MyInt(0b0000_0100u8);
-137 | |     }
+...   |
 138 | | }
     | |_^
     |

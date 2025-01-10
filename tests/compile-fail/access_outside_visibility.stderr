@@ -10,9 +10,7 @@ note: the struct `Flags2` is defined here
 4  | /     bitflags! {
 5  | |         pub struct Flags1: u32 {
 6  | |             const FLAG_A = 0b00000001;
-7  | |         }
 ...  |
-11 | |         }
 12 | |     }
    | |_____^
    = note: this error originates in the macro `$crate::__declare_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
