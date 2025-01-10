@@ -21,6 +21,7 @@ mod iter;
 mod parser;
 mod remove;
 mod symmetric_difference;
+mod truncate;
 mod union;
 mod unknown;
 
