@@ -608,6 +608,8 @@ macro_rules! bitflags {
 /// })
 /// ```
 ///
+/// The final `_ => default_result` arm is required, otherwise the macro will fail to compile.
+///
 /// # Examples
 ///
 /// ```rust
@@ -626,14 +628,14 @@ macro_rules! bitflags {
 ///
 /// bitflags_match!(flags, {
 ///     Flags::A => println!("A"),
-///     Flags::B => println!("B"),
+///     Flags::B => { println!("B"); }
 ///     Flags::C => println!("C"),
 ///     Flags::A | Flags::B => {
 ///         print!("A");
 ///         print!(" | ");
 ///         print!("B");
 ///     },
-///     Flags::A | Flags::C => println!("A | C"),
+///     Flags::A | Flags::C => { println!("A | C") },
 ///     Flags::B | Flags::C => println!("B | C"),
 ///     Flags::A | Flags::B | Flags::C => println!("A | B | C"),
 ///     _ => println!("other")
@@ -642,9 +644,9 @@ macro_rules! bitflags {
 ///
 /// # How it works
 ///
-/// The macro expands to a series of if-else statements, checking equality
-/// between the input expression and each pattern. This allows for correct
-/// matching of bitflag combinations, which is not possible with a regular
+/// The macro expands to a series of if(pattern){ return result; } statements,
+/// checking equality between the input expression and each pattern. This allows for
+/// correct matching of bitflag combinations, which is not possible with a regular
 /// match expression due to the way bitflags are implemented.
 ///
 /// # Note
@@ -654,22 +656,50 @@ macro_rules! bitflags {
 #[macro_export]
 macro_rules! bitflags_match {
     ($operation:expr, {
-        $( $pattern:expr => $result:expr, )*
-        _ => $default:expr
+        $($t:tt)*
     }) => {
+        // Expand to a closure so we can use `return`
+        // This makes it possible to apply attributes to the "match arms"
+        (|| {
+            $crate::__bitflags_match!($operation, { $($t)* })
+        })()
+    };
+}
+
+/// Expand the `bitflags_match` macro
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __bitflags_match {
+    // Eat an optional `,` following a block match arm
+    ($operation:expr, { $pattern:expr => { $($body:tt)* } , $($t:tt)+ }) => {
+        $crate::__bitflags_match!($operation, { $pattern => { $($body)* } $($t)+ })
+    };
+    // Expand a block match arm `A => { .. }`
+    ($operation:expr, { $pattern:expr => { $($body:tt)* } $($t:tt)+ }) => {
         {
-            // Iterate over the patterns and check for matches
-            $(
-                if $operation == $pattern {
-                   $result
-                } else
-            )*
-           {
-             // Return default result if no match was found
-             $default
-           }
+            if $operation == $pattern {
+                return {
+                    $($body)*
+                };
+            }
+
+            $crate::__bitflags_match!($operation, { $($t)+ })
         }
     };
+    // Expand an expression match arm `A => x,`
+    ($operation:expr, { $pattern:expr => $body:expr , $($t:tt)+ }) => {
+        {
+            if $operation == $pattern {
+                return $body;
+            }
+
+            $crate::__bitflags_match!($operation, { $($t)+ })
+        }
+    };
+    // Expand the default case
+    ($operation:expr, { _ => $default:expr $(,)? }) => {
+        $default
+    }
 }
 
 /// Implement functions on bitflags types.
