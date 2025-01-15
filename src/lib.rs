@@ -587,121 +587,6 @@ macro_rules! bitflags {
     () => {};
 }
 
-/// bitflags match patterns similar to Rust's match expression
-///
-/// This macro allows for matching bitflag combinations in a way that resembles
-/// Rust's native match expression, but works correctly with bitflag operations.
-///
-/// # Requirements
-///
-/// - The struct used with this macro must implement `PartialEq`.
-/// - It's recommended to use this macro with structs created by the `bitflags!` macro.
-///
-/// # Syntax
-///
-/// ```ignore
-/// bitflags_match!(expression, {
-///     pattern1 => result1,
-///     pattern2 => result2,
-///     ...
-///     _ => default_result
-/// })
-/// ```
-///
-/// The final `_ => default_result` arm is required, otherwise the macro will fail to compile.
-///
-/// # Examples
-///
-/// ```rust
-/// use bitflags::{bitflags, bitflags_match};
-///
-/// bitflags! {
-///     #[derive(PartialEq)]
-///     struct Flags: u8 {
-///         const A = 1 << 0;
-///         const B = 1 << 1;
-///         const C = 1 << 2;
-///     }
-/// }
-///
-/// let flags = Flags::A | Flags::B;
-///
-/// bitflags_match!(flags, {
-///     Flags::A => println!("A"),
-///     Flags::B => { println!("B"); }
-///     Flags::C => println!("C"),
-///     Flags::A | Flags::B => {
-///         print!("A");
-///         print!(" | ");
-///         print!("B");
-///     },
-///     Flags::A | Flags::C => { println!("A | C") },
-///     Flags::B | Flags::C => println!("B | C"),
-///     Flags::A | Flags::B | Flags::C => println!("A | B | C"),
-///     _ => println!("other")
-/// })
-/// ```
-///
-/// # How it works
-///
-/// The macro expands to a series of if(pattern){ return result; } statements,
-/// checking equality between the input expression and each pattern. This allows for
-/// correct matching of bitflag combinations, which is not possible with a regular
-/// match expression due to the way bitflags are implemented.
-///
-/// # Note
-///
-/// The order of patterns matters. The first matching pattern will be executed,
-/// so more specific patterns should come before more general ones.
-#[macro_export]
-macro_rules! bitflags_match {
-    ($operation:expr, {
-        $($t:tt)*
-    }) => {
-        // Expand to a closure so we can use `return`
-        // This makes it possible to apply attributes to the "match arms"
-        (|| {
-            $crate::__bitflags_match!($operation, { $($t)* })
-        })()
-    };
-}
-
-/// Expand the `bitflags_match` macro
-#[macro_export]
-#[doc(hidden)]
-macro_rules! __bitflags_match {
-    // Eat an optional `,` following a block match arm
-    ($operation:expr, { $pattern:expr => { $($body:tt)* } , $($t:tt)+ }) => {
-        $crate::__bitflags_match!($operation, { $pattern => { $($body)* } $($t)+ })
-    };
-    // Expand a block match arm `A => { .. }`
-    ($operation:expr, { $pattern:expr => { $($body:tt)* } $($t:tt)+ }) => {
-        {
-            if $operation == $pattern {
-                return {
-                    $($body)*
-                };
-            }
-
-            $crate::__bitflags_match!($operation, { $($t)+ })
-        }
-    };
-    // Expand an expression match arm `A => x,`
-    ($operation:expr, { $pattern:expr => $body:expr , $($t:tt)+ }) => {
-        {
-            if $operation == $pattern {
-                return $body;
-            }
-
-            $crate::__bitflags_match!($operation, { $($t)+ })
-        }
-    };
-    // Expand the default case
-    ($operation:expr, { _ => $default:expr $(,)? }) => {
-        $default
-    }
-}
-
 /// Implement functions on bitflags types.
 ///
 /// We need to be careful about adding new methods and trait implementations here because they
@@ -905,6 +790,104 @@ macro_rules! __impl_bitflags {
             }
         }
     };
+}
+
+/// A macro that matches flags values, similar to Rust's `match` statement.
+///
+/// In a regular `match` statement, the syntax `Flag::A | Flag::B` is interpreted as an or-pattern,
+/// instead of the bitwise-or of `Flag::A` and `Flag::B`. This can be surprising when combined with flags types
+/// because `Flag::A | Flag::B` won't match the pattern `Flag::A | Flag::B`. This macro is an alternative to
+/// `match` for flags values that doesn't have this issue.
+///
+/// # Syntax
+///
+/// ```ignore
+/// bitflags_match!(expression, {
+///     pattern1 => result1,
+///     pattern2 => result2,
+///     ..
+///     _ => default_result,
+/// })
+/// ```
+///
+/// The final `_ => default_result` arm is required, otherwise the macro will fail to compile.
+///
+/// # Examples
+///
+/// ```rust
+/// use bitflags::{bitflags, bitflags_match};
+///
+/// bitflags! {
+///     #[derive(PartialEq)]
+///     struct Flags: u8 {
+///         const A = 1 << 0;
+///         const B = 1 << 1;
+///         const C = 1 << 2;
+///     }
+/// }
+///
+/// let flags = Flags::A | Flags::B;
+///
+/// bitflags_match!(flags, {
+///     Flags::A | Flags::B => println!("A and/or B are set"),
+///     _ => println!("neither A nor B are set"),
+/// })
+/// ```
+///
+/// # How it works
+///
+/// The macro expands to a series of `if` statements, checking equality between the input expression
+/// and each pattern. This allows for correct matching of bitflag combinations, which is not possible
+/// with a regular match expression due to the way bitflags are implemented.
+///
+/// Patterns are evaluated in order.
+#[macro_export]
+macro_rules! bitflags_match {
+    ($operation:expr, {
+        $($t:tt)*
+    }) => {
+        // Expand to a closure so we can use `return`
+        // This makes it possible to apply attributes to the "match arms"
+        (|| {
+            $crate::__bitflags_match!($operation, { $($t)* })
+        })()
+    };
+}
+
+/// Expand the `bitflags_match` macro
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __bitflags_match {
+    // Eat an optional `,` following a block match arm
+    ($operation:expr, { $pattern:expr => { $($body:tt)* } , $($t:tt)+ }) => {
+        $crate::__bitflags_match!($operation, { $pattern => { $($body)* } $($t)+ })
+    };
+    // Expand a block match arm `A => { .. }`
+    ($operation:expr, { $pattern:expr => { $($body:tt)* } $($t:tt)+ }) => {
+        {
+            if $operation == $pattern {
+                return {
+                    $($body)*
+                };
+            }
+
+            $crate::__bitflags_match!($operation, { $($t)+ })
+        }
+    };
+    // Expand an expression match arm `A => x,`
+    ($operation:expr, { $pattern:expr => $body:expr , $($t:tt)+ }) => {
+        {
+            if $operation == $pattern {
+                return $body;
+            }
+
+            $crate::__bitflags_match!($operation, { $($t)+ })
+        }
+    };
+    // Expand the default case
+    ($operation:expr, { _ => $default:expr $(,)? }) => {
+        $default
+    }
 }
 
 /// A macro that processed the input to `bitflags!` and shuffles attributes around

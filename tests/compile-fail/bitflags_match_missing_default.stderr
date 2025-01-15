@@ -1,0 +1,14 @@
+error: no rules expected `}`
+  --> tests/compile-fail/bitflags_match_missing_default.rs:19:5
+   |
+19 | /     bitflags::bitflags_match!(Flags::A | Flags::B, {
+20 | |         Flags::A => (),
+21 | |     });
+   | |______^ no rules expected this token in macro call
+   |
+note: while trying to match meta-variable `$t:tt`
+  --> src/lib.rs
+   |
+   |     ($operation:expr, { $pattern:expr => $body:expr , $($t:tt)+ }) => {
+   |                                                         ^^^^^
+   = note: this error originates in the macro `bitflags::bitflags_match` (in Nightly builds, run with -Z macro-backtrace for more info)
