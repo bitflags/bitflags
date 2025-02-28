@@ -19,5 +19,6 @@ error[E0599]: no associated item named `_` found for struct `Unnamed` in the cur
   |
 help: there is an associated constant `A` with a similar name
   |
-7 |         const A = Self::A.bits();
-  |                         ~
+7 -         const A = Self::_.bits();
+7 +         const A = Self::A.bits();
+  |
