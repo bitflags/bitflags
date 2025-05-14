@@ -56,7 +56,6 @@ note: impl defined here, but it is not `const`
 26  | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     |                       ^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the derive macro `PartialEq` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
@@ -94,7 +93,6 @@ note: impl defined here, but it is not `const`
 26  | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     |                       ^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the derive macro `PartialEq` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
@@ -132,7 +130,6 @@ note: impl defined here, but it is not `const`
 26  | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     |                       ^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the derive macro `PartialEq` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
@@ -170,7 +167,6 @@ note: impl defined here, but it is not `const`
 26  | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     |                       ^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the derive macro `PartialEq` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
@@ -208,7 +204,6 @@ note: impl defined here, but it is not `const`
 26  | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     |                       ^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the derive macro `PartialEq` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
