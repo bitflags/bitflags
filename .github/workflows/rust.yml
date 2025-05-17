@@ -108,9 +108,9 @@ jobs:
           rustup toolchain install nightly --component miri
           cargo +nightly miri setup
       - name: Default features
-        run: cargo +nightly miri test
+        run: cargo +nightly miri test --lib
       - name: BE
-        run: cargo +nightly miri test --target s390x-unknown-linux-gnu
+        run: cargo +nightly miri test --lib --target s390x-unknown-linux-gnu
 
   clippy:
     name: Clippy
