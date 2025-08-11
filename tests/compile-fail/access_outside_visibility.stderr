@@ -7,9 +7,9 @@ error[E0603]: struct `Flags2` is private
 note: the struct `Flags2` is defined here
   --> tests/compile-fail/access_outside_visibility.rs:4:5
    |
-4  | /     bitflags! {
-5  | |         pub struct Flags1: u32 {
-6  | |             const FLAG_A = 0b00000001;
+ 4 | /     bitflags! {
+ 5 | |         pub struct Flags1: u32 {
+ 6 | |             const FLAG_A = 0b00000001;
 ...  |
 12 | |     }
    | |_____^

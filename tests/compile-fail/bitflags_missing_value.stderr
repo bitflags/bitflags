@@ -9,9 +9,3 @@ note: while trying to match `=`
   |
   |                 const $Flag:tt = $value:expr;
   |                                ^
-
-error[E0601]: `main` function not found in crate `$CRATE`
- --> tests/compile-fail/bitflags_missing_value.rs:8:2
-  |
-8 | }
-  |  ^ consider adding a `main` function to `$DIR/tests/compile-fail/bitflags_missing_value.rs`
