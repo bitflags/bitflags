@@ -27,13 +27,12 @@ error[E0046]: not all trait items implemented, missing: `Iter`, `IterNames`
   = help: implement the missing item: `type Iter = /* Type */;`
   = help: implement the missing item: `type IterNames = /* Type */;`
 
-error[E0277]: the trait bound `BootlegFlags: bitflags::Flags` is not satisfied
+error[E0277]: the trait bound `BootlegFlags: Flags` is not satisfied
  --> tests/compile-fail/bitflags_trait_custom.rs:5:19
   |
 5 | impl BitFlags for BootlegFlags {
-  |                   ^^^^^^^^^^^^ the trait `bitflags::Flags` is not implemented for `BootlegFlags`
+  |                   ^^^^^^^^^^^^ the trait `Flags` is not implemented for `BootlegFlags`
   |
-  = help: the trait `bitflags::Flags` is implemented for `bitflags::example_generated::Flags`
 note: required by a bound in `BitFlags`
  --> src/traits.rs
   |

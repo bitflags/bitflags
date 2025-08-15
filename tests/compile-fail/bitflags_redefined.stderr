@@ -43,7 +43,7 @@ error[E0119]: conflicting implementations of trait `PublicFlags` for type `Flags
    |
    = note: this error originates in the macro `$crate::__impl_internal_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0119]: conflicting implementations of trait `bitflags::Flags` for type `Flags1`
+error[E0119]: conflicting implementations of trait `Flags` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
  4 | / bitflags! {
