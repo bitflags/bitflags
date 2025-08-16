@@ -30,7 +30,7 @@ jobs:
       run: cargo install cargo-hack
 
     - name: Powerset
-      run: cargo hack test --feature-powerset --lib --optional-deps --depth 3 --skip "compiler_builtins core rustc-dep-of-std"
+      run: cargo hack test --feature-powerset --lib --optional-deps --depth 3
 
     - name: Docs
       run: cargo doc --features example_generated
