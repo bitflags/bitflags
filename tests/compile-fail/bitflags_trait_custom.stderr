@@ -18,6 +18,15 @@ warning: use of deprecated trait `bitflags::BitFlags`: use the `Flags` trait ins
 5 | impl BitFlags for BootlegFlags {
   |      ^^^^^^^^
 
+error[E0046]: not all trait items implemented, missing: `Iter`, `IterNames`
+ --> tests/compile-fail/bitflags_trait_custom.rs:5:1
+  |
+5 | impl BitFlags for BootlegFlags {
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ missing `Iter`, `IterNames` in implementation
+  |
+  = help: implement the missing item: `type Iter = /* Type */;`
+  = help: implement the missing item: `type IterNames = /* Type */;`
+
 error[E0277]: the trait bound `BootlegFlags: Flags` is not satisfied
  --> tests/compile-fail/bitflags_trait_custom.rs:5:19
   |
@@ -29,12 +38,3 @@ note: required by a bound in `BitFlags`
   |
   | pub trait BitFlags: ImplementedByBitFlagsMacro + Flags {
   |                                                  ^^^^^ required by this bound in `BitFlags`
-
-error[E0046]: not all trait items implemented, missing: `Iter`, `IterNames`
- --> tests/compile-fail/bitflags_trait_custom.rs:5:1
-  |
-5 | impl BitFlags for BootlegFlags {
-  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ missing `Iter`, `IterNames` in implementation
-  |
-  = help: implement the missing item: `type Iter = /* Type */;`
-  = help: implement the missing item: `type IterNames = /* Type */;`

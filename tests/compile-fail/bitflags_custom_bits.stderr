@@ -34,7 +34,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:42:1
     |
-42  | impl BitOr for MyInt {
+ 42 | impl BitOr for MyInt {
     | ^^^^^^^^^^^^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
@@ -53,7 +53,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:26:23
     |
-26  | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+ 26 | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     |                       ^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
 
@@ -71,7 +71,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:34:1
     |
-34  | impl BitAnd for MyInt {
+ 34 | impl BitAnd for MyInt {
     | ^^^^^^^^^^^^^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
@@ -90,7 +90,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:26:23
     |
-26  | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+ 26 | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     |                       ^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
 
@@ -108,7 +108,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:42:1
     |
-42  | impl BitOr for MyInt {
+ 42 | impl BitOr for MyInt {
     | ^^^^^^^^^^^^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
@@ -127,7 +127,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:26:23
     |
-26  | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+ 26 | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     |                       ^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
 
@@ -145,7 +145,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:34:1
     |
-34  | impl BitAnd for MyInt {
+ 34 | impl BitAnd for MyInt {
     | ^^^^^^^^^^^^^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
@@ -164,7 +164,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:26:23
     |
-26  | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+ 26 | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     |                       ^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
 
@@ -182,7 +182,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:34:1
     |
-34  | impl BitAnd for MyInt {
+ 34 | impl BitAnd for MyInt {
     | ^^^^^^^^^^^^^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
@@ -201,7 +201,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:26:23
     |
-26  | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+ 26 | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     |                       ^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
 
@@ -219,7 +219,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:34:1
     |
-34  | impl BitAnd for MyInt {
+ 34 | impl BitAnd for MyInt {
     | ^^^^^^^^^^^^^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
@@ -238,7 +238,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:42:1
     |
-42  | impl BitOr for MyInt {
+ 42 | impl BitOr for MyInt {
     | ^^^^^^^^^^^^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
@@ -257,7 +257,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:76:1
     |
-76  | impl Not for MyInt {
+ 76 | impl Not for MyInt {
     | ^^^^^^^^^^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
@@ -276,7 +276,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:34:1
     |
-34  | impl BitAnd for MyInt {
+ 34 | impl BitAnd for MyInt {
     | ^^^^^^^^^^^^^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
@@ -295,7 +295,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:50:1
     |
-50  | impl BitXor for MyInt {
+ 50 | impl BitXor for MyInt {
     | ^^^^^^^^^^^^^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
@@ -314,7 +314,7 @@ error[E0015]: cannot call non-const operator in constant functions
 note: impl defined here, but it is not `const`
    --> tests/compile-fail/bitflags_custom_bits.rs:76:1
     |
-76  | impl Not for MyInt {
+ 76 | impl Not for MyInt {
     | ^^^^^^^^^^^^^^^^^^
     = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)

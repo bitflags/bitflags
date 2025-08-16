@@ -1,13 +1,13 @@
 error[E0428]: the name `Flags1` is defined multiple times
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ `Flags1` redefined here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -27,13 +27,13 @@ error[E0601]: `main` function not found in crate `$CRATE`
 error[E0119]: conflicting implementations of trait `PublicFlags` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -46,13 +46,13 @@ error[E0119]: conflicting implementations of trait `PublicFlags` for type `Flags
 error[E0119]: conflicting implementations of trait `Flags` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -65,13 +65,13 @@ error[E0119]: conflicting implementations of trait `Flags` for type `Flags1`
 error[E0119]: conflicting implementations of trait `Binary` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -84,13 +84,13 @@ error[E0119]: conflicting implementations of trait `Binary` for type `Flags1`
 error[E0119]: conflicting implementations of trait `Octal` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -103,13 +103,13 @@ error[E0119]: conflicting implementations of trait `Octal` for type `Flags1`
 error[E0119]: conflicting implementations of trait `LowerHex` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -122,13 +122,13 @@ error[E0119]: conflicting implementations of trait `LowerHex` for type `Flags1`
 error[E0119]: conflicting implementations of trait `UpperHex` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -141,13 +141,13 @@ error[E0119]: conflicting implementations of trait `UpperHex` for type `Flags1`
 error[E0119]: conflicting implementations of trait `BitOr` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -160,13 +160,13 @@ error[E0119]: conflicting implementations of trait `BitOr` for type `Flags1`
 error[E0119]: conflicting implementations of trait `BitOrAssign` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -179,13 +179,13 @@ error[E0119]: conflicting implementations of trait `BitOrAssign` for type `Flags
 error[E0119]: conflicting implementations of trait `BitXor` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -198,13 +198,13 @@ error[E0119]: conflicting implementations of trait `BitXor` for type `Flags1`
 error[E0119]: conflicting implementations of trait `BitXorAssign` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -217,13 +217,13 @@ error[E0119]: conflicting implementations of trait `BitXorAssign` for type `Flag
 error[E0119]: conflicting implementations of trait `BitAnd` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -236,13 +236,13 @@ error[E0119]: conflicting implementations of trait `BitAnd` for type `Flags1`
 error[E0119]: conflicting implementations of trait `BitAndAssign` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -255,13 +255,13 @@ error[E0119]: conflicting implementations of trait `BitAndAssign` for type `Flag
 error[E0119]: conflicting implementations of trait `Sub` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -274,13 +274,13 @@ error[E0119]: conflicting implementations of trait `Sub` for type `Flags1`
 error[E0119]: conflicting implementations of trait `SubAssign` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -293,13 +293,13 @@ error[E0119]: conflicting implementations of trait `SubAssign` for type `Flags1`
 error[E0119]: conflicting implementations of trait `Not` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -312,13 +312,13 @@ error[E0119]: conflicting implementations of trait `Not` for type `Flags1`
 error[E0119]: conflicting implementations of trait `Extend<Flags1>` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -331,13 +331,13 @@ error[E0119]: conflicting implementations of trait `Extend<Flags1>` for type `Fl
 error[E0119]: conflicting implementations of trait `FromIterator<Flags1>` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -350,13 +350,13 @@ error[E0119]: conflicting implementations of trait `FromIterator<Flags1>` for ty
 error[E0119]: conflicting implementations of trait `IntoIterator` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_- first implementation here
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -369,13 +369,13 @@ error[E0119]: conflicting implementations of trait `IntoIterator` for type `Flag
 error[E0592]: duplicate definitions with name `A`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `A`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -388,13 +388,13 @@ error[E0592]: duplicate definitions with name `A`
 error[E0592]: duplicate definitions with name `empty`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `empty`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -407,13 +407,13 @@ error[E0592]: duplicate definitions with name `empty`
 error[E0592]: duplicate definitions with name `all`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `all`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -426,13 +426,13 @@ error[E0592]: duplicate definitions with name `all`
 error[E0592]: duplicate definitions with name `bits`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `bits`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -445,13 +445,13 @@ error[E0592]: duplicate definitions with name `bits`
 error[E0592]: duplicate definitions with name `from_bits`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `from_bits`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -464,13 +464,13 @@ error[E0592]: duplicate definitions with name `from_bits`
 error[E0592]: duplicate definitions with name `from_bits_truncate`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `from_bits_truncate`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -483,13 +483,13 @@ error[E0592]: duplicate definitions with name `from_bits_truncate`
 error[E0592]: duplicate definitions with name `from_bits_retain`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `from_bits_retain`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -502,13 +502,13 @@ error[E0592]: duplicate definitions with name `from_bits_retain`
 error[E0592]: duplicate definitions with name `from_name`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `from_name`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -521,13 +521,13 @@ error[E0592]: duplicate definitions with name `from_name`
 error[E0592]: duplicate definitions with name `is_empty`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `is_empty`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -540,13 +540,13 @@ error[E0592]: duplicate definitions with name `is_empty`
 error[E0592]: duplicate definitions with name `is_all`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `is_all`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -559,13 +559,13 @@ error[E0592]: duplicate definitions with name `is_all`
 error[E0592]: duplicate definitions with name `intersects`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `intersects`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -578,13 +578,13 @@ error[E0592]: duplicate definitions with name `intersects`
 error[E0592]: duplicate definitions with name `contains`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `contains`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -597,13 +597,13 @@ error[E0592]: duplicate definitions with name `contains`
 error[E0592]: duplicate definitions with name `insert`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `insert`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -616,13 +616,13 @@ error[E0592]: duplicate definitions with name `insert`
 error[E0592]: duplicate definitions with name `remove`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `remove`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -635,13 +635,13 @@ error[E0592]: duplicate definitions with name `remove`
 error[E0592]: duplicate definitions with name `toggle`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `toggle`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -654,13 +654,13 @@ error[E0592]: duplicate definitions with name `toggle`
 error[E0592]: duplicate definitions with name `set`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `set`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -673,13 +673,13 @@ error[E0592]: duplicate definitions with name `set`
 error[E0592]: duplicate definitions with name `intersection`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `intersection`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -692,13 +692,13 @@ error[E0592]: duplicate definitions with name `intersection`
 error[E0592]: duplicate definitions with name `union`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `union`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -711,13 +711,13 @@ error[E0592]: duplicate definitions with name `union`
 error[E0592]: duplicate definitions with name `difference`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `difference`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -730,13 +730,13 @@ error[E0592]: duplicate definitions with name `difference`
 error[E0592]: duplicate definitions with name `symmetric_difference`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `symmetric_difference`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -749,13 +749,13 @@ error[E0592]: duplicate definitions with name `symmetric_difference`
 error[E0592]: duplicate definitions with name `complement`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `complement`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -768,13 +768,13 @@ error[E0592]: duplicate definitions with name `complement`
 error[E0592]: duplicate definitions with name `iter`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `iter`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -787,13 +787,13 @@ error[E0592]: duplicate definitions with name `iter`
 error[E0592]: duplicate definitions with name `iter_names`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ duplicate definitions for `iter_names`
-9  |
+ 9 |
 10 | / bitflags! {
 11 | |     pub struct Flags1: u32 {
 12 | |         const A = 1;
@@ -806,21 +806,21 @@ error[E0592]: duplicate definitions with name `iter_names`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `from_bits_retain` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -836,17 +836,17 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:6:15
    |
-6  |         const A = 1;
+ 6 |         const A = 1;
    |               ^ multiple `A` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -862,21 +862,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `bits` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -892,21 +892,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `from_bits_retain` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -922,21 +922,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `bits` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -952,21 +952,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `from_bits_retain` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -982,21 +982,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `from_bits_retain` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1012,21 +1012,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `from_bits_retain` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1042,21 +1042,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `from_bits_retain` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1240,21 +1240,21 @@ error[E0282]: type annotations needed
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `union` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1270,21 +1270,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `insert` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1300,21 +1300,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `symmetric_difference` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1330,21 +1330,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `toggle` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1360,21 +1360,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `intersection` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1390,21 +1390,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `from_bits_retain` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1420,21 +1420,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `bits` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1450,21 +1450,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `difference` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1480,21 +1480,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `remove` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1510,21 +1510,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `complement` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1540,21 +1540,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `insert` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1570,21 +1570,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `empty` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1600,21 +1600,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `from_bits_retain` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1630,21 +1630,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `bits` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1660,21 +1660,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `from_bits_retain` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1690,21 +1690,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `bits` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1720,21 +1720,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `from_bits_retain` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1750,21 +1750,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `bits` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1780,21 +1780,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `from_bits_retain` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1810,21 +1810,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `bits` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1840,21 +1840,21 @@ note: candidate #2 is defined in an impl for the type `Flags1`
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^ multiple `iter` found
    |
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1880,11 +1880,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1906,11 +1906,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1936,11 +1936,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1966,11 +1966,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -1996,11 +1996,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2026,11 +2026,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2056,11 +2056,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2086,11 +2086,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2116,11 +2116,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2314,11 +2314,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2344,11 +2344,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2374,11 +2374,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2404,11 +2404,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2434,11 +2434,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2464,11 +2464,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2494,11 +2494,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2524,11 +2524,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2554,11 +2554,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2584,11 +2584,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2614,11 +2614,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2644,11 +2644,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2674,11 +2674,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2704,11 +2704,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2734,11 +2734,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2764,11 +2764,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2794,11 +2794,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2824,11 +2824,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2854,11 +2854,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2884,11 +2884,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
@@ -2914,11 +2914,11 @@ error[E0034]: multiple applicable items in scope
 note: candidate #1 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |
-4  | / bitflags! {
-5  | |     pub struct Flags1: u32 {
-6  | |         const A = 1;
-7  | |     }
-8  | | }
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
    | |_^
 note: candidate #2 is defined in an impl for the type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
