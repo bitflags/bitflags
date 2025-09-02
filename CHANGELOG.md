@@ -1,3 +1,10 @@
+# 2.9.4
+
+## What's Changed
+* Add Cargo features to readme by @KodrAus in https://github.com/bitflags/bitflags/pull/460
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.9.3...2.9.4
+
 # 2.9.3
 
 ## What's Changed
