@@ -5,7 +5,7 @@ use crate::{
     Flags,
 };
 use core::{fmt, str};
-use serde::{
+use serde_core::{
     de::{Error, Visitor},
     Deserialize, Deserializer, Serialize, Serializer,
 };
@@ -70,7 +70,7 @@ where
 mod tests {
     use serde_test::{assert_tokens, Configure, Token::*};
     bitflags! {
-        #[derive(serde_derive::Serialize, serde_derive::Deserialize, Debug, PartialEq, Eq)]
+        #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Eq)]
         #[serde(transparent)]
         struct SerdeFlags: u32 {
             const A = 1;
