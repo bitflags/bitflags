@@ -5,7 +5,7 @@ use crate::{
     Flags,
 };
 use core::{fmt, str};
-use serde_core::{
+use serde::{
     de::{Error, Visitor},
     Deserialize, Deserializer, Serialize, Serializer,
 };
