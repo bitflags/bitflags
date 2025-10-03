@@ -143,3 +143,40 @@ impl<B: Flags> Iterator for IterNames<B> {
         None
     }
 }
+
+/**
+An iterator over all named flags.
+
+This iterator will yield flags values for all defined named flags, regardless of
+whether they are contained in a particular flags value.
+*/
+pub struct IterNamed<B: 'static> {
+    flags: &'static [Flag<B>],
+    idx: usize,
+}
+
+impl<B: Flags> IterNamed<B> {
+    pub(crate) fn new() -> Self {
+        IterNamed {
+            flags: B::FLAGS,
+            idx: 0,
+        }
+    }
+}
+
+impl<B: Flags> Iterator for IterNamed<B> {
+    type Item = B;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        while let Some(flag) = self.flags.get(self.idx) {
+            self.idx += 1;
+
+            // Only yield named flags
+            if flag.is_named() {
+                return Some(B::from_bits_retain(flag.value().bits()));
+            }
+        }
+
+        None
+    }
+}

@@ -20,6 +20,7 @@ mod intersects;
 mod is_all;
 mod is_empty;
 mod iter;
+mod iter_named;
 mod parser;
 mod remove;
 mod symmetric_difference;

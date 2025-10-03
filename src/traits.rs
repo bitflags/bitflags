@@ -152,14 +152,6 @@ pub trait Flags: Sized + 'static {
         Self::from_bits_retain(truncated)
     }
 
-    /// This method will return an iterator over all named flags (including combinations).
-    fn all_named_flags() -> impl Iterator<Item = Self> {
-        Self::FLAGS
-            .iter()
-            .filter(|f| f.is_named())
-            .map(|f| Self::from_bits_retain(f.value().bits()))
-    }
-
     /// This method will return `true` if any unknown bits are set.
     fn contains_unknown_bits(&self) -> bool {
         Self::all().bits() & self.bits() != self.bits()
@@ -216,6 +208,11 @@ pub trait Flags: Sized + 'static {
     /// will be yielded together as a final flags value.
     fn iter(&self) -> iter::Iter<Self> {
         iter::Iter::new(self)
+    }
+
+    /// This method will return an iterator over all named flags (including combinations).
+    fn iter_named() -> iter::IterNamed<Self> {
+        iter::IterNamed::new()
     }
 
     /// Yield a set of contained named flags values.
