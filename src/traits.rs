@@ -210,6 +210,11 @@ pub trait Flags: Sized + 'static {
         iter::Iter::new(self)
     }
 
+    /// This method will return an iterator over all named flags (including combinations).
+    fn iter_named() -> iter::IterNamed<Self> {
+        iter::IterNamed::new()
+    }
+
     /// Yield a set of contained named flags values.
     ///
     /// This method is like [`Flags::iter`], except only yields bits in contained named flags.
