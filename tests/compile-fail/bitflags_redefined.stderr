@@ -803,6 +803,25 @@ error[E0592]: duplicate definitions with name `iter_names`
    |
    = note: this error originates in the macro `$crate::__impl_public_bitflags_iter` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
 
+error[E0592]: duplicate definitions with name `names`
+  --> tests/compile-fail/bitflags_redefined.rs:4:1
+   |
+ 4 | / bitflags! {
+ 5 | |     pub struct Flags1: u32 {
+ 6 | |         const A = 1;
+ 7 | |     }
+ 8 | | }
+   | |_^ duplicate definitions for `names`
+ 9 |
+10 | / bitflags! {
+11 | |     pub struct Flags1: u32 {
+12 | |         const A = 1;
+13 | |     }
+14 | | }
+   | |_- other definition for `names`
+   |
+   = note: this error originates in the macro `$crate::__impl_public_bitflags_name` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
 error[E0034]: multiple applicable items in scope
   --> tests/compile-fail/bitflags_redefined.rs:4:1
    |

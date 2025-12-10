@@ -26,6 +26,7 @@ mod symmetric_difference;
 mod truncate;
 mod union;
 mod unknown;
+mod value_names;
 
 bitflags! {
     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]

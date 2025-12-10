@@ -532,6 +532,8 @@ macro_rules! bitflags {
             $crate::__impl_public_bitflags_iter! {
                 $BitFlags: $T, $BitFlags
             }
+
+            $crate::__impl_public_bitflags_name! { $BitFlags }
         };
 
         $crate::bitflags! {
@@ -587,6 +589,8 @@ macro_rules! bitflags {
             $crate::__impl_public_bitflags_iter! {
                 $BitFlags: $T, $BitFlags
             }
+
+            $crate::__impl_public_bitflags_name! { $BitFlags }
         };
 
         $crate::bitflags! {
@@ -594,6 +598,24 @@ macro_rules! bitflags {
         }
     };
     () => {};
+}
+
+/// Implementing name/try_name based on FLAGS
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __impl_public_bitflags_name {
+    ($BitFlags:ident) => {
+        impl $BitFlags {
+            /// Get an iterator over all defined names for this flags value.
+            ///
+            /// This iterator will yield all defined names for the flags value, including
+            /// any convenience flags.
+            #[inline]
+            pub fn names(&self) -> $crate::iter::ValueNames<$BitFlags> {
+                $crate::iter::ValueNames::new(self)
+            }
+        }
+    };
 }
 
 /// Implement functions on bitflags types.

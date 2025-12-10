@@ -180,3 +180,35 @@ impl<B: Flags> Iterator for IterDefinedNames<B> {
         None
     }
 }
+
+/**
+An iterator over all defined names for a specific flags value.
+*/
+pub struct ValueNames<T: Flags> {
+    inner: IterDefinedNames<T>,
+    bits: T::Bits,
+}
+
+impl<T: Flags> ValueNames<T> {
+    #[inline]
+    pub fn new(value: &T) -> Self {
+        Self {
+            inner: <T as Flags>::iter_defined_names(),
+            bits: value.bits(),
+        }
+    }
+}
+
+impl<T: Flags> Iterator for ValueNames<T> {
+    type Item = &'static str;
+
+    #[inline]
+    fn next(&mut self) -> Option<Self::Item> {
+        for (n, f) in self.inner.by_ref() {
+            if f.bits() == self.bits {
+                return Some(n);
+            }
+        }
+        None
+    }
+}
