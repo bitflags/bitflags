@@ -24,7 +24,7 @@ error[E0601]: `main` function not found in crate `$CRATE`
 14 | }
    |  ^ consider adding a `main` function to `$DIR/tests/compile-fail/bitflags_redefined.rs`
 
-error[E0119]: conflicting implementations of trait `PublicFlags` for type `Flags1`
+error[E0119]: conflicting implementations of trait `bitflags::__private::PublicFlags` for type `Flags1`
   --> tests/compile-fail/bitflags_redefined.rs:10:1
    |
  4 | / bitflags! {
