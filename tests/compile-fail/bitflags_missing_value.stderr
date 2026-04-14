@@ -1,11 +1,11 @@
 error: no rules expected `;`
  --> tests/compile-fail/bitflags_missing_value.rs:6:16
   |
-6 |         const A;
-  |                ^ no rules expected this token in macro call
-  |
+  6 |         const A;
+    |                ^ no rules expected this token in macro call
+    |
 note: while trying to match `=`
- --> src/lib.rs
-  |
-  |                 const $Flag:tt = $value:expr;
-  |                                ^
+   --> src/lib.rs
+    |
+    |                 const $Flag:tt = $value:expr;
+    |                                ^

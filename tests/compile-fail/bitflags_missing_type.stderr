@@ -1,11 +1,11 @@
 error: no rules expected `{`
  --> tests/compile-fail/bitflags_missing_type.rs:5:23
   |
-5 |     pub struct Flags1 {
-  |                       ^ no rules expected this token in macro call
-  |
+  5 |     pub struct Flags1 {
+    |                       ^ no rules expected this token in macro call
+    |
 note: while trying to match `:`
- --> src/lib.rs
-  |
-  |         $vis:vis struct $BitFlags:ident: $T:ty {
-  |                                        ^
+   --> src/lib.rs
+    |
+    |         $vis:vis struct $BitFlags:ident: $T:ty {
+    |                                        ^

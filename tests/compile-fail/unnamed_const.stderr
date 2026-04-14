@@ -1,10 +1,10 @@
 error: expected identifier, found reserved identifier `_`
  --> tests/compile-fail/unnamed_const.rs:7:25
   |
-7 |         const A = Self::_.bits();
-  |                         ^ expected identifier, found reserved identifier
-  |
- ::: src/lib.rs
-  |
-  |                 const $Flag:tt = $value:expr;
-  |                                  ----------- while parsing argument for this `expr` macro fragment
+  7 |         const A = Self::_.bits();
+    |                         ^ expected identifier, found reserved identifier
+    |
+   ::: src/lib.rs
+    |
+    |                 const $Flag:tt = $value:expr;
+    |                                  ----------- while parsing argument for this `expr` macro fragment
