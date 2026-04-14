@@ -25,7 +25,7 @@ note: required by a bound in `bitflags::__private::PublicFlags::Primitive`
     |     type Primitive: Primitive;
     |                     ^^^^^^^^^ required by this bound in `PublicFlags::Primitive`
 
-error[E0277]: the trait bound `MyInt: [const] BitOr` is not satisfied
+error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
     |
 132 | / bitflags! {
@@ -36,26 +36,15 @@ error[E0277]: the trait bound `MyInt: [const] BitOr` is not satisfied
 138 | | }
     | |_^
     |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: make the `impl` of trait `BitOr` `const`
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:42:1
     |
- 42 | impl const BitOr for MyInt {
-    |      +++++
-
-error[E0277]: the trait bound `MyInt: [const] PartialEq` is not satisfied
-   --> tests/compile-fail/bitflags_custom_bits.rs:132:1
-    |
-132 | / bitflags! {
-133 | |     struct Flags128: MyInt {
-134 | |         const A = MyInt(0b0000_0001u8);
-135 | |         const B = MyInt(0b0000_0010u8);
-...   |
-138 | | }
-    | |_^
-    |
+ 42 | impl BitOr for MyInt {
+    | ^^^^^^^^^^^^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0277]: the trait bound `MyInt: [const] BitAnd` is not satisfied
+error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
     |
 132 | / bitflags! {
@@ -66,13 +55,14 @@ error[E0277]: the trait bound `MyInt: [const] BitAnd` is not satisfied
 138 | | }
     | |_^
     |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: make the `impl` of trait `BitAnd` `const`
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:26:23
     |
- 34 | impl const BitAnd for MyInt {
-    |      +++++
+ 26 | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    |                       ^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
 
-error[E0277]: the trait bound `MyInt: [const] PartialEq` is not satisfied
+error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
     |
 132 | / bitflags! {
@@ -83,39 +73,15 @@ error[E0277]: the trait bound `MyInt: [const] PartialEq` is not satisfied
 138 | | }
     | |_^
     |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0277]: the trait bound `MyInt: [const] BitOr` is not satisfied
-   --> tests/compile-fail/bitflags_custom_bits.rs:132:1
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:34:1
     |
-132 | / bitflags! {
-133 | |     struct Flags128: MyInt {
-134 | |         const A = MyInt(0b0000_0001u8);
-135 | |         const B = MyInt(0b0000_0010u8);
-...   |
-138 | | }
-    | |_^
-    |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: make the `impl` of trait `BitOr` `const`
-    |
- 42 | impl const BitOr for MyInt {
-    |      +++++
-
-error[E0277]: the trait bound `MyInt: [const] PartialEq` is not satisfied
-   --> tests/compile-fail/bitflags_custom_bits.rs:132:1
-    |
-132 | / bitflags! {
-133 | |     struct Flags128: MyInt {
-134 | |         const A = MyInt(0b0000_0001u8);
-135 | |         const B = MyInt(0b0000_0010u8);
-...   |
-138 | | }
-    | |_^
-    |
+ 34 | impl BitAnd for MyInt {
+    | ^^^^^^^^^^^^^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0277]: the trait bound `MyInt: [const] BitAnd` is not satisfied
+error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
     |
 132 | / bitflags! {
@@ -126,13 +92,14 @@ error[E0277]: the trait bound `MyInt: [const] BitAnd` is not satisfied
 138 | | }
     | |_^
     |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: make the `impl` of trait `BitAnd` `const`
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:26:23
     |
- 34 | impl const BitAnd for MyInt {
-    |      +++++
+ 26 | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    |                       ^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
 
-error[E0277]: the trait bound `MyInt: [const] PartialEq` is not satisfied
+error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
     |
 132 | / bitflags! {
@@ -143,39 +110,15 @@ error[E0277]: the trait bound `MyInt: [const] PartialEq` is not satisfied
 138 | | }
     | |_^
     |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0277]: the trait bound `MyInt: [const] BitAnd` is not satisfied
-   --> tests/compile-fail/bitflags_custom_bits.rs:132:1
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:42:1
     |
-132 | / bitflags! {
-133 | |     struct Flags128: MyInt {
-134 | |         const A = MyInt(0b0000_0001u8);
-135 | |         const B = MyInt(0b0000_0010u8);
-...   |
-138 | | }
-    | |_^
-    |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: make the `impl` of trait `BitAnd` `const`
-    |
- 34 | impl const BitAnd for MyInt {
-    |      +++++
-
-error[E0277]: the trait bound `MyInt: [const] PartialEq` is not satisfied
-   --> tests/compile-fail/bitflags_custom_bits.rs:132:1
-    |
-132 | / bitflags! {
-133 | |     struct Flags128: MyInt {
-134 | |         const A = MyInt(0b0000_0001u8);
-135 | |         const B = MyInt(0b0000_0010u8);
-...   |
-138 | | }
-    | |_^
-    |
+ 42 | impl BitOr for MyInt {
+    | ^^^^^^^^^^^^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
     = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0277]: the trait bound `MyInt: [const] BitAnd` is not satisfied
+error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
     |
 132 | / bitflags! {
@@ -186,13 +129,14 @@ error[E0277]: the trait bound `MyInt: [const] BitAnd` is not satisfied
 138 | | }
     | |_^
     |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: make the `impl` of trait `BitAnd` `const`
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:26:23
     |
- 34 | impl const BitAnd for MyInt {
-    |      +++++
+ 26 | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    |                       ^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
 
-error[E0277]: the trait bound `MyInt: [const] BitOr` is not satisfied
+error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
     |
 132 | / bitflags! {
@@ -203,13 +147,15 @@ error[E0277]: the trait bound `MyInt: [const] BitOr` is not satisfied
 138 | | }
     | |_^
     |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: make the `impl` of trait `BitOr` `const`
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:34:1
     |
- 42 | impl const BitOr for MyInt {
-    |      +++++
+ 34 | impl BitAnd for MyInt {
+    | ^^^^^^^^^^^^^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
+    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0277]: the trait bound `MyInt: [const] Not` is not satisfied
+error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
     |
 132 | / bitflags! {
@@ -220,13 +166,14 @@ error[E0277]: the trait bound `MyInt: [const] Not` is not satisfied
 138 | | }
     | |_^
     |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: make the `impl` of trait `Not` `const`
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:26:23
     |
- 76 | impl const Not for MyInt {
-    |      +++++
+ 26 | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    |                       ^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
 
-error[E0277]: the trait bound `MyInt: [const] BitAnd` is not satisfied
+error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
     |
 132 | / bitflags! {
@@ -237,13 +184,15 @@ error[E0277]: the trait bound `MyInt: [const] BitAnd` is not satisfied
 138 | | }
     | |_^
     |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: make the `impl` of trait `BitAnd` `const`
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:34:1
     |
- 34 | impl const BitAnd for MyInt {
-    |      +++++
+ 34 | impl BitAnd for MyInt {
+    | ^^^^^^^^^^^^^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
+    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0277]: the trait bound `MyInt: [const] BitXor` is not satisfied
+error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
     |
 132 | / bitflags! {
@@ -254,13 +203,14 @@ error[E0277]: the trait bound `MyInt: [const] BitXor` is not satisfied
 138 | | }
     | |_^
     |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: make the `impl` of trait `BitXor` `const`
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:26:23
     |
- 50 | impl const BitXor for MyInt {
-    |      +++++
+ 26 | #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    |                       ^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
 
-error[E0277]: the trait bound `MyInt: [const] Not` is not satisfied
+error[E0015]: cannot call non-const operator in constant functions
    --> tests/compile-fail/bitflags_custom_bits.rs:132:1
     |
 132 | / bitflags! {
@@ -271,8 +221,105 @@ error[E0277]: the trait bound `MyInt: [const] Not` is not satisfied
 138 | | }
     | |_^
     |
-    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: make the `impl` of trait `Not` `const`
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:34:1
     |
- 76 | impl const Not for MyInt {
-    |      +++++
+ 34 | impl BitAnd for MyInt {
+    | ^^^^^^^^^^^^^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
+    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0015]: cannot call non-const operator in constant functions
+   --> tests/compile-fail/bitflags_custom_bits.rs:132:1
+    |
+132 | / bitflags! {
+133 | |     struct Flags128: MyInt {
+134 | |         const A = MyInt(0b0000_0001u8);
+135 | |         const B = MyInt(0b0000_0010u8);
+...   |
+138 | | }
+    | |_^
+    |
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:42:1
+    |
+ 42 | impl BitOr for MyInt {
+    | ^^^^^^^^^^^^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
+    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0015]: cannot call non-const operator in constant functions
+   --> tests/compile-fail/bitflags_custom_bits.rs:132:1
+    |
+132 | / bitflags! {
+133 | |     struct Flags128: MyInt {
+134 | |         const A = MyInt(0b0000_0001u8);
+135 | |         const B = MyInt(0b0000_0010u8);
+...   |
+138 | | }
+    | |_^
+    |
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:76:1
+    |
+ 76 | impl Not for MyInt {
+    | ^^^^^^^^^^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
+    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0015]: cannot call non-const operator in constant functions
+   --> tests/compile-fail/bitflags_custom_bits.rs:132:1
+    |
+132 | / bitflags! {
+133 | |     struct Flags128: MyInt {
+134 | |         const A = MyInt(0b0000_0001u8);
+135 | |         const B = MyInt(0b0000_0010u8);
+...   |
+138 | | }
+    | |_^
+    |
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:34:1
+    |
+ 34 | impl BitAnd for MyInt {
+    | ^^^^^^^^^^^^^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
+    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0015]: cannot call non-const operator in constant functions
+   --> tests/compile-fail/bitflags_custom_bits.rs:132:1
+    |
+132 | / bitflags! {
+133 | |     struct Flags128: MyInt {
+134 | |         const A = MyInt(0b0000_0001u8);
+135 | |         const B = MyInt(0b0000_0010u8);
+...   |
+138 | | }
+    | |_^
+    |
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:50:1
+    |
+ 50 | impl BitXor for MyInt {
+    | ^^^^^^^^^^^^^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
+    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0015]: cannot call non-const operator in constant functions
+   --> tests/compile-fail/bitflags_custom_bits.rs:132:1
+    |
+132 | / bitflags! {
+133 | |     struct Flags128: MyInt {
+134 | |         const A = MyInt(0b0000_0001u8);
+135 | |         const B = MyInt(0b0000_0010u8);
+...   |
+138 | | }
+    | |_^
+    |
+note: impl defined here, but it is not `const`
+   --> tests/compile-fail/bitflags_custom_bits.rs:76:1
+    |
+ 76 | impl Not for MyInt {
+    | ^^^^^^^^^^^^^^^^^^
+    = note: calls in constant functions are limited to constant functions, tuple structs and tuple variants
+    = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)

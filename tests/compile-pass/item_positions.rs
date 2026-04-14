@@ -29,7 +29,7 @@ pub mod nested {
     }
 }
 
-pub const _: () = {
+const _: () = {
     bitflags! {
         pub struct Flags1: u32 {
             const A = 1;
