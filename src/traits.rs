@@ -245,7 +245,7 @@ pub trait Flags: Sized + 'static {
         Self::all().bits() | self.bits() == self.bits()
     }
 
-    /// Whether any set bits in `self` are also set in `other`.
+    /// Whether any set bits in `other` are also set in `self`.
     fn intersects(&self, other: Self) -> bool
     where
         Self: Sized,
@@ -253,7 +253,7 @@ pub trait Flags: Sized + 'static {
         self.bits() & other.bits() != Self::Bits::EMPTY
     }
 
-    /// Whether all set bits in a `self` value are also set in `other`.
+    /// Whether all set bits in `other` are also set in `self`.
     fn contains(&self, other: Self) -> bool
     where
         Self: Sized,

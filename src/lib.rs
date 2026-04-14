@@ -676,7 +676,7 @@ macro_rules! __impl_bitflags {
             pub fn from_name($name: &str) -> $crate::__private::core::option::Option<Self>
                 $from_name_body
 
-            /// Whether all bits in this flags value are unset.
+            /// Whether all bits in `self` are unset.
             #[inline]
             pub const fn is_empty(&$self) -> bool
                 $is_empty_body
@@ -686,12 +686,12 @@ macro_rules! __impl_bitflags {
             pub const fn is_all(&$self) -> bool
                 $is_all_body
 
-            /// Whether any set bits in `self` are also set in `other`.
+            /// Whether any set bits in `other` are also set in `self`.
             #[inline]
             pub const fn intersects(&$self, $other: Self) -> bool
                 $intersects_body
 
-            /// Whether all set bits in `self` are also set in `other`.
+            /// Whether all set bits in `other` are also set in `self`.
             #[inline]
             pub const fn contains(&$self, $other: Self) -> bool
                 $contains_body
