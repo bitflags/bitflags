@@ -30,6 +30,10 @@ mod union;
 mod unknown;
 mod unknown_bits;
 
+mod custom {
+    pub const NAME: &'static str = "custom";
+}
+
 bitflags! {
     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
     pub struct TestFlags: u8 {
@@ -139,7 +143,7 @@ bitflags! {
     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
     pub struct TestRenamed: u8 {
         /// 1
-        #[flag_name = "custom"]
+        #[flag_name = custom::NAME]
         #[flag_name = "a"]
         const A = 1;
         /// 1 << 1

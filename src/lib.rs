@@ -947,7 +947,7 @@ macro_rules! __bitflags_expr_safe_attrs {
             attrs: {
             unprocessed: [
                 // flag_name matched here
-                #[flag_name = $arg:tt]
+                #[flag_name = $arg:expr]
                 $($attrs_rest:tt)*
             ],
             processed: [$($expr:tt)*],
@@ -1035,7 +1035,7 @@ macro_rules! __bitflags_item_safe_attrs {
             attrs: {
             unprocessed: [
                 // flag_name matched here
-                #[flag_name = $arg:tt]
+                #[flag_name = $arg:expr]
                 $($attrs_rest:tt)*
             ],
             processed: [$($item:tt)*],
@@ -1117,7 +1117,7 @@ macro_rules! __bitflags_flag_name {
             attrs: {
             unprocessed: [
                 // cfg matched here
-                #[flag_name = $flag_name:tt]
+                #[flag_name = $flag_name:expr]
                 $($attrs_rest:tt)*
             ],
         },
