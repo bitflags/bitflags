@@ -860,7 +860,7 @@ macro_rules! __bitflags_match {
     }
 }
 
-/// A macro that processed the input to `bitflags!` and shuffles attributes around
+/// A macro that processes the input to `bitflags!` and shuffles attributes around
 /// based on whether or not they're "expression-safe".
 ///
 /// This macro is a token-tree muncher that works on 2 levels:
@@ -919,6 +919,31 @@ macro_rules! __bitflags_expr_safe_attrs {
         }
     };
     // Process the next attribute on the current flag
+    // The `flag_name` attribute is custom, so is discarded
+    (
+        expr: { $e:expr },
+            attrs: {
+            unprocessed: [
+                // cfg matched here
+                #[flag_name $($args:tt)*]
+                $($attrs_rest:tt)*
+            ],
+            processed: [$($expr:tt)*],
+        },
+    ) => {
+        $crate::__bitflags_expr_safe_attrs! {
+            expr: { $e },
+            attrs: {
+                unprocessed: [
+                    $($attrs_rest)*
+                ],
+                processed: [
+                    $($expr)*
+                ],
+            },
+        }
+    };
+    // Process the next attribute on the current flag
     // `$other`: The next flag should not be propagated to expressions
     (
         expr: { $e:expr },
@@ -954,6 +979,157 @@ macro_rules! __bitflags_expr_safe_attrs {
     ) => {
         $(#[$expr $($exprargs)*])*
         { $e }
+    }
+}
+
+/// A macro that processes the input to `bitflags!` and shuffles attributes around
+/// based on whether or not they're "item-safe".
+///
+/// This macro follows the same pattern as expr-safe above, but assumes all attributes
+/// are safe on items. It only filters out any `bitflags`-defined attributes.
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __bitflags_item_safe_attrs {
+    // Entrypoint: Move all flags and all attributes into `unprocessed` lists
+    // where they'll be munched one-at-a-time
+    (
+        $(#[$inner:ident $($args:tt)*])*
+        { $i:item }
+    ) => {
+        $crate::__bitflags_item_safe_attrs! {
+            item: { $i },
+            attrs: {
+                // All attributes start here
+                unprocessed: [$(#[$inner $($args)*])*],
+                // Attributes that are safe on items go here
+                processed: [],
+            },
+        }
+    };
+    // Process the next attribute on the current flag
+    // The `flag_name` attribute is custom, so is discarded
+    (
+        item: { $i:item },
+            attrs: {
+            unprocessed: [
+                // cfg matched here
+                #[flag_name $($args:tt)*]
+                $($attrs_rest:tt)*
+            ],
+            processed: [$($item:tt)*],
+        },
+    ) => {
+        $crate::__bitflags_item_safe_attrs! {
+            item: { $i },
+            attrs: {
+                unprocessed: [
+                    $($attrs_rest)*
+                ],
+                processed: [
+                    $($item)*
+                ],
+            },
+        }
+    };
+    // Process the next attribute on the current flag
+    // `$other`: The next flag should not be propagated to items
+    (
+        item: { $i:item },
+            attrs: {
+            unprocessed: [
+                // $other matched here
+                #[$other:ident $($args:tt)*]
+                $($attrs_rest:tt)*
+            ],
+            processed: [$($item:tt)*],
+        },
+    ) => {
+        $crate::__bitflags_item_safe_attrs! {
+            item: { $i },
+                attrs: {
+                unprocessed: [
+                    $($attrs_rest)*
+                ],
+                processed: [
+                    // $other added here
+                    $($item)*
+                    #[$other $($args)*]
+                ],
+            },
+        }
+    };
+    // Once all attributes on all flags are processed, generate the actual code
+    (
+        item: { $i:item },
+        attrs: {
+            unprocessed: [],
+            processed: [$(#[$item:ident $($itemargs:tt)*])*],
+        },
+    ) => {
+        $(#[$item $($itemargs)*])*
+        $i
+    }
+}
+
+/// Determine the name to assign to a flag.
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __bitflags_flag_name {
+    // Entrypoint: Move all flags and all attributes into `unprocessed` lists
+    // where they'll be munched one-at-a-time
+    (
+        $(#[$inner:ident $($args:tt)*])*
+        { $name:ident }
+    ) => {
+        $crate::__bitflags_flag_name! {
+            name: { $name },
+            attrs: {
+                // All attributes start here
+                unprocessed: [$(#[$inner $($args)*])*],
+            },
+        }
+    };
+    // Matched `flag_name`
+    (
+        name: { $name:ident },
+            attrs: {
+            unprocessed: [
+                // cfg matched here
+                #[flag_name = $flag_name:tt]
+                $($attrs_rest:tt)*
+            ],
+        },
+    ) => {
+        $flag_name
+    };
+    // Discard other attributes
+    (
+        name: { $name:ident },
+            attrs: {
+            unprocessed: [
+                // $other matched here
+                #[$other:ident $($args:tt)*]
+                $($attrs_rest:tt)*
+            ],
+        },
+    ) => {
+        $crate::__bitflags_flag_name! {
+            name: { $name },
+                attrs: {
+                unprocessed: [
+                    $($attrs_rest)*
+                ],
+            },
+        }
+    };
+    // Finished
+    (
+        name: { $name:ident },
+        attrs: {
+            unprocessed: [],
+        },
+    ) => {
+        $crate::__private::core::stringify!($name)
     }
 }
 

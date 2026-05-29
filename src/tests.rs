@@ -134,4 +134,11 @@ bitflags! {
         /// External
         const _ = !0;
     }
+
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+    pub struct TestRenamed: u8 {
+        /// 1
+        #[flag_name = "custom"]
+        const A = 1;
+    }
 }
