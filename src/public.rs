@@ -537,7 +537,6 @@ macro_rules! __impl_public_bitflags_consts {
         }
 
         $(#[$outer])*
-        #[allow(unused_mut)]
         impl $crate::Flags for $PublicBitFlags {
             const FLAGS: &'static [$crate::Flag<$PublicBitFlags>] = &[
                 $(
@@ -581,6 +580,7 @@ macro_rules! __impl_public_bitflags_consts {
                 $PublicBitFlags::from_bits_retain(bits)
             }
 
+            #[allow(unused_mut, clippy::assign_op_pattern)]
             fn all_named() -> $PublicBitFlags {
                 let mut truncated = <$T as $crate::Bits>::EMPTY;
                 let mut i = 0;
