@@ -582,26 +582,30 @@ macro_rules! __impl_public_bitflags_consts {
 
             #[allow(unused_mut, clippy::assign_op_pattern)]
             fn all_named() -> $PublicBitFlags {
-                let mut truncated = <$T as $crate::Bits>::EMPTY;
-                let mut i = 0;
+                const ALL_NAMED: $T = {
+                    let mut truncated = <$T as $crate::Bits>::EMPTY;
+                    let mut i = 0;
 
-                $(
-                    $crate::__bitflags_expr_safe_attrs!(
-                        $(#[$inner $($args)*])*
-                        {{
-                            let flag = &<$PublicBitFlags as $crate::Flags>::FLAGS[i];
+                    $(
+                        $crate::__bitflags_expr_safe_attrs!(
+                            $(#[$inner $($args)*])*
+                            {{
+                                let flag = &<$PublicBitFlags as $crate::Flags>::FLAGS[i];
 
-                            if flag.is_named() {
-                                truncated = truncated | flag.value().bits();
-                            }
+                                if flag.is_named() {
+                                    truncated = truncated | flag.value().bits();
+                                }
 
-                            i += 1;
-                        }}
-                    );
-                )*
+                                i += 1;
+                            }}
+                        );
+                    )*
 
-                let _ = i;
-                $PublicBitFlags::from_bits_retain(truncated)
+                    let _ = i;
+                    truncated
+                };
+
+                $PublicBitFlags::from_bits_retain(ALL_NAMED)
             }
         }
     };
