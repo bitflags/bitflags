@@ -140,6 +140,7 @@ bitflags! {
     pub struct TestRenamed: u8 {
         /// 1
         #[flag_name = "custom"]
+        #[flag_name = "a"]
         const A = 1;
         /// 1 << 1
         #[flag_name = "custom"]
