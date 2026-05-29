@@ -130,6 +130,28 @@ impl Flags {
 }
 ```
 
+### Renaming flags
+
+The [`bitflags`] macro recognizes a special `#[flag_name = "<value>"]` attribute on flags values to rename them:
+
+```rust
+# use bitflags::bitflags;
+bitflags! {
+    pub struct Flags: u32 {
+        // Add the attribute to a flag to change its name
+        #[flag_name = "a"]
+        const A = 0b00000001;
+        #[flag_name = "b"]
+        const B = 0b00000010;
+        #[flag_name = "c"]
+        const C = 0b00000100;
+    }
+}
+```
+
+When applied to a flag value, instead of using its identifier, like `A` as the name, it'll use the given string. This
+doesn't affect the identifier of the constant itself, just the name recognized when parsing and formatting.
+
 ## Working with flags values
 
 Use generated constants and standard bitwise operators to interact with flags values:
