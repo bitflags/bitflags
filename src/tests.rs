@@ -1,4 +1,5 @@
 mod all;
+mod all_named;
 mod bitflags_match;
 mod bits;
 mod clear;
