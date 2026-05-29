@@ -537,6 +537,7 @@ macro_rules! __impl_public_bitflags_consts {
         }
 
         $(#[$outer])*
+        #[allow(unused_mut)]
         impl $crate::Flags for $PublicBitFlags {
             const FLAGS: &'static [$crate::Flag<$PublicBitFlags>] = &[
                 $(
@@ -578,6 +579,29 @@ macro_rules! __impl_public_bitflags_consts {
 
             fn from_bits_retain(bits: $T) -> $PublicBitFlags {
                 $PublicBitFlags::from_bits_retain(bits)
+            }
+
+            fn all_named() -> $PublicBitFlags {
+                let mut truncated = <$T as $crate::Bits>::EMPTY;
+                let mut i = 0;
+
+                $(
+                    $crate::__bitflags_expr_safe_attrs!(
+                        $(#[$inner $($args)*])*
+                        {{
+                            let flag = &<$PublicBitFlags as $crate::Flags>::FLAGS[i];
+
+                            if flag.is_named() {
+                                truncated = truncated | flag.value().bits();
+                            }
+
+                            i += 1;
+                        }}
+                    );
+                )*
+
+                let _ = i;
+                $PublicBitFlags::from_bits_retain(truncated)
             }
         }
     };
