@@ -924,7 +924,7 @@ macro_rules! __bitflags_expr_safe_attrs {
         expr: { $e:expr },
             attrs: {
             unprocessed: [
-                // cfg matched here
+                // flag_name matched here
                 #[flag_name $($args:tt)*]
                 $($attrs_rest:tt)*
             ],
@@ -1012,7 +1012,7 @@ macro_rules! __bitflags_item_safe_attrs {
         item: { $i:item },
             attrs: {
             unprocessed: [
-                // cfg matched here
+                // flag_name matched here
                 #[flag_name $($args:tt)*]
                 $($attrs_rest:tt)*
             ],
@@ -1032,7 +1032,7 @@ macro_rules! __bitflags_item_safe_attrs {
         }
     };
     // Process the next attribute on the current flag
-    // `$other`: The next flag should not be propagated to items
+    // `$other`: The next flag should be propagated
     (
         item: { $i:item },
             attrs: {
