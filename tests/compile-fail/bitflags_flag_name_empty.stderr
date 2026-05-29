@@ -1,0 +1,5 @@
+error: cannot find attribute `flag_name` in this scope
+ --> tests/compile-fail/bitflags_flag_name_empty.rs:5:11
+  |
+5 |         #[flag_name]
+  |           ^^^^^^^^^
