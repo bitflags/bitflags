@@ -1,3 +1,11 @@
+# 2.12.0
+
+## What's Changed
+* Add a custom `#[flag_name]` attribute by @KodrAus in https://github.com/bitflags/bitflags/pull/483
+* Add an all_named ctor for filtering out catch-all flags by @KodrAus in https://github.com/bitflags/bitflags/pull/484
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.11.1...2.12.0
+
 # 2.11.1
 
 ## What's Changed
