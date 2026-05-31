@@ -190,19 +190,28 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn from_name(name) {
+                    mod __bitflags_flag_names {
+                        $(
+                            $crate::__bitflags_flag_name!(
+                                $(#[$inner $($args)*])*
+                                { pub(super) const $Flag = $Flag }
+                            );
+                        )*
+                    }
+
                     $(
                         $crate::__bitflags_flag!({
                             name: $Flag,
-                            named: {
+                            named: {{
                                 $crate::__bitflags_expr_safe_attrs!(
                                     $(#[$inner $($args)*])*
                                     {
-                                        if name == $crate::__bitflags_flag_name!($(#[$inner $($args)*])* { $Flag }) {
+                                        if name == __bitflags_flag_names::$Flag {
                                             return $crate::__private::core::option::Option::Some(Self($PublicBitFlags::$Flag.bits()));
                                         }
                                     }
                                 );
-                            },
+                            }},
                             unnamed: {},
                         });
                     )*
@@ -522,10 +531,6 @@ macro_rules! __impl_public_bitflags_consts {
                     named: {
                         $crate::__bitflags_item_safe_attrs!(
                             $(#[$inner $($args)*])*
-                            #[allow(
-                                deprecated,
-                                non_upper_case_globals,
-                            )]
                             {
                                 pub const $Flag: Self = Self::from_bits_retain($value);
                             }
@@ -538,37 +543,39 @@ macro_rules! __impl_public_bitflags_consts {
 
         $(#[$outer])*
         impl $crate::Flags for $PublicBitFlags {
-            const FLAGS: &'static [$crate::Flag<$PublicBitFlags>] = &[
-                $(
-                    $crate::__bitflags_flag!({
-                        name: $Flag,
-                        named: {
-                            $crate::__bitflags_expr_safe_attrs!(
-                                $(#[$inner $($args)*])*
-                                {
-                                    #[allow(
-                                        deprecated,
-                                        non_upper_case_globals,
-                                    )]
-                                    $crate::Flag::new($crate::__bitflags_flag_name!($(#[$inner $($args)*])* { $Flag }), $PublicBitFlags::$Flag)
-                                }
-                            )
-                        },
-                        unnamed: {
-                            $crate::__bitflags_expr_safe_attrs!(
-                                $(#[$inner $($args)*])*
-                                {
-                                    #[allow(
-                                        deprecated,
-                                        non_upper_case_globals,
-                                    )]
-                                    $crate::Flag::new("", $PublicBitFlags::from_bits_retain($value))
-                                }
-                            )
-                        },
-                    }),
-                )*
-            ];
+            const FLAGS: &'static [$crate::Flag<$PublicBitFlags>] = {
+                mod __bitflags_flag_names {
+                    $(
+                        $crate::__bitflags_flag_name!(
+                            $(#[$inner $($args)*])*
+                            { pub(super) const $Flag = $Flag });
+                    )*
+                }
+
+                &[
+                    $(
+                        $crate::__bitflags_flag!({
+                            name: $Flag,
+                            named: {
+                                $crate::__bitflags_expr_safe_attrs!(
+                                    $(#[$inner $($args)*])*
+                                    {
+                                        $crate::Flag::new(__bitflags_flag_names::$Flag, $PublicBitFlags::$Flag)
+                                    }
+                                )
+                            },
+                            unnamed: {
+                                $crate::__bitflags_expr_safe_attrs!(
+                                    $(#[$inner $($args)*])*
+                                    {
+                                        $crate::Flag::new("", $PublicBitFlags::from_bits_retain($value))
+                                    }
+                                )
+                            },
+                        }),
+                    )*
+                ]
+            };
 
             type Bits = $T;
 
@@ -580,7 +587,6 @@ macro_rules! __impl_public_bitflags_consts {
                 $PublicBitFlags::from_bits_retain(bits)
             }
 
-            #[allow(unused_mut, clippy::assign_op_pattern)]
             fn all_named() -> $PublicBitFlags {
                 const ALL_NAMED: $T = {
                     let mut truncated = <$T as $crate::Bits>::EMPTY;
