@@ -505,6 +505,7 @@ macro_rules! bitflags {
                 unused_mut,
                 unused_imports,
                 non_upper_case_globals,
+                clippy::min_ident_chars,
                 clippy::assign_op_pattern,
                 clippy::indexing_slicing,
                 clippy::same_name_method,
@@ -526,6 +527,7 @@ macro_rules! bitflags {
             unused_mut,
             unused_imports,
             non_upper_case_globals,
+            clippy::min_ident_chars,
             clippy::assign_op_pattern,
             clippy::indexing_slicing,
             clippy::same_name_method,
@@ -594,6 +596,7 @@ macro_rules! bitflags {
                 unused_mut,
                 unused_imports,
                 non_upper_case_globals,
+                clippy::min_ident_chars,
                 clippy::assign_op_pattern,
                 clippy::indexing_slicing,
                 clippy::same_name_method,
@@ -615,6 +618,7 @@ macro_rules! bitflags {
             unused_mut,
             unused_imports,
             non_upper_case_globals,
+            clippy::min_ident_chars,
             clippy::assign_op_pattern,
             clippy::iter_without_into_iter,
         )]
@@ -680,7 +684,6 @@ macro_rules! __impl_bitflags {
             fn complement(self) $complement_body:block
         }
     ) => {
-        #[allow(dead_code, deprecated, unused_attributes)]
         $(#[$outer])*
         impl $PublicBitFlags {
             /// Get a flags value with all bits unset.
