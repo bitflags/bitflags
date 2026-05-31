@@ -132,18 +132,18 @@ impl Flags {
 
 ### Renaming flags
 
-The [`bitflags`] macro recognizes a special `#[flag_name = "<value>"]` attribute on flags values to rename them:
+The [`bitflags`] macro recognizes a special `#[bitflags(flag_name = "<value>")]` attribute on flags values to rename them:
 
 ```rust
 # use bitflags::bitflags;
 bitflags! {
     pub struct Flags: u32 {
         // Add the attribute to a flag to change its name
-        #[flag_name = "a"]
+        #[bitflags(flag_name = "a")]
         const A = 0b00000001;
-        #[flag_name = "b"]
+        #[bitflags(flag_name = "b")]
         const B = 0b00000010;
-        #[flag_name = "c"]
+        #[bitflags(flag_name = "c")]
         const C = 0b00000100;
     }
 }
@@ -909,7 +909,7 @@ macro_rules! __bitflags_expr_safe_attrs {
             },
         }
     };
-    // `cfg`: Propagate
+    // `cfg`: propagate
     (
         expr: { $e:expr },
             attrs: {
@@ -991,12 +991,12 @@ macro_rules! __bitflags_item_safe_attrs {
             },
         }
     };
-    // `flag_name`: Discard
+    // `bitflags`: discard
     (
         item: { $i:item },
         attrs: {
             unprocessed: [
-                #[flag_name = $arg:expr]
+                #[bitflags $($args:tt)*]
                 $($attrs_rest:tt)*
             ],
             processed: [$($item:tt)*],
@@ -1077,12 +1077,12 @@ macro_rules! __bitflags_flag_name {
             },
         }
     };
-    // `flag_name`: Set the name
+    // `bitflags(flag_name)`: set the name
     (
         item: { $vis:vis const $binding:ident = $name:expr },
         attrs: {
             unprocessed: [
-                #[flag_name = $flag_name:expr]
+                #[bitflags(flag_name = $flag_name:expr)]
                 $($attrs_rest:tt)*
             ],
             processed: [$($item:tt)*],
@@ -1100,7 +1100,7 @@ macro_rules! __bitflags_flag_name {
             },
         }
     };
-    // `cfg`: Propagate
+    // `cfg`: propagate
     (
         item: { $vis:vis const $binding:ident = $name:expr },
         attrs: {

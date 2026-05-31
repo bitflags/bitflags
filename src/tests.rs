@@ -144,17 +144,17 @@ bitflags! {
     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
     pub struct TestRenamed: u8 {
         /// 1
-        #[flag_name = "a"]
-        #[flag_name = custom::NAME]
+        #[bitflags(flag_name = "a")]
+        #[bitflags(flag_name = custom::NAME)]
         const A = 1;
         /// 1 << 1
-        #[flag_name = "custom"]
+        #[bitflags(flag_name = "custom")]
         const B = 1 << 1;
         /// 1 << 2
-        #[flag_name = "c"]
+        #[bitflags(flag_name = "c")]
         const C = 1 << 2;
         /// 1 << 3
-        #[flag_name = "custom | e"]
+        #[bitflags(flag_name = "custom | e")]
         const D = 1 << 3;
     }
 }
