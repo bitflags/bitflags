@@ -3,7 +3,7 @@ extern crate bitflags;
 bitflags::bitflags! {
     #[derive(Debug, PartialEq, Eq)]
     pub struct Example: u64 {
-        #[flag_name = "custom"]
+        #[bitflags(flag_name = "custom")]
         const FLAG = 0b01;
     }
 }

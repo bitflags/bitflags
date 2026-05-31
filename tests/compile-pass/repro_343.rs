@@ -1,4 +1,9 @@
 /*
+Repro for: https://github.com/bitflags/bitflags/issues/343
+Original source from: https://github.com/blackbeam/rust_mysql_common
+
+The original file carries the following license:
+
 Copyright (c) 2016 Anatoly Ikorsky
 
 Permission is hereby granted, free of charge, to any

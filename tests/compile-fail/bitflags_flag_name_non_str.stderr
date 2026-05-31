@@ -1,44 +1,23 @@
 error[E0308]: mismatched types
- --> tests/compile-fail/bitflags_flag_name_non_str.rs:5:23
+ --> tests/compile-fail/bitflags_flag_name_non_str.rs:5:32
   |
 3 | / bitflags! {
 4 | |     pub struct Flags1: u32 {
-5 | |         #[flag_name = 42]
-  | |                       ^^ expected `&str`, found integer
+5 | |         #[bitflags(flag_name = 42)]
+  | |                                ^^ expected `&str`, found integer
 6 | |         const FLAG_A = 0b00000001;
 7 | |     }
 8 | | }
-  | |_- arguments to this function are incorrect
-  |
-note: associated function defined here
- --> src/traits.rs
-  |
-  |     pub const fn new(name: &'static str, value: B) -> Self {
-  |                  ^^^
+  | |_- expected because of the type of the constant
 
-error[E0277]: can't compare `&str` with `{integer}`
- --> tests/compile-fail/bitflags_flag_name_non_str.rs:3:1
+error[E0308]: mismatched types
+ --> tests/compile-fail/bitflags_flag_name_non_str.rs:5:32
   |
 3 | / bitflags! {
 4 | |     pub struct Flags1: u32 {
-5 | |         #[flag_name = 42]
-  | |                       --
+5 | |         #[bitflags(flag_name = 42)]
+  | |                                ^^ expected `&str`, found integer
 6 | |         const FLAG_A = 0b00000001;
 7 | |     }
 8 | | }
-  | | ^ no implementation for `&str == {integer}`
-  | |_|
-  |
-  |
-  = help: the trait `PartialEq<{integer}>` is not implemented for `&str`
-  = help: the following other types implement trait `PartialEq<Rhs>`:
-            `&str` implements `PartialEq<ByteStr>`
-            `&str` implements `PartialEq<ByteString>`
-            `&str` implements `PartialEq<Cow<'_, str>>`
-            `&str` implements `PartialEq<OsString>`
-            `&str` implements `PartialEq<String>`
-            `str` implements `PartialEq<ByteStr>`
-            `str` implements `PartialEq<ByteString>`
-            `str` implements `PartialEq<Cow<'_, str>>`
-          and $N others
-  = note: this error originates in the macro `$crate::__impl_public_bitflags` which comes from the expansion of the macro `bitflags` (in Nightly builds, run with -Z macro-backtrace for more info)
+  | |_- expected because of the type of the constant
