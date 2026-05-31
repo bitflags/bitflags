@@ -1,5 +1,9 @@
 # 2.12.0
 
+## Yanked
+
+This release has been yanked because the `#[flag_name]` processing noticeably increases macro recursion, hitting the default limit in cases that are already close to it.
+
 ## What's Changed
 * Add a custom `#[flag_name]` attribute by @KodrAus in https://github.com/bitflags/bitflags/pull/483
 * Add an all_named ctor for filtering out catch-all flags by @KodrAus in https://github.com/bitflags/bitflags/pull/484

@@ -882,6 +882,48 @@ macro_rules! __bitflags_match {
     }
 }
 
+/// Implement a flag, which may be a wildcard `_`.
+///
+/// Named flags will emit the `named` block, and unnamed flags will emit the `unnamed` block.
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __bitflags_flag {
+    (
+        {
+            name: _,
+            named: { $($named:tt)* },
+            unnamed: { $($unnamed:tt)* },
+        }
+    ) => {
+        $($unnamed)*
+    };
+    (
+        {
+            name: $Flag:ident,
+            named: { $($named:tt)* },
+            unnamed: { $($unnamed:tt)* },
+        }
+    ) => {
+        $($named)*
+    };
+}
+
+/*
+Attribute inspection macros
+
+The following macros all use the same pattern for searching for specific attributes and transforming
+a target token tree. They're implementations of _token-tree munchers_, where each token from a source
+set is matched one-at-a-time until the input is exhausted, at which point the final result is emitted.
+
+The first match is the entrypoint for the macro with user syntax.
+
+Subsequent matches pull tokens from `unprocessed` and do something with them. That might be moving
+them into `processed` to be emitted later, or manipulating a target item/expression. The logic of
+the macro is implemented in these middle matches.
+
+The final match is the exitpoint, where `unprocessed` is empty.
+*/
+
 /// A macro that processes the input to `bitflags!` and shuffles attributes around
 /// based on whether or not they're "expression-safe".
 ///
@@ -912,7 +954,7 @@ macro_rules! __bitflags_expr_safe_attrs {
     // `cfg`: propagate
     (
         expr: { $e:expr },
-            attrs: {
+        attrs: {
             unprocessed: [
                 #[cfg $($args:tt)*]
                 $($attrs_rest:tt)*
@@ -936,7 +978,7 @@ macro_rules! __bitflags_expr_safe_attrs {
     // Other: discard
     (
         expr: { $e:expr },
-            attrs: {
+        attrs: {
             unprocessed: [
                 #[$other:ident $($args:tt)*]
                 $($attrs_rest:tt)*
@@ -1156,30 +1198,6 @@ macro_rules! __bitflags_flag_name {
         $(#[$item $($itemargs)*])*
         $vis const $binding: &'static str = $name;
     }
-}
-
-/// Implement a flag, which may be a wildcard `_`.
-#[macro_export]
-#[doc(hidden)]
-macro_rules! __bitflags_flag {
-    (
-        {
-            name: _,
-            named: { $($named:tt)* },
-            unnamed: { $($unnamed:tt)* },
-        }
-    ) => {
-        $($unnamed)*
-    };
-    (
-        {
-            name: $Flag:ident,
-            named: { $($named:tt)* },
-            unnamed: { $($unnamed:tt)* },
-        }
-    ) => {
-        $($named)*
-    };
 }
 
 #[macro_use]
