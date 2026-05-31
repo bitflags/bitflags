@@ -494,31 +494,6 @@ macro_rules! bitflags {
             $vis struct $BitFlags
         }
 
-        // Workaround for: https://github.com/bitflags/bitflags/issues/320
-
-        $crate::__impl_public_bitflags_consts! {
-            #[allow(
-                dead_code,
-                deprecated,
-                unused_doc_comments,
-                unused_attributes,
-                unused_mut,
-                unused_imports,
-                non_upper_case_globals,
-                clippy::min_ident_chars,
-                clippy::assign_op_pattern,
-                clippy::indexing_slicing,
-                clippy::same_name_method,
-                clippy::iter_without_into_iter,
-            )]
-            $BitFlags: $T {
-                $(
-                    $(#[$inner $($args)*])*
-                    const $Flag = $value;
-                )*
-            }
-        }
-
         #[allow(
             dead_code,
             deprecated,
@@ -538,6 +513,15 @@ macro_rules! bitflags {
             // These types don't appear in the end-user's API
             $crate::__declare_internal_bitflags! {
                 $vis struct InternalBitFlags: $T
+            }
+
+            $crate::__impl_public_bitflags_consts! {
+                $BitFlags: $T {
+                    $(
+                        $(#[$inner $($args)*])*
+                        const $Flag = $value;
+                    )*
+                }
             }
 
             $crate::__impl_internal_bitflags! {
@@ -587,29 +571,6 @@ macro_rules! bitflags {
 
         $($t:tt)*
     ) => {
-        $crate::__impl_public_bitflags_consts! {
-            #[allow(
-                dead_code,
-                deprecated,
-                unused_doc_comments,
-                unused_attributes,
-                unused_mut,
-                unused_imports,
-                non_upper_case_globals,
-                clippy::min_ident_chars,
-                clippy::assign_op_pattern,
-                clippy::indexing_slicing,
-                clippy::same_name_method,
-                clippy::iter_without_into_iter,
-            )]
-            $BitFlags: $T {
-                $(
-                    $(#[$inner $($args)*])*
-                    const $Flag = $value;
-                )*
-            }
-        }
-
         #[allow(
             dead_code,
             deprecated,
@@ -623,6 +584,15 @@ macro_rules! bitflags {
             clippy::iter_without_into_iter,
         )]
         const _: () = {
+            $crate::__impl_public_bitflags_consts! {
+                $BitFlags: $T {
+                    $(
+                        $(#[$inner $($args)*])*
+                        const $Flag = $value;
+                    )*
+                }
+            }
+
             $crate::__impl_public_bitflags! {
                 $(#[$outer])*
                 $BitFlags: $T, $BitFlags {
