@@ -1,3 +1,10 @@
+# 2.12.1
+
+## What's Changed
+* Rework the `#[flag_name]` feature and re-stabilize as `#[bitflags(flag_name)]` by @KodrAus in https://github.com/bitflags/bitflags/pull/487
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.12.0...2.12.1
+
 # 2.12.0
 
 ## Yanked
