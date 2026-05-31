@@ -31,6 +31,12 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+#![allow(non_camel_case_types)]
+
+type c_ulong = u64;
+
+fn main() {}
+
 #[repr(transparent)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct dispatch_block_flags_t(pub c_ulong);
