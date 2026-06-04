@@ -554,8 +554,6 @@ macro_rules! bitflags {
             $crate::__impl_public_bitflags_iter! {
                 $BitFlags: $T, $BitFlags
             }
-
-            $crate::__impl_public_bitflags_iter_equal_names! { $BitFlags }
         };
 
         $crate::bitflags! {
@@ -612,8 +610,6 @@ macro_rules! bitflags {
             $crate::__impl_public_bitflags_iter! {
                 $BitFlags: $T, $BitFlags
             }
-
-            $crate::__impl_public_bitflags_iter_equal_names! { $BitFlags }
         };
 
         $crate::bitflags! {
@@ -621,24 +617,6 @@ macro_rules! bitflags {
         }
     };
     () => {};
-}
-
-/// Implementing name/try_name based on FLAGS
-#[macro_export]
-#[doc(hidden)]
-macro_rules! __impl_public_bitflags_iter_equal_names {
-    ($BitFlags:ident) => {
-        impl $BitFlags {
-            /// Get an iterator over all defined names for this flags value.
-            ///
-            /// This iterator will yield all defined names for the flags value, including
-            /// any convenience flags.
-            #[inline]
-            pub fn iter_equal_names(&self) -> $crate::iter::ValueEqualNames<$BitFlags> {
-                $crate::iter::ValueEqualNames::new(self)
-            }
-        }
-    };
 }
 
 /// Implement functions on bitflags types.

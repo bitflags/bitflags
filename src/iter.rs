@@ -184,12 +184,12 @@ impl<B: Flags> Iterator for IterDefinedNames<B> {
 /**
 An iterator over all defined names for a specific flags value.
 */
-pub struct ValueEqualNames<T: Flags> {
+pub struct IterEqualNames<T: Flags> {
     inner: IterDefinedNames<T>,
     bits: T::Bits,
 }
 
-impl<T: Flags> ValueEqualNames<T> {
+impl<T: Flags> IterEqualNames<T> {
     #[inline]
     pub fn new(value: &T) -> Self {
         Self {
@@ -199,7 +199,7 @@ impl<T: Flags> ValueEqualNames<T> {
     }
 }
 
-impl<T: Flags> Iterator for ValueEqualNames<T> {
+impl<T: Flags> Iterator for IterEqualNames<T> {
     type Item = &'static str;
 
     #[inline]
