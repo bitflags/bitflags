@@ -191,7 +191,7 @@ pub struct IterEqualNames<T: Flags> {
 
 impl<T: Flags> IterEqualNames<T> {
     #[inline]
-    pub fn new(value: &T) -> Self {
+    pub(crate) fn new(value: &T) -> Self {
         Self {
             inner: <T as Flags>::iter_defined_names(),
             bits: value.bits(),
