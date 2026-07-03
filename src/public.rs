@@ -154,7 +154,7 @@ macro_rules! __impl_public_bitflags {
                         $(
                             $crate::__bitflags_expr_safe_attrs!(
                                 $(#[$inner $($args)*])*
-                                { truncated |= $value }
+                                { truncated |= $PublicBitFlags::$Flag.bits() }
                             );
                         )*
 
@@ -204,7 +204,7 @@ macro_rules! __impl_public_bitflags {
                                     $(#[$inner $($args)*])*
                                     {
                                         if name == __bitflags_flag_names::$Flag {
-                                            return $crate::__private::core::option::Option::Some(Self($value));
+                                            return $crate::__private::core::option::Option::Some(Self($PublicBitFlags::$Flag.bits()));
                                         }
                                     }
                                 );
