@@ -150,15 +150,15 @@ macro_rules! __impl_public_bitflags {
                 fn all() {
                     const {
                         let mut truncated = <$T as $crate::Bits>::EMPTY;
-                        let mut i = 0;
+                        let mut _i = 0;
 
                         $(
                             $crate::__bitflags_expr_safe_attrs!(
                                 $(#[$inner $($args)*])*
                                 {{
-                                    truncated |= <$PublicBitFlags as $crate::Flags>::FLAGS[i]
+                                    truncated |= <$PublicBitFlags as $crate::Flags>::FLAGS[_i]
                                         .value().bits();
-                                    i += 1;
+                                    _i += 1;
                                 }}
                             );
                         )*
