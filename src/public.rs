@@ -148,7 +148,7 @@ macro_rules! __impl_public_bitflags {
                 }
 
                 fn all() {
-                    const {
+                    const ALL: $BitFlags = {
                         let mut truncated = <$T as $crate::Bits>::EMPTY;
                         let mut _i = 0;
 
@@ -163,8 +163,10 @@ macro_rules! __impl_public_bitflags {
                             );
                         )*
 
-                        Self(truncated)
-                    }
+                        $BitFlags(truncated)
+                    };
+
+                    ALL
                 }
 
                 fn bits(&self) {
