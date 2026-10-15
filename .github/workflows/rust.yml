@@ -10,57 +10,58 @@ permissions:
 
 jobs:
   check:
-    name: "Tests"
+    name: Tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
         channel:
-        - stable
-        - beta
-        - nightly
+          - stable
+          - beta
+          - nightly
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-    - name: Install Rust Toolchain
-      run: rustup update ${{ matrix.channel }} && rustup default ${{ matrix.channel }}
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.channel }}
 
-    - name: Install cargo-hack
-      run: cargo install cargo-hack
+      - name: Install cargo-hack
+        run: cargo install cargo-hack
 
-    - name: Powerset
-      run: cargo hack test --feature-powerset --lib --optional-deps --depth 3
+      - name: Powerset
+        run: cargo hack test --feature-powerset --lib --optional-deps --depth 3
 
-    - name: Docs
-      run: cargo doc --features example_generated
+      - name: Docs
+        run: cargo doc --features example_generated
 
-    - name: Smoke test
-      run: cargo run --manifest-path tests/smoke-test/Cargo.toml
+      - name: Smoke test
+        run: cargo run --manifest-path tests/smoke-test/Cargo.toml
 
   check-minimal:
     name: Check minimal versions
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-    - name: Install Rust Toolchain
-      run: rustup default nightly
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@nightly
 
-    - name: Check minimal versions
-      run: cargo check --all --features serde,arbitrary,bytemuck,std,example_generated --all-targets -Z minimal-versions
+      - name: Check minimal versions
+        run: cargo check --all --features serde,arbitrary,bytemuck,std,example_generated --all-targets -Z minimal-versions
 
   benches:
     name: Benches
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Install Rust toolchain
-        run: rustup default nightly
+        uses: dtolnay/rust-toolchain@nightly
 
       - name: Default features
         run: cargo bench --no-run
@@ -70,10 +71,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Install Rust toolchain
-        run: rustup default beta
+        uses: dtolnay/rust-toolchain@beta
 
       - name: Compile pass
         run: cargo test pass
@@ -86,7 +87,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Install tombl
         run: cargo install tombl
@@ -99,16 +103,24 @@ jobs:
           cargo +$msrv build
 
   miri:
-    name: "Miri"
+    name: Miri
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
-      - name: Install Miri
-        run: |
-          rustup toolchain install nightly --component miri
-          cargo +nightly miri setup
+      - name: Checkout sources
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: miri
+          targets: s390x-unknown-linux-gnu
+
+      - name: Setup Miri
+        run: cargo +nightly miri setup
+
       - name: Default features
         run: cargo +nightly miri test --lib
+
       - name: BE
         run: cargo +nightly miri test --lib --target s390x-unknown-linux-gnu
 
@@ -117,12 +129,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
-      - name: Install Clippy
-        run: |
-          rustup update beta
-          rustup component add clippy --toolchain beta
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@beta
+        with:
+          components: clippy
 
       - name: Default features
         run: |
@@ -137,12 +149,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Install Rust toolchain
-        run: |
-          rustup default nightly
-          rustup target add thumbv6m-none-eabi
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: thumbv6m-none-eabi
 
       - name: Default features
         run: cargo build -Z avoid-dev-deps --features example_generated --target thumbv6m-none-eabi
